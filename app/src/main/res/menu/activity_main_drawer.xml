@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view"
+    android:fontFamily="@font/roboto">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/dibujo_linea"
+            android:icon="@drawable/ic_medir_distancia"
+            android:title="Medir distancia" />
+        <item
+            android:id="@+id/dibujo_poligono"
+            android:icon="@drawable/ic_menu_medir_area"
+            android:title="Medir área" />
+        <item
+            android:id="@+id/nav_buscar_coordenadas"
+            android:icon="@drawable/ic_menu_buscar_coordenadas"
+            android:title="Buscar coordenadas" />
+        <item
+            android:id="@+id/habilitar_giroscopio"
+            android:icon="@drawable/ic_enable_orientation"
+            android:title="Habilitar giroscopio" />
+        <item
+            android:id="@+id/nav_manage"
+            android:icon="@drawable/ic_menu_exportar"
+            android:title="Exportar" />
+        <item
+            android:id="@+id/captura"
+            android:icon="@drawable/ic_menu_captura"
+            android:title="Captura" />
+        <item
+            android:id="@+id/limpiar_mapa"
+            android:icon="@drawable/ic_menu_limpiar"
+            android:title="Limpiar" />
+    </group>
+
+    <item android:title="Otros" >
+        <menu>
+            <item
+                android:id="@+id/nav_ayuda"
+                android:icon="@drawable/ic_menu_ayuda"
+                android:title="Ayuda" />
+            <item
+                android:id="@+id/nav_acerca"
+                android:icon="@drawable/ic_menu_acerca"
+                android:title="Acerca" />
+
+        </menu>
+    </item>
+
+</menu>

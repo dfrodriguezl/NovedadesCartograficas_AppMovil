@@ -1,0 +1,620 @@
+package co.gov.dane.danevisor;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Location;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import com.google.maps.android.SphericalUtil;
+
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,GoogleMap.OnMyLocationClickListener,AdapterView.OnItemSelectedListener,
+        GoogleMap.OnCameraMoveListener, SensorEventListener {
+
+    private static final int MY_LOCATION_REQUEST_CODE = 1;
+    private GoogleMap mMap;
+    private Spinner mMapTypeSelector;
+
+    private int mMapTypes[] = {
+            GoogleMap.MAP_TYPE_NORMAL,
+            GoogleMap.MAP_TYPE_SATELLITE,
+            GoogleMap.MAP_TYPE_HYBRID,
+            GoogleMap.MAP_TYPE_TERRAIN,
+            GoogleMap.MAP_TYPE_NONE
+    };
+    private Polyline line;
+    private Polygon poli;
+    int sensor_activado=1;
+
+    private SensorManager mSensorManager;
+    private float[] mRotationMatrix = new float[16];
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},00);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+
+
+
+        int ZoomControl_id = 0x1;
+        int position_control_id = 0x2;
+
+
+        // Find ZoomControl view
+        View zoomControls = mapFragment.getView().findViewById(ZoomControl_id);
+
+        if (zoomControls != null && zoomControls.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+            // ZoomControl is inside of RelativeLayout
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) zoomControls.getLayoutParams();
+
+            // Align it to - parent top|left
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+            // Update margins, set to 10dp
+            final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                    getResources().getDisplayMetrics());
+            params.setMargins(margin, 400, margin, margin);
+        }
+
+        View positioncontrol = mapFragment.getView().findViewById(position_control_id);
+
+        if (positioncontrol != null && positioncontrol.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+            // ZoomControl is inside of RelativeLayout
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) positioncontrol.getLayoutParams();
+
+            // Align it to - parent top|left
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+            // Update margins, set to 10dp
+            final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                    getResources().getDisplayMetrics());
+            params.setMargins(margin, 250, margin, margin);
+        }
+
+
+
+
+
+        mMapTypeSelector = (Spinner) findViewById(R.id.map_type_selector);
+        mMapTypeSelector.setOnItemSelectedListener(this);
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // for the system's orientation sensor registered listeners
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // to stop the listener and save battery
+        mSensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        float degree = Math.round(event.values[0]);
+
+         updateCamera(degree);
+
+
+    }
+    private void updateCamera(float bearing) {
+        CameraPosition oldPos = mMap.getCameraPosition();
+
+        CameraPosition pos = CameraPosition.builder(oldPos).bearing(bearing).tilt(60).build();
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
+    }
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, Settings.class);
+            startActivity(intent);
+            return true;
+        }
+        if (id == R.id.action_layers) {
+
+            AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+            final View mView =getLayoutInflater().inflate(R.layout.dialog_mapa_base,null);
+            mBuilder.setView(mView);
+            final AlertDialog dialog =mBuilder.create();
+
+            WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+            wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+            wmlp.y = 200;   //y position
+
+            wmlp.width=mView.getWidth();
+            dialog.getWindow().setDimAmount(0);
+            dialog.show();
+
+            LinearLayout mapa_base_normal = (LinearLayout) mView.findViewById(R.id.mapa_base_normal);
+
+            mapa_base_normal.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mMap.setMapType(mMapTypes[0]);
+                }
+            });
+            LinearLayout mapa_base_satelite = (LinearLayout) mView.findViewById(R.id.mapa_base_satelite);
+
+            mapa_base_satelite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mMap.setMapType(mMapTypes[1]);
+                }
+            });
+            LinearLayout mapa_base_hibrido = (LinearLayout) mView.findViewById(R.id.mapa_base_hibrido);
+
+            mapa_base_hibrido.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mMap.setMapType(mMapTypes[2]);
+                }
+            });
+            LinearLayout mapa_base_tierra = (LinearLayout) mView.findViewById(R.id.mapa_base_tierra);
+
+            mapa_base_tierra.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mMap.setMapType(mMapTypes[3]);
+                }
+            });
+            LinearLayout mapa_base_none = (LinearLayout) mView.findViewById(R.id.mapa_base_none);
+
+            mapa_base_none.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mMap.setMapType(mMapTypes[4]);
+                }
+            });
+
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+
+        if (id == R.id.dibujo_linea) {
+            dibujo_linea();
+        }else if (id == R.id.dibujo_poligono) {
+            dibujo_poligono();
+        } else if (id == R.id.limpiar_mapa) {
+            mMap.clear();
+        }
+        else if (id == R.id.habilitar_giroscopio) {
+
+            if(sensor_activado==0){
+                Log.v("Sensor:", String.valueOf(sensor_activado));
+                mSensorManager.unregisterListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
+                sensor_activado=1;
+            }
+            if(sensor_activado==1){
+                mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+                        SensorManager.SENSOR_DELAY_NORMAL);
+                sensor_activado=0;
+            }
+
+
+        }else if (id == R.id.captura) {
+
+            //captureScreen();
+            snapShot();
+
+        } else if (id == R.id.nav_buscar_coordenadas) {
+
+            AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+            final View mView =getLayoutInflater().inflate(R.layout.dialog_coordenadas,null);
+            mBuilder.setView(mView);
+            final AlertDialog dialog =mBuilder.create();
+
+
+            Button btn_coordenadas= (Button) mView.findViewById(R.id.btn_dialog_coordenadas);
+            final TextView latitud= (TextView) mView.findViewById(R.id.et_dialog_coordenadas_latitud);
+            final TextView longitud= (TextView) mView.findViewById(R.id.et_dialog_coordenadas_longitud);
+
+            btn_coordenadas.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String lat = latitud.getText().toString();
+                    String lon = longitud.getText().toString();
+
+                    LatLng marker = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
+                    mMap.addMarker(new MarkerOptions().position(marker)
+                            .title("Ubicación"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
+
+                    dialog.dismiss();
+                }
+            });
+
+            /*
+            Window window = dialog.getWindow();
+            WindowManager.LayoutParams wlp = window.getAttributes();
+
+            wlp.gravity = Gravity.BOTTOM;
+            wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+            window.setAttributes(wlp);
+
+            dialog.show();
+            */
+            dialog.show();
+
+        } else if (id == R.id.nav_acerca) {
+
+            AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+            final View mView =getLayoutInflater().inflate(R.layout.dialog_acerca,null);
+            mBuilder.setView(mView);
+
+            Button btn_acerca= (Button) mView.findViewById(R.id.btn_dialog_acerca);
+            final AlertDialog dialog =mBuilder.create();
+            dialog.show();
+
+            btn_acerca.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            LinearLayout ly_dialog_acerca_web= (LinearLayout) mView.findViewById(R.id.ly_dialog_acerca_web);
+
+            ly_dialog_acerca_web.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.dane.gov.co/"));
+                    startActivity(browserIntent);
+                }
+            });
+
+            LinearLayout ly_dialog_acerca_contacto= (LinearLayout) mView.findViewById(R.id.ly_dialog_acerca_contacto);
+
+            ly_dialog_acerca_contacto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    Uri data = Uri.parse("mailto:"
+                            + "sige@dane.gov.co"
+                            + "?subject=" + "Aplicativo Movil Edición DANE" + "&body=" + "");
+                    intent.setData(data);
+                    startActivity(intent);
+                }
+            });
+
+
+        } else if (id == R.id.nav_ayuda) {
+
+            AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+            final View mView =getLayoutInflater().inflate(R.layout.dialog_ayuda,null);
+            mBuilder.setView(mView);
+
+            Button btn_ayuda= (Button) mView.findViewById(R.id.btn_dialog_ayuda);
+            final AlertDialog dialog =mBuilder.create();
+            dialog.show();
+
+            btn_ayuda.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(4, -72);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").draggable(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_LOCATION_REQUEST_CODE);
+        }
+        mMap.setOnMyLocationClickListener(this);
+        mMap.setOnCameraMoveListener(this);
+
+
+    }
+
+    public void dibujo_linea(){
+
+        line= mMap.addPolyline(new PolylineOptions()
+                .width(5)
+                .color(Color.RED));
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
+            @Override
+            public void onMapClick(LatLng point) {
+                Marker marker = mMap.addMarker(new MarkerOptions().position(point));
+
+                List<LatLng> points;
+                points=line.getPoints();
+                points.add(new LatLng(point.latitude, point.longitude));
+                line.setPoints(points);
+
+                double distance = SphericalUtil.computeLength(points);
+
+                Toast.makeText(MainActivity.this, "Distancia:\n"+ Double.toString(distance), Toast.LENGTH_LONG).show();
+            }
+
+        });
+    }
+
+    public void dibujo_poligono(){
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
+
+            int control=1;
+
+            @Override
+            public void onMapClick(LatLng point) {
+
+                Marker marker = mMap.addMarker(new MarkerOptions().position(point));
+                if(control==1){
+                    poli= mMap.addPolygon(new PolygonOptions()
+                            .add(new LatLng(point.latitude, point.longitude))
+                            .strokeColor(Color.RED)
+                            .fillColor(Color.parseColor("#D6EAF8")));
+                }else{
+                    List<LatLng> points =new ArrayList<LatLng>();
+
+
+                    points=poli.getPoints();
+
+                    if(control>2){
+                        points.remove( points.size() - 1 );
+                    }
+                    points.add(new LatLng(point.latitude, point.longitude));
+                    Log.v("Puntos", String.valueOf(points));
+                    poli.setPoints(points);
+
+                    double area = SphericalUtil.computeArea(points);
+
+                    Toast.makeText(MainActivity.this, "Area:\n"+ Double.toString(area)+"m2", Toast.LENGTH_LONG).show();
+                }
+                control=control+1;
+
+            }
+
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_LOCATION_REQUEST_CODE) {
+            if (permissions.length == 1 &&
+                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                mMap.setMyLocationEnabled(true);
+            } else {
+                // Permission was denied. Display an error message.
+            }
+        }
+}
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+        Toast.makeText(this, "Current location:\n" + location, Toast.LENGTH_LONG).show();
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        mMap.setMapType(mMapTypes[position]);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    @Override
+    public void onCameraMove() {
+
+        TextView latitud = (TextView)findViewById(R.id.latitud);
+        TextView longitud = (TextView)findViewById(R.id.longitud);
+
+        double mylat = mMap.getCameraPosition().target.latitude;
+        double mylon = mMap.getCameraPosition().target.longitude;
+
+        latitud.setText("Lat: "+String.format("%.4f", mylat));
+        longitud.setText("Lon: "+String.format("%.4f", mylon));
+
+    }
+
+    //Método para captura de tomas de pantalla.
+    public void snapShot(){
+        GoogleMap.SnapshotReadyCallback callback=new GoogleMap.SnapshotReadyCallback () {
+            Bitmap bitmap;
+            @Override
+            public void onSnapshotReady(Bitmap snapshot) {
+                bitmap=snapshot;
+
+                try{
+                    Date now = new Date();
+                    android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), now+".png");
+                    FileOutputStream fout=new FileOutputStream (file);
+                    bitmap.compress (Bitmap.CompressFormat.PNG,90,fout);
+
+                    final MediaPlayer mp = MediaPlayer.create(MainActivity.this,R.raw.camera_shutter);
+                    mp.start();
+
+                    Toast.makeText(MainActivity.this, "Captura de pantalla: \n"+ now+".png", Toast.LENGTH_LONG).show();
+
+                }catch (Exception e){
+                    e.printStackTrace ();
+
+                }
+
+
+            }
+        };mMap.snapshot (callback);
+    }
+
+
+
+}
