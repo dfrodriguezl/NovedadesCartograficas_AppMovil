@@ -92,4 +92,31 @@
         <item>Terrain</item>
         <item>None</item>
     </string-array>
+
+
+        <string-array name="novedad_punto">
+            <item>Poste</item>
+            <item>Arbol</item>
+            <item>Semaforo</item>
+            <item>Hueco</item>
+            <item>Obra</item>
+            <item>Casa</item>
+            <item>Corral</item>
+            <item>Fabrica</item>
+        </string-array>
+
+
+    <string-array name="novedad_linea">
+        <item>Rio</item>
+        <item>Calle</item>
+        <item>Linea Ferrea</item>
+        <item>Cerca</item>
+    </string-array>
+
+    <string-array name="novedad_poligono">
+        <item>Manzana</item>
+        <item>Finca</item>
+        <item>Obra de infraestructura</item>
+    </string-array>
+
 </resources>

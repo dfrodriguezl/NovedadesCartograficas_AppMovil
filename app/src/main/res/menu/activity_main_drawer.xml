@@ -6,6 +6,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/mapas_offline"
+            android:icon="@drawable/ic_mapas_offline"
+            android:title="Mapas sin conexión" />
+        <item
             android:id="@+id/dibujo_linea"
             android:icon="@drawable/ic_medir_distancia"
             android:title="Medir distancia" />

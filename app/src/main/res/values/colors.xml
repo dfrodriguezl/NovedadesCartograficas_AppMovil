@@ -7,4 +7,9 @@
     <color name="blanco">#FFFFFF</color>
     <color name="blanco_transparente">#80FFFFFF</color>
     <color name="gris">#BDC3C7</color>
+    <color name="verde">#229954</color>
+    <color name="azul">#3498DB</color>
+    <color name="amarrillo">#F5B041</color>
+
+
 </resources>

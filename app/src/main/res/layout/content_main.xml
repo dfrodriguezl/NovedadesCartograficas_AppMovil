@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="113dp">
+        tools:layout_editor_absoluteY="256dp">
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -35,30 +35,35 @@
             app:srcCompat="@drawable/ic_puntero" />
 
 
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/blanco_transparente"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="100dp">
-
-        <TextView
-            android:id="@+id/latitud"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/editText"
-            android:text="Lat" />
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="100dp"
+            android:background="@color/blanco_transparente"
+            android:orientation="vertical"
+            android:padding="5dp">
 
-        <TextView
-            android:id="@+id/longitud"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Lon" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/latitud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/editText"
+                android:text="Lat" />
+
+            <TextView
+                android:id="@+id/longitud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lon" />
+            <TextView
+                android:id="@+id/area"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Área" />
+        </LinearLayout>
+
+
 
     </RelativeLayout>
-
 </android.support.constraint.ConstraintLayout>

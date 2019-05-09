@@ -1,6 +1,7 @@
 package co.gov.dane.danevisor;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -38,6 +39,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -45,10 +47,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.Feature;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -62,10 +73,27 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.gms.maps.model.UrlTileProvider;
 import com.google.maps.android.SphericalUtil;
+import com.google.maps.android.data.Geometry;
+import com.google.maps.android.data.geojson.GeoJsonFeature;
+import com.google.maps.android.data.geojson.GeoJsonLayer;
+import com.google.maps.android.data.geojson.GeoJsonPolygon;
+import com.google.maps.android.data.geojson.GeoJsonPolygonStyle;
+
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,GoogleMap.OnMyLocationClickListener,AdapterView.OnItemSelectedListener,
@@ -86,6 +114,10 @@ public class MainActivity extends AppCompatActivity
     private Polygon poli;
     int sensor_activado=1;
 
+    List<Marker> markers = new ArrayList<>();
+    List<Polygon> Polygon_shape = new ArrayList<>();
+
+
     private SensorManager mSensorManager;
     private float[] mRotationMatrix = new float[16];
 
@@ -95,6 +127,28 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},00);
+
+
+        //creación del Folder para guardar los mbtiles.
+        String ruta_mbtiles=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"mbtiles";
+        File folder = new File(ruta_mbtiles);
+        boolean success = true;
+        if (!folder.exists()) {
+            success = folder.mkdirs();
+        }
+        if (success) {
+            Log.d("Carpeta:","Ya creada");
+
+
+
+
+
+
+        } else {
+
+        }
+
+
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -173,7 +227,374 @@ public class MainActivity extends AppCompatActivity
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
 
+
+
+        GeoJsonLayer layer;
+        String PLACES_URL = "http://geoportal.dane.gov.co/geoserver/dig/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=dig%3AENA_GP_PREDIAL_05107_BRICENO%7C&maxfeatures=50&outputformat=json";
+        // Instantiate the RequestQueue
+        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+
+        //Prepare the Request
+        StringRequest request = new StringRequest(
+                Request.Method.GET, //GET or POST
+                PLACES_URL, //URL
+                new Response.Listener<String>() { //Listener OK
+
+                    @Override
+                    public void onResponse(String  responsePlaces) {
+                        //Response OK!! :)
+                        try {
+
+                            JSONObject obj = new JSONObject(responsePlaces);
+
+                            GeoJsonLayer layer = new GeoJsonLayer(mMap, obj);
+
+                            Log.i("json:", String.valueOf(obj));
+
+
+                            layer.addLayerToMap();
+
+                            GeoJsonPolygonStyle poli = new GeoJsonPolygonStyle();
+
+                            for (GeoJsonFeature feature : layer.getFeatures()) {
+
+                            }
+
+
+                            for (GeoJsonFeature feature : layer.getFeatures()) {
+                                if (feature.hasProperty("OBJECTID")) {
+                                    String id = feature.getProperty("OBJECTID");
+                                    Log.i("Propiedad:",id);
+                                }
+                                ;
+                            }
+
+
+                            layer.setOnFeatureClickListener(new GeoJsonLayer.OnFeatureClickListener() {
+                                @SuppressLint("RestrictedApi")
+                                @Override
+                                public void onFeatureClick(com.google.maps.android.data.Feature feature) {
+
+                                    for (Marker marker : markers) {
+                                        if (marker.getTag().equals("hola")) { //if a marker has desired tag
+
+                                            marker.remove();
+
+
+                                        }
+                                    }
+                                    markers.clear();
+
+                                    final GeoJsonPolygon pol= (GeoJsonPolygon) feature.getGeometry();
+
+                                    TextView area_campo = (TextView)findViewById(R.id.area);
+
+                                    double area = SphericalUtil.computeArea(pol.getOuterBoundaryCoordinates());
+                                    area=area*0.0001;
+
+                                    area_campo.setText("Área: "+String.format("%.4f",area)+" Ha");
+                                    area_campo.setTextColor(Color.parseColor("#ad2055"));
+
+
+                                    ArrayList<LatLng> dat= (ArrayList<LatLng>) pol.getCoordinates().get(0);
+
+                                    for (int i=0;i<dat.size();i++){
+                                        Marker mimarker=createMarker( dat.get(i).latitude,dat.get(i).longitude,"ivan","hola");
+
+                                        markers.add(mimarker);
+
+                                    }
+
+                                    mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                                        @Override
+                                        public void onMarkerDragStart(Marker arg0) {
+                                        }
+
+                                        @SuppressWarnings("unchecked")
+                                        @Override
+                                        public void onMarkerDragEnd(Marker arg0) {
+                                            Log.d("System out", "onMarkerDragEnd...");
+                                            mMap.animateCamera(CameraUpdateFactory.newLatLng(arg0.getPosition()));
+
+                                            ArrayList<LatLng> edit= new ArrayList<LatLng>();
+                                            PolygonOptions opts=new PolygonOptions();
+
+                                            for (Polygon poli : Polygon_shape) {
+                                                if (poli.getTag().equals("editado")) { //if a marker has desired tag
+
+                                                    poli.remove();
+
+                                                }
+                                            }
+                                            Polygon_shape.clear();
+
+                                            for (Marker marker : markers) {
+                                                if (marker.getTag().equals("hola")) { //if a marker has desired tag
+
+                                                    edit.add(marker.getPosition());
+
+                                                }
+                                            }
+                                            for (LatLng location : edit) {
+                                                opts.add(location);
+                                            }
+
+                                            Polygon polygon = mMap.addPolygon(opts.strokeColor(Color.RED).fillColor(Color.parseColor("#8059A4FC")));
+                                            polygon.setTag("editado");
+                                            Polygon_shape.add(polygon);
+
+                                            TextView area_campo = (TextView)findViewById(R.id.area);
+
+                                            double area = SphericalUtil.computeArea(polygon.getPoints());
+                                            area=area*0.0001;
+
+                                            area_campo.setText("Área: "+String.format("%.4f",area)+" Ha");
+                                            area_campo.setTextColor(Color.parseColor("#2F75C9"));
+
+                                        }
+
+                                        @Override
+                                        public void onMarkerDrag(Marker arg0) {
+                                        }
+                                    });
+
+
+
+
+                                    FloatingActionButton editarFeature = (FloatingActionButton) findViewById(R.id.editarFeature);
+
+                                    editarFeature.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            for (Marker marker : markers) {
+                                                if (marker.getTag().equals("hola")) { //if a marker has desired tag
+
+                                                    marker.remove();
+
+
+                                                }
+                                            }
+                                            markers.clear();
+                                        }
+                                    });
+                                    editarFeature.setVisibility(View.VISIBLE);
+
+
+
+
+                                }
+
+
+
+                                protected Marker createMarker(double latitude, double longitude, String title, String snippet) {
+
+                                    Marker mPerth;
+
+                                    mPerth= mMap.addMarker(new MarkerOptions()
+                                            .position(new LatLng(latitude, longitude))
+                                            .title(title)
+                                            .snippet(snippet)
+                                            .anchor(0.5f, 0.5f)
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ping))
+                                            );
+
+                                    mPerth.setTag("hola");
+                                    mPerth.setDraggable(true);
+
+                                    return mPerth;
+                                }
+
+
+                            });
+
+
+
+
+                            JSONArray names = obj.names();
+                            JSONArray values = obj.getJSONArray("features");
+                            for(int i=0; i<values.length(); i++){
+
+                                JSONObject obj1  = values.getJSONObject(i);
+                                String code = obj1.getString("geometry");
+                                Log.i("MyClass", code );
+
+                            }
+
+                        } catch (Throwable t) {
+                            Log.e("error", "Could not parse malformed JSON: \"" + responsePlaces + "\"");
+                        }
+                    }
+                }, new Response.ErrorListener() { //Listener ERROR
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //There was an error :(
+                Log.i("bye",error.toString());
+            }
+        });
+
+
+
+
+
+        //Send the request to the requestQueue
+        requestQueue.add(request);
+
+
+        //codigo atributos
+        FloatingActionButton editarPunto = (FloatingActionButton) findViewById(R.id.editarPunto);
+
+        editarPunto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+                final View mView =getLayoutInflater().inflate(R.layout.dialog_atributos,null);
+                mBuilder.setView(mView);
+                final AlertDialog dialog =mBuilder.create();
+
+                WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+                wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+                wmlp.y = 200;   //y position
+
+                wmlp.width=mView.getWidth();
+                dialog.getWindow().setDimAmount(0);
+                dialog.show();
+
+                Spinner spinner = (Spinner) mView.findViewById(R.id.spinner_novedad);
+
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mView.getContext(),
+                R.array.novedad_punto, android.R.layout.simple_spinner_item);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                spinner.setAdapter(adapter);
+
+                Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
+
+                btn_guardar_atributos.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+
+                        dibujo_punto();
+
+
+                    }
+                });
+
+            }
+        });
+
+
+
+        FloatingActionButton editarLinea = (FloatingActionButton) findViewById(R.id.editarLinea);
+
+        editarLinea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+                final View mView =getLayoutInflater().inflate(R.layout.dialog_atributos,null);
+                mBuilder.setView(mView);
+                final AlertDialog dialog =mBuilder.create();
+
+                WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+                wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+                wmlp.y = 200;   //y position
+
+                wmlp.width=mView.getWidth();
+                dialog.getWindow().setDimAmount(0);
+                dialog.show();
+
+                Spinner spinner = (Spinner) mView.findViewById(R.id.spinner_novedad);
+
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mView.getContext(),
+                        R.array.novedad_linea, android.R.layout.simple_spinner_item);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                spinner.setAdapter(adapter);
+
+                Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
+
+                btn_guardar_atributos.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+
+                        dibujo_linea();
+
+
+                    }
+                });
+
+            }
+        });
+
+
+        FloatingActionButton editarPolygono = (FloatingActionButton) findViewById(R.id.editarPolygono);
+
+        editarPolygono.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+                final View mView =getLayoutInflater().inflate(R.layout.dialog_atributos,null);
+                mBuilder.setView(mView);
+                final AlertDialog dialog =mBuilder.create();
+
+                WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+                wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+                wmlp.y = 200;   //y position
+
+                wmlp.width=mView.getWidth();
+                dialog.getWindow().setDimAmount(0);
+                dialog.show();
+
+                Spinner spinner = (Spinner) mView.findViewById(R.id.spinner_novedad);
+
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mView.getContext(),
+                        R.array.novedad_poligono, android.R.layout.simple_spinner_item);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                spinner.setAdapter(adapter);
+
+                Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
+
+                btn_guardar_atributos.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+
+                        dibujo_poligono();
+
+
+                    }
+                });
+
+            }
+        });
+
+
+
+
+
+
+
+
+
+
     }
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -467,6 +888,28 @@ public class MainActivity extends AppCompatActivity
         mMap.setOnCameraMoveListener(this);
 
 
+
+
+
+        String ruta_mbtiles=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"mbtiles";
+
+        TileProvider tileProvider = new ExpandedMBTilesTileProvider(new File(ruta_mbtiles+"/capa.mbtiles"), 256, 256);
+        TileOverlay tileOverlay = mMap.addTileOverlay(
+                new TileOverlayOptions()
+                        .tileProvider(tileProvider).zIndex(-1));
+
+
+    }
+
+    public void dibujo_punto(){
+
+       mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
+            @Override
+            public void onMapClick(LatLng point) {
+                Marker marker = mMap.addMarker(new MarkerOptions().position(point));
+            }
+
+        });
     }
 
     public void dibujo_linea(){
