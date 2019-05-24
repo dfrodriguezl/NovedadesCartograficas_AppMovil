@@ -45,53 +45,132 @@
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/save_edicion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_main_adicionar_capa" />
+        app:backgroundTint="@color/verde"
+        app:srcCompat="@drawable/ic_main_save_editor" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/editarFeature"
+        android:id="@+id/discard_save_editor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="80dp"
-        android:layout_marginRight="17dp"
+        android:layout_marginRight="75dp"
+        android:layout_marginBottom="15dp"
+        app:backgroundTint="@color/rojo"
+        app:srcCompat="@drawable/ic_main_discard_editor" />
 
-        app:srcCompat="@drawable/ic_main_editar" />
+
+
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/editarPunto"
+        android:id="@+id/add_punto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="180dp"
-        android:layout_marginRight="17dp"
-        app:backgroundTint="@color/azul"
+        android:layout_gravity="bottom|center"
+        app:backgroundTint="@color/dane"
+        android:layout_marginBottom="15dp"
         app:srcCompat="@drawable/ic_editar_punto" />
 
-
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/editarLinea"
+        android:id="@+id/delete_geom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="240dp"
-        android:layout_marginRight="17dp"
-        app:backgroundTint="@color/verde"
-        app:srcCompat="@drawable/ic_editar_linea" />
+        android:layout_gravity="bottom|left"
+        app:backgroundTint="@color/dane"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        app:srcCompat="@drawable/ic_main_delete_forever" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/editarPolygono"
+        android:id="@+id/undo_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_gravity="bottom|left"
+        app:backgroundTint="@color/dane"
+        android:layout_marginBottom="80dp"
+        android:layout_marginLeft="15dp"
+        app:srcCompat="@drawable/ic_main_undo" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/cut_geom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        app:backgroundTint="@color/dane"
+        android:layout_marginBottom="150dp"
+        android:layout_marginLeft="15dp"
+        app:srcCompat="@drawable/ic_main_cut" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/edit_atributos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        app:backgroundTint="@color/dane"
+        android:layout_marginBottom="220dp"
+        android:layout_marginLeft="15dp"
+        app:srcCompat="@drawable/ic_main_atributos" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/edit_join"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        app:backgroundTint="@color/dane"
         android:layout_marginBottom="300dp"
-        android:layout_marginRight="17dp"
-        app:backgroundTint="@color/amarrillo"
-        app:srcCompat="@drawable/ic_editar_polygono" />
+        android:layout_marginLeft="15dp"
+        app:srcCompat="@drawable/ic_main_join" />
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/menu_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center"
+        app:fab_addButtonColorNormal="@color/dane"
+        app:fab_addButtonSize="normal"
+        app:fab_labelStyle="@style/Etiquetas"
+        app:fab_labelsPosition="left">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/editarPolygono"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/amarrillo"
+            app:fab_icon="@drawable/ic_editar_polygono"
+            app:fab_size="normal"
+            app:fab_title="Poligono" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/editarLinea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/verde"
+            app:fab_icon="@drawable/ic_editar_linea"
+            app:fab_size="normal"
+            app:fab_title="Linea" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/editarPunto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/azul"
+            app:fab_icon="@drawable/ic_editar_punto"
+            app:fab_size="normal"
+            app:fab_title="Punto" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+
+
+
+
+
 
 
 </android.support.design.widget.CoordinatorLayout>

@@ -10,6 +10,10 @@
     <color name="verde">#229954</color>
     <color name="azul">#3498DB</color>
     <color name="amarrillo">#F5B041</color>
+    <color name="guardar_btn">#007216</color>
+    <color name="rojo">#DF0000</color>
+    <color name="negro_transparente">#5000</color>
 
+    <color name="poligono_touch">#50C7ECFF</color>
 
 </resources>

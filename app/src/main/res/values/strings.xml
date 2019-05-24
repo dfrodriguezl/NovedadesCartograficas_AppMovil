@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Visor DANE</string>
+    <string name="app_name">Editor DANE</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Editor Geográfico</string>
@@ -94,23 +94,31 @@
     </string-array>
 
 
-        <string-array name="novedad_punto">
-            <item>Poste</item>
-            <item>Arbol</item>
-            <item>Semaforo</item>
-            <item>Hueco</item>
-            <item>Obra</item>
-            <item>Casa</item>
-            <item>Corral</item>
-            <item>Fabrica</item>
-        </string-array>
+    <string-array name="novedad_punto">
+        <item>Poste</item>
+        <item>Arbol</item>
+        <item>Semaforo</item>
+        <item>Hueco</item>
+        <item>Obra</item>
+        <item>Casa</item>
+        <item>Corral</item>
+        <item>Fabrica</item>
+    </string-array>
 
 
     <string-array name="novedad_linea">
-        <item>Rio</item>
+        <item >Rio</item>
         <item>Calle</item>
         <item>Linea Ferrea</item>
         <item>Cerca</item>
+    </string-array>
+
+
+    <string-array name="color_linea">
+        <item >#00A8FF</item>
+        <item>#737373</item>
+        <item>#B4670D</item>
+        <item>#CE00D1</item>
     </string-array>
 
     <string-array name="novedad_poligono">
@@ -118,5 +126,12 @@
         <item>Finca</item>
         <item>Obra de infraestructura</item>
     </string-array>
+
+    <string-array name="color_poligono">
+        <item >#50FFA5A5</item>
+        <item>#5079D17E</item>
+        <item>#50FFB344</item>
+    </string-array>
+
 
 </resources>

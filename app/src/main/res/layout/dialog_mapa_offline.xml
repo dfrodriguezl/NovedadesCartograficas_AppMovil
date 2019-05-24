@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="Mapas Fuera de linea"
+        android:textSize="20sp"
+        android:textColor="@color/dane"
+        android:paddingBottom="3dp"
+        android:layout_marginTop="20dp"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Los mapas fuera de linea. (mapas .mbtiles) deben alojarse en la carpeta /Editor Dane/mbtiles."
+        android:textSize="15sp"
+        android:paddingBottom="3dp"
+        android:layout_marginTop="20dp"
+        />
+
+    <ListView
+        android:id="@+id/listview_mapa_offline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"/>
+
+    <Button
+        android:id="@+id/cerrar_dialog_mapa_offline"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:padding="10dp"
+        android:background="@drawable/borde_boton"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:text="cerrar"
+        android:layout_marginBottom="20dp"/>
+
+
+
+
+</LinearLayout>

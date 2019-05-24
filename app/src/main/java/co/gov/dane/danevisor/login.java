@@ -41,43 +41,7 @@ public class login extends AppCompatActivity {
                     aviso_login.setText("Datos incompletos");
 
                 }else{
-                    //Abrimos la base de datos 'DBUsuarios' en modo escritura
-                    dataBase usdbh =new dataBase(login.this, "GeoEditor", null, 1);
 
-                    SQLiteDatabase db = usdbh.getWritableDatabase();
-
-                    //Si hemos abierto correctamente la base de datos
-                    if(db != null)
-                    {
-                        Cursor c = db.rawQuery(" SELECT * FROM Usuarios WHERE usuario='"+usuario_nombre+"' and  clave='"+usuario_password+"'", null);
-
-                        if(c.getCount() == 0){
-                            aviso_login.setVisibility(View.VISIBLE);
-                            aviso_login.setText("Usuario ó contraseña incorrectos");
-                        }else{
-                            if (c.moveToFirst()) {
-                                //Recorremos el cursor hasta que no haya más registros
-                                do {
-                                    String codigo= c.getString(0);
-                                    String usuario = c.getString(1);
-                                    String clave = c.getString(2);
-                                    String nombre = c.getString(3);
-                                    String vigencia = c.getString(4);
-
-                                    Intent intent = new Intent(login.this, MainActivity.class);
-                                    startActivity(intent);
-
-                                } while(c.moveToNext());
-                            }
-                        }
-
-
-
-
-
-                        //Cerramos la base de datos
-                        db.close();
-                    }
                 }
 
 

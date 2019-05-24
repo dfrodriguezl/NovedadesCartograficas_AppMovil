@@ -10,11 +10,11 @@
             android:icon="@drawable/ic_mapas_offline"
             android:title="Mapas sin conexión" />
         <item
-            android:id="@+id/dibujo_linea"
+            android:id="@+id/medir_distancia"
             android:icon="@drawable/ic_medir_distancia"
             android:title="Medir distancia" />
         <item
-            android:id="@+id/dibujo_poligono"
+            android:id="@+id/medir_area"
             android:icon="@drawable/ic_menu_medir_area"
             android:title="Medir área" />
         <item

@@ -26,5 +26,8 @@
         <item name="android:textSize">17sp</item>
         <item name="android:fontFamily">@font/roboto</item>
     </style>
-
+    <style name="Etiquetas">
+        <item name="android:background">@drawable/background_label_fab</item>
+        <item name="android:textColor">@color/blanco</item>
+    </style>
 </resources>

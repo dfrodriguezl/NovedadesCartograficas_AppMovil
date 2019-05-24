@@ -22,7 +22,7 @@ public class splash extends Activity {
             @Override
             public void run() {
                 /* Create an Intent that will start the Menu-Activity. */
-                Intent mainIntent = new Intent(splash.this,login.class);
+                Intent mainIntent = new Intent(splash.this,MainActivity.class);
                 splash.this.startActivity(mainIntent);
                 splash.this.finish();
             }
