@@ -1,14 +1,21 @@
 package co.gov.dane.danevisor;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.graphics.Color;
 import android.util.Log;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -23,6 +30,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.gov.dane.danevisor.EstructuraDataBase.Estructura;
 import jsqlite.Stmt;
 
 public class SpatialAnalysis {
@@ -34,6 +42,17 @@ public class SpatialAnalysis {
     SpatialAnalysis(Context context,MainActivity main){
         this.context=context;
         this.main=main;
+    }
+
+    public String puntoWKT(Marker marker){
+
+        Coordinate punto=new Coordinate(marker.getPosition().longitude,marker.getPosition().latitude);
+
+        GeometryFactory gf = new GeometryFactory();
+
+        Point p= gf.createPoint(punto);
+
+        return String.valueOf(p);
     }
 
     public String LineaWKT(Polyline pol){
@@ -189,6 +208,9 @@ public class SpatialAnalysis {
         main.polygon.add(p);
 
     }
+
+
+
 
 
 

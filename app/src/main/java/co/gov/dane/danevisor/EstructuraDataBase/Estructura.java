@@ -28,4 +28,16 @@ public class Estructura {
 
     }
 
+    public static abstract class NovedadEntry implements BaseColumns {
+        public static final String TABLE_NAME ="novedad";
+        public static final String ID = "id";
+        public static final String TIPO_GEOMETRIA = "tipo_geometria";
+        public static final String WKT = "wkt";
+        public static final String TIPO = "tipo";
+        public static final String DESCRIPCION = "descripcion";
+
+    }
+
+
+
 }

@@ -36,28 +36,6 @@
                 app:srcCompat="@drawable/icono_login"
                 android:layout_marginBottom="20dp"/>
 
-            <EditText
-                android:background="@drawable/borde_boton_dane"
-                android:layout_marginBottom="20dp"
-                android:id="@+id/user_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Nombre de Usuario"
-                android:drawableLeft="@drawable/ic_person_login"
-                android:padding="10dp"
-                android:inputType="text"  />
-
-
-            <EditText
-                android:background="@drawable/borde_boton_dane"
-                android:id="@+id/user_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Contraseña"
-                android:inputType="textPassword"
-                android:drawableLeft="@drawable/ic_key_login"
-                android:padding="10dp"
-                android:layout_marginBottom="20dp"/>
 
             <TextView
                 android:id="@+id/aviso_login"
@@ -81,7 +59,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/borde_boton_dane"
                 android:backgroundTint="@color/dane"
-                android:text="Iniciar Sesión"
+                android:text="Escanear QR"
                 android:textColor="@color/blanco" />
 
 

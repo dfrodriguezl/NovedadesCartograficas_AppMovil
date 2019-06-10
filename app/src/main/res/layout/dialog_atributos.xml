@@ -89,16 +89,35 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_dialog_guardar_atributos"
-        style="?android:attr/borderlessButtonStyle"
+    <LinearLayout
+        android:layout_margin="10dp"
         android:layout_width="wrap_content"
-        android:padding="10dp"
-        android:background="@drawable/borde_boton"
-        android:backgroundTint="@color/azul"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Guardar"
-        android:textColor="@color/blanco"
-        android:layout_marginBottom="20dp"/>
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_dialog_guardar_atributos"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_verde"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:text="Guardar" />
+
+        <Button
+            android:id="@+id/btn_dialog_cerrar_atributos"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_azul"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:text="Cerrar"
+            />
+
+    </LinearLayout>
+
+
 </LinearLayout>

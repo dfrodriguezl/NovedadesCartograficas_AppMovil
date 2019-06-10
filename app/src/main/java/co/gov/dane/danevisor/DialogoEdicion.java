@@ -3,6 +3,7 @@ package co.gov.dane.danevisor;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -14,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.google.android.gms.maps.model.Polygon;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +31,7 @@ public class DialogoEdicion {
     private Boolean edicion=false;
     private JSONObject json;
     String Color;
+    String id_google;
 
 
     public DialogoEdicion(MainActivity main, Activity _activity,int opcion){
@@ -38,13 +42,14 @@ public class DialogoEdicion {
 
     }
 
-    public DialogoEdicion(MainActivity main, Activity _activity,int opcion,Boolean edicion,JSONObject json){
+    public DialogoEdicion(MainActivity main, Activity _activity,int opcion,Boolean edicion,JSONObject json,String id_google){
 
         this.activity = _activity;
         this.opcion=opcion;
         this.main=main;
         this.edicion=edicion;
         this.json=json;
+        this.id_google=id_google;
 
     }
 
@@ -59,7 +64,7 @@ public class DialogoEdicion {
         final View mView =inflater.inflate(R.layout.dialog_atributos,null);
         mBuilder.setView(mView);
         final AlertDialog dialog =mBuilder.create();
-
+        dialog.setCanceledOnTouchOutside(false);
         WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
 
         wmlp.gravity = Gravity.TOP | Gravity.CENTER;
@@ -68,6 +73,8 @@ public class DialogoEdicion {
         wmlp.width=mView.getWidth();
         dialog.getWindow().setDimAmount(0);
         dialog.show();
+
+
 
         final Spinner spinner = (Spinner) mView.findViewById(R.id.tipo_novedad);
 
@@ -91,8 +98,12 @@ public class DialogoEdicion {
         spinner.setAdapter(adapter);
 
         Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
+        Button btn_dialog_cerrar_atributos= (Button) mView.findViewById(R.id.btn_dialog_cerrar_atributos);
 
         if(!edicion){
+            Mensajes mitoast =new Mensajes(activity);
+            mitoast.generarToast("Ingrese los atributos de la nueva geometria");
+            btn_dialog_cerrar_atributos.setVisibility(View.GONE);
             btn_guardar_atributos.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("RestrictedApi")
                 @Override
@@ -158,6 +169,7 @@ public class DialogoEdicion {
             });
         }
         else if(edicion){
+            btn_dialog_cerrar_atributos.setVisibility(View.VISIBLE);
             try {
 
                 String tipo= json.get("tipo").toString();
@@ -176,9 +188,79 @@ public class DialogoEdicion {
 
             }
 
+            btn_dialog_cerrar_atributos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
             btn_guardar_atributos.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    try {
+
+                        int id = Integer.parseInt(json.get("id").toString());
+
+                        Spinner tipo_novedad= (Spinner) mView.findViewById(R.id.tipo_novedad);
+                        EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
+
+                        String tipo=tipo_novedad.getSelectedItem().toString();
+                        String descripcion=descripcion_novedad.getText().toString();
+
+                        Novedades novedad=new Novedades(activity,main,id,tipo,descripcion);
+                        novedad.updateNovedadAtributos();
+
+                        int position_spiner=0;
+                        String[] array_color = new String[0];
+                        try {
+                            JSONObject obj =new JSONObject();
+                            obj.put("id", String.valueOf(id));
+                            obj.put("tipo", tipo);
+                            obj.put("descripcion", descripcion);
+
+
+                        if(opcion==3){
+
+                            position_spiner=tipo_novedad.getSelectedItemPosition();
+                            array_color = main.getResources().getStringArray(R.array.color_poligono);
+
+                            for(int i=0;i<main.polygon.size();i++){
+                                if(main.polygon.get(i).getId().equals(id_google)){
+                                        main.polygon.get(i).setTag(obj);
+                                        main.polygon.get(i).setFillColor(android.graphics.Color.parseColor(array_color[position_spiner]));
+
+                                }
+
+                            }
+
+                        }
+                        if(opcion==2){
+                            position_spiner=tipo_novedad.getSelectedItemPosition();
+                            array_color = main.getResources().getStringArray(R.array.color_linea);
+
+                            for(int i=0;i<main.line.size();i++){
+                                if(main.line.get(i).getId().equals(id_google)){
+                                    main.line.get(i).setTag(obj);
+                                    main.line.get(i).setColor(android.graphics.Color.parseColor(array_color[position_spiner]));
+                                }
+
+                            }
+                        }
+
+
+
+                        } catch (JSONException e) {
+
+                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
 
                     dialog.dismiss();
                 }

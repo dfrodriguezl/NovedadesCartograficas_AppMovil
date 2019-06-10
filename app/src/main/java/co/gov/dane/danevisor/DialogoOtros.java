@@ -2,6 +2,7 @@ package co.gov.dane.danevisor;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -69,7 +71,7 @@ public class DialogoOtros {
 
 
         dialog.show();
-
+        dialog.setCanceledOnTouchOutside(false);
     }
 
 
@@ -115,7 +117,7 @@ public class DialogoOtros {
             }
         });
 
-
+        dialog.setCanceledOnTouchOutside(false);
 
     }
 
@@ -140,6 +142,47 @@ public class DialogoOtros {
             }
         });
 
+        dialog.setCanceledOnTouchOutside(false);
+
+    }
+
+    public void MostrarDialogoSincronizar(){
+
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+
+        AlertDialog.Builder mBuilder =new AlertDialog.Builder(activity);
+        final View mView =inflater.inflate(R.layout.dialog_sincronizar,null);
+        mBuilder.setView(mView);
+
+        Button btn_dialog_sincronizar_close= (Button) mView.findViewById(R.id.btn_dialog_sincronizar_close);
+        final AlertDialog dialog =mBuilder.create();
+        dialog.show();
+
+        Button descargar_datos_nube= (Button) mView.findViewById(R.id.descargar_datos_nube);
+
+        final TextView mensaje=(TextView) mView.findViewById(R.id.mensaje_sincronizar);
+
+        descargar_datos_nube.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Controlador con=new Controlador(mView.getContext());
+                con.getData();
+
+            }
+        });
+
+
+
+        btn_dialog_sincronizar_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setCanceledOnTouchOutside(false);
 
     }
 

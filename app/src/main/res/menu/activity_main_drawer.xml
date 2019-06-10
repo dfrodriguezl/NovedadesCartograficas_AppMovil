@@ -4,7 +4,8 @@
     tools:showIn="navigation_view"
     android:fontFamily="@font/roboto">
 
-    <group android:checkableBehavior="single">
+    <item android:title="Herramientas" >
+        <menu>
         <item
             android:id="@+id/mapas_offline"
             android:icon="@drawable/ic_mapas_offline"
@@ -34,10 +35,11 @@
             android:icon="@drawable/ic_menu_captura"
             android:title="Captura" />
         <item
-            android:id="@+id/limpiar_mapa"
-            android:icon="@drawable/ic_menu_limpiar"
-            android:title="Limpiar" />
-    </group>
+            android:id="@+id/sincronizar"
+            android:icon="@drawable/ic_main_sincronizar"
+            android:title="Sincronización" />
+        </menu>
+    </item>
 
     <item android:title="Otros" >
         <menu>

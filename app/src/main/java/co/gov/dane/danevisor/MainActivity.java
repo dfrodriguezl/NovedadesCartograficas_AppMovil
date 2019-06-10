@@ -19,7 +19,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -126,11 +128,11 @@ public class MainActivity extends AppCompatActivity
 
     private int tipo_edicion;
 
-    private List<Polyline> line=new ArrayList<>();
+     List<Polyline> line=new ArrayList<>();
 
     List<Polygon> polygon=new ArrayList<>();
 
-    private List<Marker> puntos=new ArrayList<>();
+     List<Marker> puntos=new ArrayList<>();
 
 
 
@@ -163,6 +165,8 @@ public class MainActivity extends AppCompatActivity
     Boolean GeometriaUpdate=false;
 
     JSONObject atributos=new JSONObject();
+
+    Mensajes mitoast =new Mensajes(MainActivity.this);
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -213,6 +217,7 @@ public class MainActivity extends AppCompatActivity
                 hide_add_punto();
                 hide_undo_geom();
                 hide_delete_geom();
+                hide_edit_atributos();
 
                 for (Marker marker : markers) {
                     if (marker.getTag().equals("edicion")) { //if a marker has desired tag
@@ -231,6 +236,28 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     puntos.add(mMap.addMarker(opts));
+                    puntos.get(puntos.size()-1).setTag(atributos);
+
+
+                    try {
+                        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+
+                        Integer id=db.getMaxIdNovedad()+1;
+                        if (atributos.has("id")) {
+                            id= Integer.valueOf(atributos.get("id").toString());
+                        }
+                        int tipo_geometria=1;
+                        String wkt=analisis.puntoWKT(puntos.get(puntos.size()-1));
+                        String tipo= atributos.get("tipo").toString();
+                        String descripcion= atributos.get("descripcion").toString();
+                        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,tipo_geometria,wkt,tipo,descripcion);
+                        Boolean inserto=novedad.insertarNovedad();
+
+                        mitoast.generarToast("Elemento guardado");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
 
                     if(GeometriaUpdate){
@@ -266,6 +293,26 @@ public class MainActivity extends AppCompatActivity
                     line.add(mMap.addPolyline(opts.width(5)));
                     line.get(line.size()-1).setClickable(true);
                     line.get(line.size()-1).setTag(atributos);
+
+                    try {
+                        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+
+                        Integer id=db.getMaxIdNovedad()+1;
+                        if (atributos.has("id")) {
+                            id= Integer.valueOf(atributos.get("id").toString());
+                        }
+                        int tipo_geometria=2;
+                        String wkt=analisis.LineaWKT(line.get(line.size()-1));
+                        String tipo= atributos.get("tipo").toString();
+                        String descripcion= atributos.get("descripcion").toString();
+                        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,tipo_geometria,wkt,tipo,descripcion);
+                        Boolean inserto=novedad.insertarNovedad();
+                        mitoast.generarToast("Elemento guardado");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
 
                     try {
                         line.get(line.size()-1).setColor(Color.parseColor(atributos.get("color").toString()));
@@ -308,6 +355,29 @@ public class MainActivity extends AppCompatActivity
                     polygon.get(polygon.size()-1).setClickable(true);
                     polygon.get(polygon.size()-1).setTag(atributos);
 
+
+                    try {
+                        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+
+                        Integer id=db.getMaxIdNovedad()+1;
+                        if (atributos.has("id")) {
+                            id= Integer.valueOf(atributos.get("id").toString());
+                        }
+                        int tipo_geometria=3;
+                        String wkt=analisis.PoligonoWKT(polygon.get(polygon.size()-1));
+                        String tipo= atributos.get("tipo").toString();
+                        String descripcion= atributos.get("descripcion").toString();
+                        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,tipo_geometria,wkt,tipo,descripcion);
+                        Boolean inserto=novedad.insertarNovedad();
+                        mitoast.generarToast("Elemento guardado");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+
+
                     try {
                         polygon.get(polygon.size()-1).setFillColor(Color.parseColor(atributos.get("color").toString()));
                     } catch (JSONException e) {
@@ -334,8 +404,7 @@ public class MainActivity extends AppCompatActivity
 
                 GeometriaUpdate=false;
 
-                Snackbar.make(view, "Elemento Guardado", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
                 save_edicion.setVisibility(View.GONE);
                 discard_save_editor.setVisibility(View.GONE);
 
@@ -358,6 +427,7 @@ public class MainActivity extends AppCompatActivity
                 hide_delete_geom();
                 hide_undo_geom();
                 drop_markers_intermediate();
+                hide_edit_atributos();
 
                 for (Marker marker : markers) {
                     if (marker.getTag().equals("edicion")) { //if a marker has desired tag
@@ -380,9 +450,7 @@ public class MainActivity extends AppCompatActivity
                     Polygon_shape=null;
                 }
 
-
-                Snackbar.make(view, "Elemento Borrado", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                mitoast.generarToast("Edición terminada");
                 discard_save_editor.setVisibility(View.GONE);
                 save_edicion.setVisibility(View.GONE);
             }
@@ -390,7 +458,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        FloatingActionButton delete_geom = (FloatingActionButton) findViewById(R.id.delete_geom);
+        final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
 
         delete_geom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -410,7 +478,22 @@ public class MainActivity extends AppCompatActivity
                     for(int i=0;i<puntos.size();i++){
 
                         if(puntos.get(i).getId().equals(codId)){
-                            puntos.get(i).remove();
+
+                            try {
+                                int id= Integer.parseInt(atributos.get("id").toString());
+
+                                Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,1,null,null,null);
+
+                                Boolean paso=novedad.eliminarNovedad();
+
+                                puntos.get(i).remove();
+                                mitoast.generarToast("Elemento borrado");
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
                         }
                     }
                 }
@@ -419,7 +502,22 @@ public class MainActivity extends AppCompatActivity
                     for(int i=0;i<line.size();i++){
 
                         if(line.get(i).getId().equals(codId)){
-                            line.get(i).remove();
+
+                            try {
+                                int id= Integer.parseInt(atributos.get("id").toString());
+
+                                Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,2,null,null,null);
+
+                                Boolean paso=novedad.eliminarNovedad();
+
+                                line.get(i).remove();
+                                mitoast.generarToast("Elemento borrado");
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
                         }
                     }
                     if(Polyline_shape!=null){
@@ -431,7 +529,22 @@ public class MainActivity extends AppCompatActivity
                     for(int i=0;i<polygon.size();i++){
 
                         if(polygon.get(i).getId().equals(codId)){
-                            polygon.get(i).remove();
+
+
+                            try {
+                                int id= Integer.parseInt(atributos.get("id").toString());
+
+                                Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,3,null,null,null);
+
+                                Boolean paso=novedad.eliminarNovedad();
+
+                                polygon.get(i).remove();
+                                mitoast.generarToast("Elemento borrado");
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
                         }
                     }
                     if(polygon_sel!=null){
@@ -446,6 +559,8 @@ public class MainActivity extends AppCompatActivity
 
                 hide_delete_geom();
                 hide_undo_geom();
+                hide_save_edicion();
+                hide_discard_save_edicion();
             }
         });
 
@@ -565,74 +680,22 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        final com.getbase.floatingactionbutton.FloatingActionsMenu menu_edicion = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.menu_fab);
-
-
-        //codigo atributos
-        com.getbase.floatingactionbutton.FloatingActionButton editarPunto = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.editarPunto);
-
-        editarPunto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-            DialogoEdicion dialog =new DialogoEdicion(MainActivity.this,MainActivity.this,1);
-
-            dialog.mostrarDialogoEdicion();
-                menu_edicion.collapse();
-
-
-            }
-        });
-
-
-
-        com.getbase.floatingactionbutton.FloatingActionButton editarLinea = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.editarLinea);
-
-        editarLinea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-                DialogoEdicion dialog =new DialogoEdicion(MainActivity.this,MainActivity.this,2);
-
-                dialog.mostrarDialogoEdicion();
-                menu_edicion.collapse();
-            }
-        });
-
-
-
-
-        com.getbase.floatingactionbutton.FloatingActionButton editarPolygono = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.editarPolygono);
-
-        editarPolygono.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                DialogoEdicion dialog =new DialogoEdicion(MainActivity.this,MainActivity.this,3);
-
-                dialog.mostrarDialogoEdicion();
-                menu_edicion.collapse();
-            }
-        });
-
-
 
         hide_add_punto();
         hide_delete_geom();
         hide_undo_geom();
 
 
-        final FloatingActionButton edit_atributos = (FloatingActionButton) findViewById(R.id.edit_atributos);
+        com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
 
 
         edit_atributos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                DialogoEdicion dialog =new DialogoEdicion(MainActivity.this,MainActivity.this,tipo_edicion,true,atributos);
+                DialogoEdicion dialog =new DialogoEdicion(MainActivity.this,MainActivity.this,tipo_edicion,true,atributos,codId);
                 dialog.mostrarDialogoEdicion();
+                hide_menu_grupo_edicion();
 
             }
         });
@@ -644,23 +707,26 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        final FloatingActionButton cut_geom = (FloatingActionButton) findViewById(R.id.cut_geom);
+        final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
 
         cut_geom.setOnClickListener(new View.OnClickListener() {
             int num_clic=1;
             @Override
             public void onClick(View v) {
                 if(CutPicker){
-                    cut_geom.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{getResources().getColor(R.color.amarrillo)}));
+
+                    cut_geom.setColorPressed(getResources().getColor(R.color.amarrillo));
                     CutPicker=false;
 
                     show_add_punto();
                     dibujo_linea();
 
                     num_clic=num_clic+1;
+                    mitoast.generarToastMapa("Dibuje una polilinea");
+
 
                 }else{
-                    cut_geom.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{getResources().getColor(R.color.dane)}));
+                    cut_geom.setColorPressed(getResources().getColor(R.color.dane));
                     CutPicker=true;
                     hide_add_punto();
 
@@ -686,6 +752,8 @@ public class MainActivity extends AppCompatActivity
                         if(polygon_sel!=null){
                             polygon_sel.remove();
                         }
+                        mitoast.generarToast("Poligono Cortado");
+
 
                         markers.clear();
                         Polyline_shape.remove();
@@ -700,20 +768,19 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-        final FloatingActionButton edit_join = (FloatingActionButton) findViewById(R.id.edit_join);
+        final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
         edit_join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if(JoinPicker){
-                    edit_join.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{getResources().getColor(R.color.amarrillo)}));
-
+                    edit_join.setColorPressed(getResources().getColor(R.color.amarrillo));
 
                     JoinPicker=false;
 
                 }else{
-                    edit_join.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{getResources().getColor(R.color.dane)}));
 
+                    edit_join.setColorPressed(getResources().getColor(R.color.dane));
                     List<String> geometrias=new ArrayList<>();
 
                     for (Polygon pol : polygon_union) {
@@ -762,6 +829,11 @@ public class MainActivity extends AppCompatActivity
         hide_cut_geom();
         hide_msg_distancia();
         hide_msg_area();
+        hide_edit_atributos();
+        hide_edit_join();
+        hide_menu_grupo_edicion();
+
+
 
     }
 
@@ -828,11 +900,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, Settings.class);
-            startActivity(intent);
-            return true;
-        }
+
         if (id == R.id.action_layers) {
 
             AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
@@ -893,6 +961,58 @@ public class MainActivity extends AppCompatActivity
 
             return true;
         }
+        if (id == R.id.action_novedad) {
+
+            AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+            final View mView =getLayoutInflater().inflate(R.layout.dialog_add_novedad,null);
+            mBuilder.setView(mView);
+            final AlertDialog dialog =mBuilder.create();
+
+            WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+            wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+            wmlp.y = 200;   //y position
+
+            wmlp.width=mView.getWidth();
+            dialog.getWindow().setDimAmount(0);
+            dialog.show();
+
+            LinearLayout novedad_punto = (LinearLayout) mView.findViewById(R.id.novedad_punto);
+
+            novedad_punto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,1);
+
+                    dialogEditor.mostrarDialogoEdicion();
+                    dialog.hide();
+                }
+            });
+            LinearLayout novedad_linea = (LinearLayout) mView.findViewById(R.id.novedad_linea);
+
+            novedad_linea.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,2);
+
+                    dialogEditor.mostrarDialogoEdicion();
+                    dialog.hide();
+                }
+            });
+            LinearLayout novedad_poligono = (LinearLayout) mView.findViewById(R.id.novedad_poligono);
+
+            novedad_poligono.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,3);
+
+                    dialogEditor.mostrarDialogoEdicion();
+                    dialog.hide();
+                }
+            });
+
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -917,8 +1037,11 @@ public class MainActivity extends AppCompatActivity
             dibujo_poligono();
             show_add_punto();
 
-        } else if (id == R.id.limpiar_mapa) {
-            mMap.clear();
+        }else if(id== R.id.sincronizar){
+
+            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            dialogo.MostrarDialogoSincronizar();
+
         }
         else if (id == R.id.habilitar_giroscopio) {
 
@@ -1027,6 +1150,10 @@ public class MainActivity extends AppCompatActivity
                 drop_markers_intermediate();
                 hide_msg_distancia();
                 hide_msg_area();
+                hide_edit_atributos();
+                hide_edit_join();
+                hide_menu_grupo_edicion();
+
 
             }
         });
@@ -1035,6 +1162,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPolygonClick(Polygon polygon) {
 
+                show_menu_grupo_edicion();
                 //edicion(polygon.getPoints());
 
                 if(polygon_sel!=null){
@@ -1071,6 +1199,8 @@ public class MainActivity extends AppCompatActivity
 
                 area(polygon);
                 show_cut_geom();
+                show_edit_atributos();
+                show_edit_join();
 
 
                 try {
@@ -1109,11 +1239,15 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPolylineClick(Polyline polyline) {
 
+
+                show_menu_grupo_edicion();
+
                 tipo_edicion=2;
                 edicion(polyline.getPoints());
                 codId=polyline.getId();
                 show_delete_geom();
                 distancia(polyline.getPoints());
+                show_edit_atributos();
 
                 try {
 
@@ -1150,52 +1284,76 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-                tipo_edicion=1;
-                edicion_puntos(marker.getPosition());
-                codId=marker.getId();
-                show_delete_geom();
-                drop_markers_intermediate();
 
-                try {
+            if (marker.getTag() != null) {
+                if (marker.getTag().equals("edicion")) { //if a marker has desired tag
 
-                    atributos=new JSONObject(marker.getTag().toString());
+                }else{
 
-                } catch (Throwable t) {
+                    show_menu_grupo_edicion();
+
+                    tipo_edicion=1;
+                    edicion_puntos(marker.getPosition());
+                    codId=marker.getId();
+                    show_delete_geom();
+                    drop_markers_intermediate();
+                    show_edit_atributos();
+
+                    try {
+
+                        atributos=new JSONObject(marker.getTag().toString());
+
+                    } catch (Throwable t) {
+
+                    }
+
+                    mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+
+                        @Override
+                        public void onMarkerDragStart(Marker arg0) {
+                        }
+
+                        @SuppressWarnings("unchecked")
+                        @Override
+                        public void onMarkerDragEnd(Marker arg0) {
+
+                            dragMarker(arg0,1);
+
+                        }
+
+                        @Override
+                        public void onMarkerDrag(Marker arg0) {
+                        }
+                    });
+
+
+
 
                 }
+            }
 
-                mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-
-                    @Override
-                    public void onMarkerDragStart(Marker arg0) {
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void onMarkerDragEnd(Marker arg0) {
-
-                        dragMarker(arg0,1);
-
-                    }
-
-                    @Override
-                    public void onMarkerDrag(Marker arg0) {
-                    }
-                });
 
                 return false;
             }
         });
 
 
-        Controlador con=new Controlador(MainActivity.this,MainActivity.this);
-        con.getData();
+
 
 
         dataBase db=new dataBase(MainActivity.this,MainActivity.this);
         db.getGeomFromDatabase();
 
+        db.getNovedades();
 
+
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String provider = service.getBestProvider(criteria, false);
+        Location location = service.getLastKnownLocation(provider);
+        LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18));
     }
 
 
@@ -1286,7 +1444,7 @@ public class MainActivity extends AppCompatActivity
 
                 double distance = SphericalUtil.computeLength(points);
 
-                //Toast.makeText(MainActivity.this, "Distancia:\n"+ Double.toString(distance), Toast.LENGTH_LONG).show();
+                //Mensajes.makeText(MainActivity.this, "Distancia:\n"+ Double.toString(distance), Mensajes.LENGTH_LONG).show();
 
             }
         });
@@ -1535,7 +1693,7 @@ public void edicion_puntos(LatLng ptos){
         fab.setVisibility(View.VISIBLE);
         FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
         discard_save_editor.setVisibility(View.VISIBLE);
-
+        hide_menu_grupo_edicion();
         GeometriaUpdate=true;
     }
 
@@ -1550,7 +1708,6 @@ public void edicion_puntos(LatLng ptos){
         }
 
         Point_shape=mMap.addMarker(opts);
-
 
     }
 
@@ -1673,12 +1830,13 @@ public void hide_add_punto(){
     }
 
 public void hide_delete_geom(){
-    FloatingActionButton delete_geom = (FloatingActionButton) findViewById(R.id.delete_geom);
-    delete_geom.setVisibility(View.GONE);
+    final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
+    delete_geom.setVisibility(View.INVISIBLE);
+    hide_menu_grupo_edicion();
 }
 
 public void show_delete_geom(){
-    FloatingActionButton delete_geom = (FloatingActionButton) findViewById(R.id.delete_geom);
+    final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
     delete_geom.setVisibility(View.VISIBLE);
 }
 
@@ -1713,12 +1871,13 @@ public void hide_discard_save_edicion(){
 }
 
 public void hide_cut_geom(){
-    final FloatingActionButton cut_geom = (FloatingActionButton) findViewById(R.id.cut_geom);
-    cut_geom.setVisibility(View.GONE);
+    final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
+    cut_geom.setVisibility(View.INVISIBLE);
+    hide_menu_grupo_edicion();
 }
 
 public void show_cut_geom(){
-    final FloatingActionButton cut_geom = (FloatingActionButton) findViewById(R.id.cut_geom);
+    final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
     cut_geom.setVisibility(View.VISIBLE);
 }
 
@@ -1741,6 +1900,40 @@ public void show_msg_area(){
 public void hide_msg_area(){
     TextView area_campo = (TextView)findViewById(R.id.area);
     area_campo.setVisibility(View.GONE);
+}
+
+public void show_edit_atributos(){
+    com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
+    edit_atributos.setVisibility(View.VISIBLE);
+}
+
+public void hide_edit_atributos(){
+    com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
+    edit_atributos.setVisibility(View.INVISIBLE);
+}
+
+public void show_edit_join(){
+    final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
+    edit_join.setVisibility(View.VISIBLE);
+
+}
+public void hide_edit_join(){
+    final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
+    edit_join.setVisibility(View.INVISIBLE);
+    hide_menu_grupo_edicion();
+
+}
+
+public void show_menu_grupo_edicion(){
+    final com.getbase.floatingactionbutton.FloatingActionsMenu menu_editor = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.menu_editor);
+    menu_editor.setVisibility(View.VISIBLE);
+    menu_editor.expand();
+}
+
+public void hide_menu_grupo_edicion(){
+    final com.getbase.floatingactionbutton.FloatingActionsMenu menu_editor = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.menu_editor);
+    menu_editor.collapse();
+    menu_editor.setVisibility(View.INVISIBLE);
 }
 
 

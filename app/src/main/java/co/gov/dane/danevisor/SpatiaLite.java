@@ -41,6 +41,14 @@ public class SpatiaLite extends SQLiteOpenHelper {
                 + Estructura.GeometriaEntry.GEOMETRIA_INI + " TEXT NOT NULL"
                 + ")");
 
+        sqLiteDatabase.execSQL("CREATE TABLE " + Estructura.NovedadEntry.TABLE_NAME + " ("
+                + Estructura.NovedadEntry.ID +" INTEGER PRIMARY KEY,"
+                + Estructura.NovedadEntry.TIPO_GEOMETRIA + " INTEGER NOT NULL,"
+                + Estructura.NovedadEntry.WKT + " TEXT NOT NULL,"
+                + Estructura.NovedadEntry.TIPO + " TEXT,"
+                + Estructura.NovedadEntry.DESCRIPCION + " TEXT "
+                + ")");
+
     }
 
     @Override
