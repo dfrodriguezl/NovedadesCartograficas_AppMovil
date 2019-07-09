@@ -3,6 +3,8 @@ package co.gov.dane.danevisor;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +42,9 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,6 +58,7 @@ public class Controlador {
     String url_geometria_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/geometria_get.php";
     String url_usuarios_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/usuarios_get.php";
 
+    String url_obras_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/obras_get.php";
 
 
     int descargas=0;
@@ -109,7 +115,6 @@ public class Controlador {
                                    values.put(Estructura.GeometriaEntry.OBSERVACIONES, obj.getString("OBSERVACIONES"));
                                    values.put(Estructura.GeometriaEntry.GEOMETRIA_INI, obj.getString("GEOMETRIA_INI"));
 
-                                   //llena la tabla de geometria.
                                    sp.insert(Estructura.GeometriaEntry.TABLE_NAME, null, values);
 
 
@@ -131,6 +136,65 @@ public class Controlador {
 
            // Add JsonArrayRequest to the RequestQueue
            requestQueue.add(jsonArrayRequest);
+
+
+           JsonArrayRequest jsonArrayRequestObras = new JsonArrayRequest(
+                   Request.Method.GET,
+                   url_obras_get,
+                   null,
+                   new Response.Listener<JSONArray>() {
+                       @Override
+                       public void onResponse(JSONArray response) {
+
+                           Log.d("Resultados:", String.valueOf(response));
+
+                           try{
+
+                               SpatiaLite db=new SpatiaLite(context);
+
+                               org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+                               sp.delete(Estructura.ObrasEntry.TABLE_NAME, null, null);
+                               for(int i=0;i<response.length();i++){
+
+                                   JSONObject obj = response.getJSONObject(i);
+
+                                   ContentValues values = new ContentValues();
+
+                                   values.put(Estructura.ObrasEntry.SERIAL, obj.getString("SERIAL"));
+                                   values.put(Estructura.ObrasEntry.FINICIO, obj.getString("FINICIO"));
+                                   values.put(Estructura.ObrasEntry.NOFORMULAR, obj.getString("NOFORMULAR"));
+                                   values.put(Estructura.ObrasEntry.NOMBREOBRA, obj.getString("NOMBREOBRA"));
+                                   values.put(Estructura.ObrasEntry.DIREOBRA, obj.getString("DIREOBRA"));
+                                   values.put(Estructura.ObrasEntry.BARRIO, obj.getString("BARRIO"));
+                                   values.put(Estructura.ObrasEntry.GEOMETRIA, obj.getString("GEOMETRIA"));
+
+                                   sp.insert(Estructura.ObrasEntry.TABLE_NAME, null, values);
+
+
+                               }
+                               sp.close();
+                           }catch (JSONException e){
+                               e.printStackTrace();
+
+                           }
+                       }
+                   },
+                   new Response.ErrorListener(){
+                       @Override
+                       public void onErrorResponse(VolleyError error){
+                           Log.i("bye",error.toString());
+
+                       }
+                   }
+           );
+
+           // Add JsonArrayRequest to the RequestQueue
+           requestQueue.add(jsonArrayRequestObras);
+
+
+
+
+
 
 
            requestQueue.addRequestFinishedListener(new RequestQueue.RequestFinishedListener<String>() {
@@ -161,14 +225,18 @@ public class Controlador {
                        public void onResponse(JSONArray response) {
 
                            try{
+                               SpatiaLite db=new SpatiaLite(context);
+
+                               org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+                               //borra la tabla de usuarios cada vez.
+                               sp.delete(Estructura.UsuarioEntry.TABLE_NAME, null, null);
 
                                for(int i=0;i<response.length();i++){
 
                                    JSONObject obj = response.getJSONObject(i);
 
-                                   SpatiaLite db=new SpatiaLite(context);
-
-                                   org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+                                   Log.d("Usuarios:", String.valueOf(obj));
 
                                    ContentValues values = new ContentValues();
 
@@ -180,13 +248,11 @@ public class Controlador {
                                    values.put(Estructura.UsuarioEntry.VIGENCIA, obj.getString("VIGENCIA"));
                                    values.put(Estructura.UsuarioEntry.ROL, obj.getInt("ROL"));
 
-                                   //borra la tabla de usuarios cada vez.
-                                   sp.delete(Estructura.UsuarioEntry.TABLE_NAME, null, null);
                                    //llena la tabla de usuarios.
                                    sp.insert(Estructura.UsuarioEntry.TABLE_NAME, null, values);
-                                   sp.close();
 
                                }
+                               sp.close();
                            }catch (JSONException e){
                                e.printStackTrace();
                            }
@@ -211,6 +277,111 @@ public class Controlador {
 
 
 
+
+
+    }
+
+    public void uploadData(){
+
+        Boolean hay_internet=isNetworkAvailable();
+
+        if(hay_internet){
+
+
+            ProgressDialog barProgressDialog = new ProgressDialog(context);
+
+            barProgressDialog.setTitle("Subiendo Información ...");
+            barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+            barProgressDialog.setProgress(0);
+
+
+            try {
+                SpatiaLite db=new SpatiaLite(context);
+
+                org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+
+                Cursor c = sp.query(
+                        Estructura.NovedadEntry.TABLE_NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                );
+
+                barProgressDialog.setMax(c.getCount());//In this part you can set the  MAX value of data
+                barProgressDialog.show();
+
+                while (c.moveToNext()) {
+
+                    barProgressDialog.incrementProgressBy(1);
+
+                    final String id=c.getString(c.getColumnIndex(Estructura.NovedadEntry.ID));
+                    final String tipo=c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO_GEOMETRIA));
+                    final String descripcion=c.getString(c.getColumnIndex(Estructura.NovedadEntry.DESCRIPCION));
+                    final String geometria=c.getString(c.getColumnIndex(Estructura.NovedadEntry.WKT));
+                    final String id_dispositivo=c.getString(c.getColumnIndex(Estructura.NovedadEntry.ID_DISPOSITIVO));
+
+                    RequestQueue requestQueue = Volley.newRequestQueue(context);
+
+                    String url = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
+
+                    StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                Log.d("response",response);
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    error.printStackTrace();
+                                }
+                            }
+                    ) {
+                        @Override
+                        protected Map<String, String> getParams()
+                        {
+                            Map<String, String>  params = new HashMap<>();
+
+                            params.put("id", id);
+                            params.put("tipo",tipo);
+                            params.put("descripcion", descripcion);
+                            params.put("geometria", geometria);
+                            params.put("usuario", "idcarrillod");
+                            params.put("id_dispositivo", id_dispositivo);
+
+                            return params;
+                        }
+                    };
+                    requestQueue.add(postRequest);
+
+
+
+
+                }
+
+                Mensajes mitoast =new Mensajes(context);
+                mitoast.generarToast("Datos Enviados");
+
+                barProgressDialog.dismiss();
+
+                sp.close();
+            } catch (SQLiteConstraintException e) {
+
+                Mensajes mitoast =new Mensajes(context);
+                mitoast.generarToast("Error al subir información");
+
+            }
+
+
+        }else{
+            Mensajes mitoast =new Mensajes(context);
+            mitoast.generarToast("No hay conexión a internet");
+        }
 
 
     }

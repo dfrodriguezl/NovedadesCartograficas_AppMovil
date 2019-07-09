@@ -38,15 +38,27 @@ public class SpatiaLite extends SQLiteOpenHelper {
                 + Estructura.GeometriaEntry.NOMBRE_CAPA + " TEXT ,"
                 + Estructura.GeometriaEntry.ESTADO + " INTEGER ,"
                 + Estructura.GeometriaEntry.OBSERVACIONES + " TEXT,"
-                + Estructura.GeometriaEntry.GEOMETRIA_INI + " TEXT NOT NULL"
+                + Estructura.GeometriaEntry.GEOMETRIA_INI + " TEXT NOT NULL,"
+                + Estructura.GeometriaEntry.USUARIO_ASIGNADO + " TEXT"
                 + ")");
 
         sqLiteDatabase.execSQL("CREATE TABLE " + Estructura.NovedadEntry.TABLE_NAME + " ("
                 + Estructura.NovedadEntry.ID +" INTEGER PRIMARY KEY,"
+                + Estructura.NovedadEntry.ID_DISPOSITIVO +" TEXT,"
                 + Estructura.NovedadEntry.TIPO_GEOMETRIA + " INTEGER NOT NULL,"
                 + Estructura.NovedadEntry.WKT + " TEXT NOT NULL,"
                 + Estructura.NovedadEntry.TIPO + " TEXT,"
                 + Estructura.NovedadEntry.DESCRIPCION + " TEXT "
+                + ")");
+
+        sqLiteDatabase.execSQL("CREATE TABLE " + Estructura.ObrasEntry.TABLE_NAME + " ("
+                + Estructura.ObrasEntry.SERIAL +" TEXT PRIMARY KEY,"
+                + Estructura.ObrasEntry.FINICIO + " TEXT,"
+                + Estructura.ObrasEntry.NOFORMULAR + " TEXT,"
+                + Estructura.ObrasEntry.NOMBREOBRA + " TEXT,"
+                + Estructura.ObrasEntry.DIREOBRA + " TEXT,"
+                + Estructura.ObrasEntry.BARRIO + " TEXT,"
+                + Estructura.ObrasEntry.GEOMETRIA + " TEXT "
                 + ")");
 
     }

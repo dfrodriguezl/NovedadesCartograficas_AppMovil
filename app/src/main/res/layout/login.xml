@@ -54,13 +54,14 @@
             <Button
                 android:id="@+id/btn_login"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:layout_marginTop="60dp"
                 android:layout_gravity="center"
                 android:background="@drawable/borde_boton_dane"
-                android:backgroundTint="@color/dane"
                 android:text="Escanear QR"
-                android:textColor="@color/blanco" />
+                android:textColor="@color/dane" />
 
 
 

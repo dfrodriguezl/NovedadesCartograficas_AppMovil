@@ -14,8 +14,10 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Polygon;
 
 import org.json.JSONException;
@@ -72,13 +74,13 @@ public class DialogoEdicion {
 
         wmlp.width=mView.getWidth();
         dialog.getWindow().setDimAmount(0);
-        dialog.show();
+
 
 
 
         final Spinner spinner = (Spinner) mView.findViewById(R.id.tipo_novedad);
 
-        int opt=0;
+        int opt=R.array.novedad_punto;
 
         if(opcion==1){
             opt=R.array.novedad_punto;
@@ -90,12 +92,70 @@ public class DialogoEdicion {
             opt=R.array.novedad_poligono;
         }
 
+
+
+        LinearLayout linear_estado_obra  =(LinearLayout)  mView.findViewById(R.id.linear_estado_obra);
+        linear_estado_obra.setVisibility(View.GONE);
+
+        LinearLayout linear_descripcion_obra  =(LinearLayout)  mView.findViewById(R.id.linear_descripcion_obra);
+        linear_descripcion_obra.setVisibility(View.GONE);
+
+        LinearLayout linear_tipo_novedad  =(LinearLayout)  mView.findViewById(R.id.linear_tipo_novedad);
+        linear_tipo_novedad.setVisibility(View.VISIBLE);
+
+
+
+
+        if(opcion==4){
+
+            linear_estado_obra.setVisibility(View.VISIBLE);
+            linear_descripcion_obra.setVisibility(View.VISIBLE);
+
+            final Spinner spinner_estado_obra = (Spinner) mView.findViewById(R.id.estado_obra);
+            final ArrayAdapter<CharSequence> adapter_obra = ArrayAdapter.createFromResource(mView.getContext(),
+                    R.array.estado_obra, android.R.layout.simple_spinner_item);
+            adapter_obra.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            spinner_estado_obra.setAdapter(adapter_obra);
+
+            linear_tipo_novedad.setVisibility(View.GONE);
+
+        }
+
+        if(opcion==5){
+
+            main.dibujo_linea();
+            main.show_add_punto();
+            main.show_discard_save_edicion();
+            main.show_save_edicion();
+
+            try {
+
+                main.atributos =new JSONObject();
+                main.atributos.put("tipo", "Ruta CEED");
+                main.atributos.put("descripcion", "CONTROL CEED");
+                main.atributos.put("color","#7D3C98");
+
+            } catch (JSONException e) {
+
+            }
+
+        }else{
+            dialog.show();
+        }
+
         final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mView.getContext(),
                 opt, android.R.layout.simple_spinner_item);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(adapter);
+
+
+
+
+
+
 
         Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
         Button btn_dialog_cerrar_atributos= (Button) mView.findViewById(R.id.btn_dialog_cerrar_atributos);
@@ -110,6 +170,8 @@ public class DialogoEdicion {
                 public void onClick(View v) {
 
                     Spinner tipo_novedad= (Spinner) mView.findViewById(R.id.tipo_novedad);
+                    Spinner estado_obra= (Spinner) mView.findViewById(R.id.estado_obra);
+
                     EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
 
                     String tipo=tipo_novedad.getSelectedItem().toString();
@@ -122,7 +184,7 @@ public class DialogoEdicion {
 
                     if(opcion==1){
                         position_spiner=tipo_novedad.getSelectedItemPosition();
-                        array_color = main.getResources().getStringArray(R.array.color_linea);
+                        array_color = main.getResources().getStringArray(R.array.color_punto);
                     }
                     if(opcion==2){
                         position_spiner=tipo_novedad.getSelectedItemPosition();
@@ -132,12 +194,23 @@ public class DialogoEdicion {
                         position_spiner=tipo_novedad.getSelectedItemPosition();
                         array_color = main.getResources().getStringArray(R.array.color_poligono);
                     }
+                    if(opcion==4){
+                        position_spiner=estado_obra.getSelectedItemPosition();
+                        array_color = main.getResources().getStringArray(R.array.color_estado_obra_punto);
+                    }
+
+
 
                     try {
                         main.atributos =new JSONObject();
                         main.atributos.put("tipo", tipo);
                         main.atributos.put("descripcion", descripcion);
                         main.atributos.put("color",array_color[position_spiner]);
+
+                        if(opcion==4){
+                            main.atributos.put("atributos","obra");
+                        }
+
                     } catch (JSONException e) {
 
                     }
@@ -158,11 +231,14 @@ public class DialogoEdicion {
                         main.dibujo_poligono();
                         main.show_add_punto();
                     }
+                    if(opcion==4){
+                        main.dibujo_punto();
+                        main.show_add_punto();
+                    }
 
-                    FloatingActionButton  save_edicion = (FloatingActionButton ) activity.findViewById(R.id.save_edicion);
-                    save_edicion.setVisibility(View.VISIBLE);
-                    FloatingActionButton discard_save_editor = (FloatingActionButton) activity.findViewById(R.id.discard_save_editor);
-                    discard_save_editor.setVisibility(View.VISIBLE);
+
+                    main.show_discard_save_edicion();
+                    main.show_save_edicion();
 
 
                 }
@@ -204,6 +280,8 @@ public class DialogoEdicion {
                         int id = Integer.parseInt(json.get("id").toString());
 
                         Spinner tipo_novedad= (Spinner) mView.findViewById(R.id.tipo_novedad);
+                        Spinner estado_obra= (Spinner) mView.findViewById(R.id.estado_obra);
+
                         EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
 
                         String tipo=tipo_novedad.getSelectedItem().toString();
@@ -225,6 +303,7 @@ public class DialogoEdicion {
 
                             position_spiner=tipo_novedad.getSelectedItemPosition();
                             array_color = main.getResources().getStringArray(R.array.color_poligono);
+                            obj.put("color",array_color[position_spiner]);
 
                             for(int i=0;i<main.polygon.size();i++){
                                 if(main.polygon.get(i).getId().equals(id_google)){
@@ -236,10 +315,11 @@ public class DialogoEdicion {
                             }
 
                         }
+
                         if(opcion==2){
                             position_spiner=tipo_novedad.getSelectedItemPosition();
                             array_color = main.getResources().getStringArray(R.array.color_linea);
-
+                            obj.put("color",array_color[position_spiner]);
                             for(int i=0;i<main.line.size();i++){
                                 if(main.line.get(i).getId().equals(id_google)){
                                     main.line.get(i).setTag(obj);
@@ -248,6 +328,33 @@ public class DialogoEdicion {
 
                             }
                         }
+                        if(opcion==1){
+                            position_spiner=tipo_novedad.getSelectedItemPosition();
+                            array_color = main.getResources().getStringArray(R.array.color_punto);
+                            obj.put("color",array_color[position_spiner]);
+                            for(int i=0;i<main.puntos.size();i++){
+                                if(main.puntos.get(i).getId().equals(id_google)){
+                                    main.puntos.get(i).setTag(obj);
+                                    main.puntos.get(i).setIcon(BitmapDescriptorFactory.defaultMarker(Float.parseFloat(array_color[position_spiner])));
+                                }
+
+                            }
+
+                        }
+                            if(opcion==4){
+                                position_spiner=tipo_novedad.getSelectedItemPosition();
+                                array_color = main.getResources().getStringArray(R.array.color_estado_obra_punto);
+                                obj.put("atributos","obra");
+                                obj.put("color",array_color[position_spiner]);
+                                for(int i=0;i<main.puntos.size();i++){
+                                    if(main.puntos.get(i).getId().equals(id_google)){
+                                        main.puntos.get(i).setTag(obj);
+                                        main.puntos.get(i).setIcon(BitmapDescriptorFactory.defaultMarker(Float.parseFloat(array_color[position_spiner])));
+                                    }
+
+                                }
+
+                            }
 
 
 

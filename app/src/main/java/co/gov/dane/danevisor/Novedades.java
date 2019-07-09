@@ -19,8 +19,10 @@ public class Novedades {
     String descripcion;
     Context context;
     MainActivity main;
+    String id_dispositivo;
+    String usuario="";
 
-    Novedades(Context context, MainActivity main, int id,int tipo_geometria,String wkt,String tipo, String descripcion){
+    Novedades(Context context, MainActivity main, int id, String id_dispositivo, int tipo_geometria,String wkt,String tipo, String descripcion){
         this.context=context;
         this.main=main;
         this.id=id;
@@ -28,6 +30,7 @@ public class Novedades {
         this.wkt=wkt;
         this.tipo=tipo;
         this.descripcion=descripcion;
+        this.id_dispositivo=id_dispositivo;
     }
     Novedades(Context context, MainActivity main, int id,String tipo, String descripcion){
         this.context=context;
@@ -39,6 +42,15 @@ public class Novedades {
         this.descripcion=descripcion;
     }
 
+    Novedades(Context context, MainActivity main, int id,String usuario){
+        this.context=context;
+        this.main=main;
+        this.id=id;
+        this.usuario=usuario;
+    }
+
+
+
     public Boolean insertarNovedad(){
 
         try {
@@ -48,6 +60,7 @@ public class Novedades {
 
             ContentValues values = new ContentValues();
             values.put(Estructura.NovedadEntry.ID, id);
+            values.put(Estructura.NovedadEntry.ID_DISPOSITIVO, id_dispositivo);
             values.put(Estructura.NovedadEntry.TIPO_GEOMETRIA, tipo_geometria);
             values.put(Estructura.NovedadEntry.WKT, wkt);
             values.put(Estructura.NovedadEntry.TIPO, tipo);
@@ -117,8 +130,52 @@ public class Novedades {
 
     }
 
+    public Boolean cambioEstadoGeometria(){
+
+        try {
+            SpatiaLite db=new SpatiaLite(context);
+
+            org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+            String table = Estructura.GeometriaEntry.TABLE_NAME;
+
+            ContentValues cv = new ContentValues();
+            cv.put("estado","2");
+
+            sp.update(table, cv, Estructura.GeometriaEntry.ID_PADRE+"="+String.valueOf(id), null);
+
+            sp.close();
+        } catch (SQLiteConstraintException e) {
+            return false;
+        }
+
+        return true;
+
+    }
 
 
+    public Boolean asignacion_geometria(){
+
+        try {
+            SpatiaLite db=new SpatiaLite(context);
+
+            org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+            String table = Estructura.GeometriaEntry.TABLE_NAME;
+
+            ContentValues cv = new ContentValues();
+            cv.put("usuario_asignado",usuario);
+
+            sp.update(table, cv, Estructura.GeometriaEntry.ID_PADRE+"="+String.valueOf(id), null);
+
+            sp.close();
+        } catch (SQLiteConstraintException e) {
+            return false;
+        }
+
+        return true;
+
+    }
 
 
 

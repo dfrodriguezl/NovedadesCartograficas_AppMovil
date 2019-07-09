@@ -3,18 +3,8 @@ package co.gov.dane.danevisor;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.database.Cursor;
-
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,20 +12,14 @@ import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -45,26 +29,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.android.gms.common.Feature;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -72,47 +42,30 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
-import com.google.android.gms.maps.model.UrlTileProvider;
 import com.google.maps.android.SphericalUtil;
-import com.google.maps.android.data.Geometry;
-import com.google.maps.android.data.geojson.GeoJsonFeature;
-import com.google.maps.android.data.geojson.GeoJsonLayer;
-import com.google.maps.android.data.geojson.GeoJsonPolygon;
-import com.google.maps.android.data.geojson.GeoJsonPolygonStyle;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.spatialite.database.SQLiteDatabase;
 
-import jsqlite.Stmt;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,GoogleMap.OnMyLocationClickListener,AdapterView.OnItemSelectedListener,
         GoogleMap.OnCameraMoveListener, SensorEventListener {
+
+    private Menu menu;
+
+    Session session;
 
     private static final int MY_LOCATION_REQUEST_CODE = 1;
     public static GoogleMap mMap;
@@ -124,7 +77,11 @@ public class MainActivity extends AppCompatActivity
             GoogleMap.MAP_TYPE_HYBRID,
             GoogleMap.MAP_TYPE_TERRAIN,
             GoogleMap.MAP_TYPE_NONE
+
     };
+
+    private Sensor mAccelerometer;
+
 
     private int tipo_edicion;
 
@@ -132,13 +89,12 @@ public class MainActivity extends AppCompatActivity
 
     List<Polygon> polygon=new ArrayList<>();
 
-     List<Marker> puntos=new ArrayList<>();
+    List<Marker> puntos=new ArrayList<>();
 
-
-
-
+    List<Marker> label=new ArrayList<>();
 
     int sensor_activado=1;
+    int tipo_edicion_guardar=1;
 
     List<Marker> markers = new ArrayList<>();
     List<Marker> markers_intermedios = new ArrayList<>();
@@ -159,14 +115,18 @@ public class MainActivity extends AppCompatActivity
 
     SpatialAnalysis analisis=new SpatialAnalysis(MainActivity.this,MainActivity.this);
 
-    Boolean CutPicker=true;
+
     Boolean JoinPicker=true;
 
     Boolean GeometriaUpdate=false;
+    Boolean isChecked=false;
 
     JSONObject atributos=new JSONObject();
 
     Mensajes mitoast =new Mensajes(MainActivity.this);
+    String id_dispositivo;
+
+    FloatingActionButton asignar_tarea=null;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -174,12 +134,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*
-        SpatiaLite sp=new SpatiaLite(MainActivity.this);
-
-        sp.getWritableDatabase();
-
-        */
 
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},00);
 
@@ -198,6 +152,11 @@ public class MainActivity extends AppCompatActivity
             folder_captura.mkdirs();
         }
 
+        Context context = this;
+
+        UniqueId llave=new UniqueId();
+
+        id_dispositivo= llave.id(context);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -211,202 +170,205 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                FloatingActionButton save_edicion = (FloatingActionButton) findViewById(R.id.save_edicion);
-                FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
+                hide_discard_save_edicion();
+                hide_save_edicion();
                 drop_markers_intermediate();
                 hide_add_punto();
                 hide_undo_geom();
                 hide_delete_geom();
                 hide_edit_atributos();
 
-                for (Marker marker : markers) {
-                    if (marker.getTag().equals("edicion")) { //if a marker has desired tag
-                        marker.remove();
-                    }
-                }
-                markers.clear();
-
-                if(tipo_edicion==1){
+                drop_markers_edicion();
 
 
-                    MarkerOptions opts=new MarkerOptions();
 
-                    if (Point_shape != null) {
-                        opts.position(Point_shape.getPosition());
-                    }
+                if(tipo_edicion_guardar==1){
 
-                    puntos.add(mMap.addMarker(opts));
-                    puntos.get(puntos.size()-1).setTag(atributos);
+                    if(tipo_edicion==1){
 
 
-                    try {
-                        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+                        MarkerOptions opts=new MarkerOptions();
 
-                        Integer id=db.getMaxIdNovedad()+1;
-                        if (atributos.has("id")) {
-                            id= Integer.valueOf(atributos.get("id").toString());
+                        if (Point_shape != null) {
+                            opts.position(Point_shape.getPosition());
                         }
-                        int tipo_geometria=1;
-                        String wkt=analisis.puntoWKT(puntos.get(puntos.size()-1));
-                        String tipo= atributos.get("tipo").toString();
-                        String descripcion= atributos.get("descripcion").toString();
-                        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,tipo_geometria,wkt,tipo,descripcion);
-                        Boolean inserto=novedad.insertarNovedad();
-
-                        mitoast.generarToast("Elemento guardado");
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
 
-                    if(GeometriaUpdate){
-                        for(int i=0;i<puntos.size();i++){
 
-                            if(puntos.get(i).getId().equals(codId)){
-                                puntos.get(i).remove();
+                        try {
+                            dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+
+                            Integer id=db.getMaxIdNovedad()+1;
+
+                            if (atributos.has("id")) {
+                                id= Integer.valueOf(atributos.get("id").toString());
+                            }
+                            atributos.put("id",String.valueOf(id));
+
+                            int tipo_geometria=1;
+                            String wkt=analisis.puntoWKT(puntos.get(puntos.size()-1));
+                            String tipo= atributos.get("tipo").toString();
+                            String descripcion= atributos.get("descripcion").toString();
+                            Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
+                            Boolean inserto=novedad.insertarNovedad();
+
+                            mitoast.generarToast("Elemento guardado");
+
+                            puntos.add(mMap.addMarker(opts));
+                            puntos.get(puntos.size()-1).setTag(atributos);
+
+                            puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.defaultMarker(Float.parseFloat(atributos.get("color").toString())));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        if(GeometriaUpdate){
+                            for(int i=0;i<puntos.size();i++){
+
+                                if(puntos.get(i).getId().equals(codId)){
+                                    puntos.get(i).remove();
+                                }
                             }
                         }
+
+
+                        Point_shape.remove();
+                        Point_shape=null;
+
                     }
 
 
-                    Point_shape.remove();
-                    Point_shape=null;
+                    if(tipo_edicion==2){
 
+                        List<LatLng> points = new ArrayList<>();
+                        PolylineOptions opts=new PolylineOptions();
 
-
-                }
-
-
-                if(tipo_edicion==2){
-
-                    List<LatLng> points = new ArrayList<>();
-                    PolylineOptions opts=new PolylineOptions();
-
-                    if (Polyline_shape != null) {
-                        points=Polyline_shape.getPoints();
-                        for (LatLng location : points) {
-                            opts.add(location);
-                        }
-                    }
-
-                    line.add(mMap.addPolyline(opts.width(5)));
-                    line.get(line.size()-1).setClickable(true);
-                    line.get(line.size()-1).setTag(atributos);
-
-                    try {
-                        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-
-                        Integer id=db.getMaxIdNovedad()+1;
-                        if (atributos.has("id")) {
-                            id= Integer.valueOf(atributos.get("id").toString());
-                        }
-                        int tipo_geometria=2;
-                        String wkt=analisis.LineaWKT(line.get(line.size()-1));
-                        String tipo= atributos.get("tipo").toString();
-                        String descripcion= atributos.get("descripcion").toString();
-                        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,tipo_geometria,wkt,tipo,descripcion);
-                        Boolean inserto=novedad.insertarNovedad();
-                        mitoast.generarToast("Elemento guardado");
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    try {
-                        line.get(line.size()-1).setColor(Color.parseColor(atributos.get("color").toString()));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    if(GeometriaUpdate){
-                        for(int i=0;i<line.size();i++){
-
-                            if(line.get(i).getId().equals(codId)){
-                                line.get(line.size()-1).setTag(line.get(i).getTag());
-                                line.get(i).remove();
+                        if (Polyline_shape != null) {
+                            points=Polyline_shape.getPoints();
+                            for (LatLng location : points) {
+                                opts.add(location);
                             }
                         }
-                    }
 
 
 
-                    Polyline_shape.remove();
-                    Polyline_shape=null;
+                        try {
+                            dataBase db=new dataBase(MainActivity.this,MainActivity.this);
 
-                }
+                            Integer id=db.getMaxIdNovedad()+1;
+                            if (atributos.has("id")) {
+                                id= Integer.valueOf(atributos.get("id").toString());
+                            }
+                            atributos.put("id",String.valueOf(id));
+                            line.add(mMap.addPolyline(opts.width(5)));
+                            line.get(line.size()-1).setClickable(true);
 
-                if(tipo_edicion==3){
+                            int tipo_geometria=2;
+
+                            String wkt=analisis.LineaWKT(line.get(line.size()-1));
+                            String tipo= atributos.get("tipo").toString();
+                            String descripcion= atributos.get("descripcion").toString();
+                            Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
+                            Boolean inserto=novedad.insertarNovedad();
+                            mitoast.generarToast("Elemento guardado");
 
 
-                    List<LatLng> points = new ArrayList<>();
-                    PolygonOptions opts=new PolygonOptions();
+                            line.get(line.size()-1).setTag(atributos);
+                            line.get(line.size()-1).setColor(Color.parseColor(atributos.get("color").toString()));
+                            line.get(line.size()-1).setWidth(15);
 
-                    if (Polygon_shape != null) {
-                        points=Polygon_shape.getPoints();
-                        for (LatLng location : points) {
-                            opts.add(location);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    }
-
-                    polygon.add(mMap.addPolygon(opts));
-                    polygon.get(polygon.size()-1).setClickable(true);
-                    polygon.get(polygon.size()-1).setTag(atributos);
-
-
-                    try {
-                        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-
-                        Integer id=db.getMaxIdNovedad()+1;
-                        if (atributos.has("id")) {
-                            id= Integer.valueOf(atributos.get("id").toString());
-                        }
-                        int tipo_geometria=3;
-                        String wkt=analisis.PoligonoWKT(polygon.get(polygon.size()-1));
-                        String tipo= atributos.get("tipo").toString();
-                        String descripcion= atributos.get("descripcion").toString();
-                        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,tipo_geometria,wkt,tipo,descripcion);
-                        Boolean inserto=novedad.insertarNovedad();
-                        mitoast.generarToast("Elemento guardado");
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
 
 
 
-                    try {
-                        polygon.get(polygon.size()-1).setFillColor(Color.parseColor(atributos.get("color").toString()));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                        if(GeometriaUpdate){
+                            for(int i=0;i<line.size();i++){
 
-                    if(GeometriaUpdate){
-                        for(int i=0;i<polygon.size();i++){
-
-                            if(polygon.get(i).getId().equals(codId)){
-                                polygon.get(i).remove();
+                                if(line.get(i).getId().equals(codId)){
+                                    line.get(line.size()-1).setTag(line.get(i).getTag());
+                                    line.get(i).remove();
+                                }
                             }
                         }
+
+
+                        Polyline_shape.remove();
+                        Polyline_shape=null;
+
                     }
 
-
-                    Polygon_shape.remove();
-                    Polygon_shape=null;
+                    if(tipo_edicion==3){
 
 
+                        List<LatLng> points = new ArrayList<>();
+                        PolygonOptions opts=new PolygonOptions();
+
+                        if (Polygon_shape != null) {
+                            points=Polygon_shape.getPoints();
+                            for (LatLng location : points) {
+                                opts.add(location);
+                            }
+                        }
 
 
+
+
+                        try {
+                            dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+
+                            Integer id=db.getMaxIdNovedad()+1;
+                            if (atributos.has("id")) {
+                                id= Integer.valueOf(atributos.get("id").toString());
+                            }
+                            atributos.put("id",String.valueOf(id));
+                            polygon.add(mMap.addPolygon(opts));
+                            polygon.get(polygon.size()-1).setClickable(true);
+
+                            int tipo_geometria=3;
+                            String wkt=analisis.PoligonoWKT(polygon.get(polygon.size()-1));
+                            String tipo= atributos.get("tipo").toString();
+                            String descripcion= atributos.get("descripcion").toString();
+                            Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
+                            Boolean inserto=novedad.insertarNovedad();
+                            mitoast.generarToast("Elemento guardado");
+
+
+
+                            polygon.get(polygon.size()-1).setTag(atributos);
+                            polygon.get(polygon.size()-1).setFillColor(Color.parseColor(atributos.get("color").toString()));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+                        if(GeometriaUpdate){
+                            for(int i=0;i<polygon.size();i++){
+
+                                if(polygon.get(i).getId().equals(codId)){
+                                    polygon.get(i).remove();
+                                }
+                            }
+                        }
+
+                        Polygon_shape.remove();
+                        Polygon_shape=null;
+
+                    }
+
+                    GeometriaUpdate=false;
+
+                }else if(tipo_edicion_guardar==2){
+                    cortar_geometria();
                 }
 
-                GeometriaUpdate=false;
 
-
-                save_edicion.setVisibility(View.GONE);
-                discard_save_editor.setVisibility(View.GONE);
 
 
             }
@@ -414,27 +376,23 @@ public class MainActivity extends AppCompatActivity
 
 
         FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
-        discard_save_editor.setVisibility(View.GONE);
-
+        hide_discard_save_edicion();
 
         discard_save_editor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
-                FloatingActionButton save_edicion = (FloatingActionButton) findViewById(R.id.save_edicion);
+                estado_mapa_sin_edicion();
                 hide_add_punto();
                 hide_delete_geom();
                 hide_undo_geom();
                 drop_markers_intermediate();
                 hide_edit_atributos();
-
-                for (Marker marker : markers) {
-                    if (marker.getTag().equals("edicion")) { //if a marker has desired tag
-                        marker.remove();
-                    }
-                }
-                markers.clear();
+                hide_discard_save_edicion();
+                hide_save_edicion();
+                hide_msg_area();
+                hide_msg_distancia();
+                drop_markers_edicion();
 
                 if(tipo_edicion==1){
                     Point_shape.remove();
@@ -451,8 +409,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 mitoast.generarToast("Edición terminada");
-                discard_save_editor.setVisibility(View.GONE);
-                save_edicion.setVisibility(View.GONE);
+
             }
         });
 
@@ -461,106 +418,14 @@ public class MainActivity extends AppCompatActivity
         final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
 
         delete_geom.setOnClickListener(new View.OnClickListener() {
+
+
             @Override
             public void onClick(View v) {
 
-                drop_markers_intermediate();
-                for (Marker marker : markers) {
-                    if (marker.getTag().equals("edicion")) { //if a marker has desired tag
-                        marker.remove();
-                    }
-                }
-                markers.clear();
+                DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+                dialogo.confirmacionBorrado();
 
-
-
-                if(tipo_edicion==1){
-                    for(int i=0;i<puntos.size();i++){
-
-                        if(puntos.get(i).getId().equals(codId)){
-
-                            try {
-                                int id= Integer.parseInt(atributos.get("id").toString());
-
-                                Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,1,null,null,null);
-
-                                Boolean paso=novedad.eliminarNovedad();
-
-                                puntos.get(i).remove();
-                                mitoast.generarToast("Elemento borrado");
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-                }
-
-                if(tipo_edicion==2){
-                    for(int i=0;i<line.size();i++){
-
-                        if(line.get(i).getId().equals(codId)){
-
-                            try {
-                                int id= Integer.parseInt(atributos.get("id").toString());
-
-                                Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,2,null,null,null);
-
-                                Boolean paso=novedad.eliminarNovedad();
-
-                                line.get(i).remove();
-                                mitoast.generarToast("Elemento borrado");
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-
-                        }
-                    }
-                    if(Polyline_shape!=null){
-                        Polyline_shape.remove();
-                    }
-                    Polyline_shape=null;
-                }
-                if(tipo_edicion==3){
-                    for(int i=0;i<polygon.size();i++){
-
-                        if(polygon.get(i).getId().equals(codId)){
-
-
-                            try {
-                                int id= Integer.parseInt(atributos.get("id").toString());
-
-                                Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,3,null,null,null);
-
-                                Boolean paso=novedad.eliminarNovedad();
-
-                                polygon.get(i).remove();
-                                mitoast.generarToast("Elemento borrado");
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-                    if(polygon_sel!=null){
-                        polygon_sel.remove();
-                    }
-                    if(Polygon_shape!=null){
-                        Polygon_shape.remove();
-                    }
-
-                    Polygon_shape=null;
-                }
-
-                hide_delete_geom();
-                hide_undo_geom();
-                hide_save_edicion();
-                hide_discard_save_edicion();
             }
         });
 
@@ -602,96 +467,24 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-
-
-
-        int ZoomControl_id = 0x1;
-        int position_control_id = 0x2;
-        int brujula_control_id = 0x5;
-
-
-        // Find ZoomControl view
-        View zoomControls = mapFragment.getView().findViewById(ZoomControl_id);
-
-        if (zoomControls != null && zoomControls.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-            // ZoomControl is inside of RelativeLayout
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) zoomControls.getLayoutParams();
-
-            // Align it to - parent top|left
-            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-
-            // Update margins, set to 10dp
-            final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
-                    getResources().getDisplayMetrics());
-            params.setMargins(margin, 400, margin, margin);
-        }
-
-        View positioncontrol = mapFragment.getView().findViewById(position_control_id);
-
-        if (positioncontrol != null && positioncontrol.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-            // ZoomControl is inside of RelativeLayout
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) positioncontrol.getLayoutParams();
-
-            // Align it to - parent top|left
-            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-
-            // Update margins, set to 10dp
-            final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
-                    getResources().getDisplayMetrics());
-            params.setMargins(margin, 250, margin, margin);
-        }
-        View brujulacontrol = mapFragment.getView().findViewById(brujula_control_id);
-
-        if (brujulacontrol != null && brujulacontrol.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-            // ZoomControl is inside of RelativeLayout
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) brujulacontrol.getLayoutParams();
-
-            // Align it to - parent top|left
-            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-
-            // Update margins, set to 10dp
-            final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
-                    getResources().getDisplayMetrics());
-            params.setMargins(margin, 500, margin, margin);
-        }
-
-
-        mMapTypeSelector = (Spinner) findViewById(R.id.map_type_selector);
-        mMapTypeSelector.setOnItemSelectedListener(this);
-
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
-
-
-
-        hide_add_punto();
-        hide_delete_geom();
-        hide_undo_geom();
-
-
-        com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
+       com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
 
 
         edit_atributos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (atributos.has("atributos")) {
+
+                    try {
+                        if(atributos.get("atributos").toString().equals("obra")){
+                            tipo_edicion=4;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 DialogoEdicion dialog =new DialogoEdicion(MainActivity.this,MainActivity.this,tipo_edicion,true,atributos,codId);
                 dialog.mostrarDialogoEdicion();
@@ -700,70 +493,23 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-
-
-
-
-
-
         final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
 
         cut_geom.setOnClickListener(new View.OnClickListener() {
             int num_clic=1;
             @Override
             public void onClick(View v) {
-                if(CutPicker){
 
-                    cut_geom.setColorPressed(getResources().getColor(R.color.amarrillo));
-                    CutPicker=false;
+                show_save_edicion();
+                show_discard_save_edicion();
+                hide_menu_grupo_edicion();
+                tipo_edicion_guardar=2;
 
-                    show_add_punto();
-                    dibujo_linea();
+                show_add_punto();
+                dibujo_linea();
 
-                    num_clic=num_clic+1;
-                    mitoast.generarToastMapa("Dibuje una polilinea");
+                mitoast.generarToastMapa("Dibuje una polilinea");
 
-
-                }else{
-                    cut_geom.setColorPressed(getResources().getColor(R.color.dane));
-                    CutPicker=true;
-                    hide_add_punto();
-
-
-                    if(num_clic>1){
-
-                        String poligono=analisis.PoligonoWKT(polygon_sel);
-
-                        String linea=analisis.LineaWKT(Polyline_shape);
-
-
-                        String resultado=analisis.CutPolygonByLine(poligono,linea);
-
-                        analisis.MultipolygonToPolygon(resultado);
-
-                        for (Marker marker : markers) {
-                            if (marker.getTag().equals("edicion")) {
-
-                                marker.remove();
-
-                            }
-                        }
-                        if(polygon_sel!=null){
-                            polygon_sel.remove();
-                        }
-                        mitoast.generarToast("Poligono Cortado");
-
-
-                        markers.clear();
-                        Polyline_shape.remove();
-                        Polyline_shape=null;
-                        hide_cut_geom();
-                        hide_undo_geom();
-                    }
-                    num_clic=1;
-
-                }
             }
         });
 
@@ -772,6 +518,8 @@ public class MainActivity extends AppCompatActivity
         edit_join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 
                 if(JoinPicker){
                     edit_join.setColorPressed(getResources().getColor(R.color.amarrillo));
@@ -810,9 +558,7 @@ public class MainActivity extends AppCompatActivity
 
                     polygon_union.clear();
 
-                    if(polygon_sel!=null){
-                        polygon_sel.remove();
-                    }
+                    borrar_poligono_seleccionado();
 
                     analisis.unionPolygons(geometrias);
 
@@ -824,14 +570,68 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        asignar_tarea = (FloatingActionButton) findViewById(R.id.asignar_tarea);
+
+        asignar_tarea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+                dialogo.MostrarDialogoAsignacion();
+
+                asignar_tarea.setVisibility(View.INVISIBLE);
+                JoinPicker=false;
+                estado_mapa_asignacion();
+                mitoast.generarToast("Comience a seleccionar los poligonos");
 
 
+            }
+        });
+
+        hide_add_punto();
+        hide_delete_geom();
+        hide_undo_geom();
         hide_cut_geom();
         hide_msg_distancia();
         hide_msg_area();
         hide_edit_atributos();
         hide_edit_join();
         hide_menu_grupo_edicion();
+
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        controlToolsGoogle();
+
+        mMapTypeSelector = (Spinner) findViewById(R.id.map_type_selector);
+        mMapTypeSelector.setOnItemSelectedListener(this);
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        NavigationView navigationView1 = (NavigationView) findViewById(R.id.nav_view);
+        Menu menu = navigationView1.getMenu();
+        MenuItem nav_camara = menu.findItem(R.id.nav_usuario);
+
+        session = new Session(MainActivity.this);
+        String nombre=session.getnombre();
+        nav_camara.setTitle(nombre);
+
+        int rol =session.getrol();
+
+        if(rol==1){
+            nav_camara.setIcon(R.drawable.ic_menu_supervisor);
+        }else if(rol==2){
+            nav_camara.setIcon(R.drawable.ic_menu_encuestador);
+            asignar_tarea.setVisibility(View.INVISIBLE);
+        }
+
 
 
 
@@ -843,15 +643,12 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        // for the system's orientation sensor registered listeners
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        // to stop the listener and save battery
         mSensorManager.unregisterListener(this);
     }
 
@@ -862,8 +659,8 @@ public class MainActivity extends AppCompatActivity
 
          updateCamera(degree);
 
-
     }
+
     private void updateCamera(float bearing) {
         CameraPosition oldPos = mMap.getCameraPosition();
 
@@ -887,131 +684,36 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-
-        if (id == R.id.action_layers) {
-
-            AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
-            final View mView =getLayoutInflater().inflate(R.layout.dialog_mapa_base,null);
-            mBuilder.setView(mView);
-            final AlertDialog dialog =mBuilder.create();
-
-            WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
-
-            wmlp.gravity = Gravity.TOP | Gravity.CENTER;
-            wmlp.y = 200;   //y position
-
-            wmlp.width=mView.getWidth();
-            dialog.getWindow().setDimAmount(0);
-            dialog.show();
-
-            LinearLayout mapa_base_normal = (LinearLayout) mView.findViewById(R.id.mapa_base_normal);
-
-            mapa_base_normal.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.setMapType(mMapTypes[0]);
-                }
-            });
-            LinearLayout mapa_base_satelite = (LinearLayout) mView.findViewById(R.id.mapa_base_satelite);
-
-            mapa_base_satelite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.setMapType(mMapTypes[1]);
-                }
-            });
-            LinearLayout mapa_base_hibrido = (LinearLayout) mView.findViewById(R.id.mapa_base_hibrido);
-
-            mapa_base_hibrido.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.setMapType(mMapTypes[2]);
-                }
-            });
-            LinearLayout mapa_base_tierra = (LinearLayout) mView.findViewById(R.id.mapa_base_tierra);
-
-            mapa_base_tierra.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.setMapType(mMapTypes[3]);
-                }
-            });
-            LinearLayout mapa_base_none = (LinearLayout) mView.findViewById(R.id.mapa_base_none);
-
-            mapa_base_none.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMap.setMapType(mMapTypes[4]);
-                }
-            });
+        if(id == R.id.ver_labels){
 
 
-            return true;
+        }
+        else if (id == R.id.action_layers) {
+
+            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            dialogo.MostrarMapasBase();
+
+        }else if(id == R.id.action_search){
+
+            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            dialogo.MostrarDialogoBusqueda();
+
         }
         if (id == R.id.action_novedad) {
 
-            AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
-            final View mView =getLayoutInflater().inflate(R.layout.dialog_add_novedad,null);
-            mBuilder.setView(mView);
-            final AlertDialog dialog =mBuilder.create();
+            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            dialogo.MostrarDialogoNovedad();
 
-            WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
-
-            wmlp.gravity = Gravity.TOP | Gravity.CENTER;
-            wmlp.y = 200;   //y position
-
-            wmlp.width=mView.getWidth();
-            dialog.getWindow().setDimAmount(0);
-            dialog.show();
-
-            LinearLayout novedad_punto = (LinearLayout) mView.findViewById(R.id.novedad_punto);
-
-            novedad_punto.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,1);
-
-                    dialogEditor.mostrarDialogoEdicion();
-                    dialog.hide();
-                }
-            });
-            LinearLayout novedad_linea = (LinearLayout) mView.findViewById(R.id.novedad_linea);
-
-            novedad_linea.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,2);
-
-                    dialogEditor.mostrarDialogoEdicion();
-                    dialog.hide();
-                }
-            });
-            LinearLayout novedad_poligono = (LinearLayout) mView.findViewById(R.id.novedad_poligono);
-
-            novedad_poligono.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,3);
-
-                    dialogEditor.mostrarDialogoEdicion();
-                    dialog.hide();
-                }
-            });
-
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -1029,13 +731,70 @@ public class MainActivity extends AppCompatActivity
             dialogo.MostrarMapasOffline();
 
         }
+        else if(id==R.id.buscar_ceed){
+
+            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            dialogo.MostrarDialogoBusquedaCeed();
+
+        }
+        else if(id==R.id.zoom_obras){
+
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (Marker marker : puntos) {
+
+                update_atributos(marker.getTag().toString());
+
+
+                try {
+                    if(atributos.get("tipo").toString().equals("obra")){
+                        builder.include(marker.getPosition());
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            LatLngBounds bounds = builder.build();
+            int padding = 0; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            mMap.animateCamera(cu);
+
+        }
         else if (id == R.id.medir_distancia) {
+
+            estado_mapa_edicion();
+
             dibujo_linea();
             show_add_punto();
+            show_discard_save_edicion();
+
+            drop_markers_edicion();
+            borrar_poligono_seleccionado();
+            hide_cut_geom();
+            hide_delete_geom();
+            drop_markers_intermediate();
+            hide_msg_area();
+            hide_edit_atributos();
+            hide_edit_join();
+            hide_menu_grupo_edicion();
+
 
         }else if (id == R.id.medir_area) {
+
+            estado_mapa_edicion();
             dibujo_poligono();
             show_add_punto();
+            show_discard_save_edicion();
+
+            drop_markers_edicion();
+            borrar_poligono_seleccionado();
+            hide_cut_geom();
+            hide_delete_geom();
+            drop_markers_intermediate();
+            hide_edit_atributos();
+            hide_edit_join();
+            hide_menu_grupo_edicion();
+
 
         }else if(id== R.id.sincronizar){
 
@@ -1046,20 +805,26 @@ public class MainActivity extends AppCompatActivity
         else if (id == R.id.habilitar_giroscopio) {
 
             if(sensor_activado==0){
-                Log.v("Sensor:", String.valueOf(sensor_activado));
-                mSensorManager.unregisterListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
+
+                mSensorManager.unregisterListener(this, mAccelerometer);
                 sensor_activado=1;
             }
             if(sensor_activado==1){
-                mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-                        SensorManager.SENSOR_DELAY_NORMAL);
+
+                mAccelerometer =  mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+                int delay = 100000; //in microseconds equivalent to 0.1 sec
+                mSensorManager.registerListener(this,
+                        mAccelerometer,
+                        delay
+                );
+
+
                 sensor_activado=0;
             }
 
 
         }else if (id == R.id.captura) {
 
-            //captureScreen();
             snapShot captura=new snapShot(MainActivity.this);
             captura.capturaPantalla();
 
@@ -1073,13 +838,16 @@ public class MainActivity extends AppCompatActivity
             DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
             dialogo.MostrarDialogoAcerca();
 
-
-
         } else if (id == R.id.nav_ayuda) {
 
             DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
             dialogo.MostrarDialogoAyuda();
 
+
+        }else if(id == R.id.nav_salir){
+
+            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            dialogo.salirApp();
 
         }
 
@@ -1092,7 +860,6 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
@@ -1109,7 +876,6 @@ public class MainActivity extends AppCompatActivity
 
         mMap.setOnMyLocationClickListener(this);
         mMap.setOnCameraMoveListener(this);
-
 
 
         //Mapa base del aplciativo
@@ -1129,22 +895,91 @@ public class MainActivity extends AppCompatActivity
             listado_mapas_offline.add(new MapaOffline(nombre_capa,false,ruta_mbtiles+"/"+s,10));
         }
 
+        estado_mapa_sin_edicion();
+
+
+        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+        db.getGeomFromDatabase();
+
+        db.getNovedades();
+        db.getObrasCeed();
+
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String provider = service.getBestProvider(criteria, false);
+        Location location = service.getLastKnownLocation(provider);
+        LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18));
+
+    }
+
+    public void estado_mapa_asignacion(){
+        mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+            @Override
+            public void onPolygonClick(Polygon polygon) {
+                PolygonOptions opts=new PolygonOptions();
+                opts.addAll(polygon.getPoints());
+
+                if(!JoinPicker){
+                    Polygon p=mMap.addPolygon(opts);
+                    p.setStrokeColor(Color.BLUE);
+                    p.setZIndex(100);
+                    cod_poligonos_union.add(polygon.getId());
+                    polygon_union.add(p);
+
+
+                }
+            }
+        });
+
+    }
+
+    public void estado_mapa_edicion(){
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                for (Marker marker : markers) {
-                    if (marker.getTag().equals("edicion")) {
 
-                        marker.remove();
+                borrar_poligono_seleccionado();
+                hide_cut_geom();
+                hide_delete_geom();
+                hide_edit_atributos();
+                hide_edit_join();
+                hide_menu_grupo_edicion();
 
-                    }
-                }
-                markers.clear();
-                if(polygon_sel!=null){
-                    polygon_sel.remove();
-                }
+            }
+        });
 
+        mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+            @Override
+            public void onPolygonClick(Polygon polygon) {
+
+            }
+        });
+
+        mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
+            @Override
+            public void onPolylineClick(Polyline polyline) {
+
+            }
+        });
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                return false;
+            }
+        });
+
+    }
+    public void estado_mapa_sin_edicion(){
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+
+                drop_markers_edicion();
+                borrar_poligono_seleccionado();
                 hide_cut_geom();
                 hide_delete_geom();
                 drop_markers_intermediate();
@@ -1154,7 +989,6 @@ public class MainActivity extends AppCompatActivity
                 hide_edit_join();
                 hide_menu_grupo_edicion();
 
-
             }
         });
 
@@ -1162,29 +996,27 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPolygonClick(Polygon polygon) {
 
+                drop_markers_edicion();
+                drop_markers_intermediate();
                 show_menu_grupo_edicion();
-                //edicion(polygon.getPoints());
 
-                if(polygon_sel!=null){
-                    polygon_sel.remove();
-                }
+                borrar_poligono_seleccionado();
 
                 PolygonOptions opts=new PolygonOptions();
                 opts.addAll(polygon.getPoints());
 
                 polygon_sel= mMap.addPolygon(opts);
+                polygon_sel.setZIndex(50);
                 polygon_sel.setStrokeColor(Color.BLUE);
-                polygon_sel.setFillColor(getResources().getColor(R.color.poligono_touch));
+
 
                 if(!JoinPicker){
                     Polygon p=mMap.addPolygon(opts);
+                    p.setZIndex(100);
+                    p.setStrokeColor(Color.BLUE);
                     cod_poligonos_union.add(polygon.getId());
                     polygon_union.add(p);
 
-                    for (Polygon pol : polygon_union) {
-                        pol.setStrokeColor(Color.BLUE);
-                        pol.setFillColor(getResources().getColor(R.color.poligono_touch));
-                    }
                 }
 
 
@@ -1194,42 +1026,14 @@ public class MainActivity extends AppCompatActivity
 
                 show_delete_geom();
 
-                String poligono=analisis.PoligonoWKT(polygon);
-
-
                 area(polygon);
                 show_cut_geom();
                 show_edit_atributos();
                 show_edit_join();
 
+                update_atributos(polygon.getTag().toString());
 
-                try {
-
-                    atributos=new JSONObject(polygon.getTag().toString());
-
-                } catch (Throwable t) {
-
-                }
-
-                mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-
-
-                    @Override
-                    public void onMarkerDragStart(Marker arg0) {
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void onMarkerDragEnd(Marker arg0) {
-
-                        dragMarker(arg0,3);
-
-                    }
-
-                    @Override
-                    public void onMarkerDrag(Marker arg0) {
-                    }
-                });
+                drag_punto_edicion(3);
 
             }
         });
@@ -1239,43 +1043,20 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPolylineClick(Polyline polyline) {
 
-
+                borrar_poligono_seleccionado();
+                hide_cut_geom();
+                hide_edit_join();
                 show_menu_grupo_edicion();
-
                 tipo_edicion=2;
                 edicion(polyline.getPoints());
                 codId=polyline.getId();
                 show_delete_geom();
                 distancia(polyline.getPoints());
                 show_edit_atributos();
+                hide_msg_area();
+                update_atributos(polyline.getTag().toString());
 
-                try {
-
-                    atributos=new JSONObject(polyline.getTag().toString());
-
-                } catch (Throwable t) {
-
-                }
-
-
-                mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-
-                    @Override
-                    public void onMarkerDragStart(Marker arg0) {
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void onMarkerDragEnd(Marker arg0) {
-
-                        dragMarker(arg0,2);
-
-                    }
-
-                    @Override
-                    public void onMarkerDrag(Marker arg0) {
-                    }
-                });
+                drag_punto_edicion(2);
             }
         });
 
@@ -1285,52 +1066,52 @@ public class MainActivity extends AppCompatActivity
             public boolean onMarkerClick(Marker marker) {
 
 
-            if (marker.getTag() != null) {
-                if (marker.getTag().equals("edicion")) { //if a marker has desired tag
+                if (marker.getTag() != null) {
+                    if (marker.getTag().equals("edicion")) { //if a marker has desired tag
 
-                }else{
+                    }else{
 
-                    show_menu_grupo_edicion();
 
-                    tipo_edicion=1;
-                    edicion_puntos(marker.getPosition());
-                    codId=marker.getId();
-                    show_delete_geom();
-                    drop_markers_intermediate();
-                    show_edit_atributos();
+                        update_atributos(marker.getTag().toString());
 
-                    try {
 
-                        atributos=new JSONObject(marker.getTag().toString());
+                        try {
+                            if(atributos.get("tipo").toString().equals("obra")){
 
-                    } catch (Throwable t) {
+                                DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+                                String serial=atributos.get("serial").toString();
+                                String  nombreobra=atributos.get("nombreobra").toString();
+                                String  direccion=atributos.get("direccion").toString();
+                                String  barrio=atributos.get("barrio").toString();
+
+                                dialogo.MostrarDialogoObras(serial,nombreobra,direccion,barrio);
+
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        borrar_poligono_seleccionado();
+                        hide_cut_geom();
+                        hide_edit_join();
+                        show_menu_grupo_edicion();
+                        hide_msg_area();
+                        hide_msg_distancia();
+                        tipo_edicion=1;
+                        edicion_puntos(marker.getPosition());
+                        codId=marker.getId();
+                        show_delete_geom();
+                        drop_markers_intermediate();
+                        show_edit_atributos();
+
+                        update_atributos(marker.getTag().toString());
+
+                        drag_punto_edicion(1);
 
                     }
-
-                    mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-
-                        @Override
-                        public void onMarkerDragStart(Marker arg0) {
-                        }
-
-                        @SuppressWarnings("unchecked")
-                        @Override
-                        public void onMarkerDragEnd(Marker arg0) {
-
-                            dragMarker(arg0,1);
-
-                        }
-
-                        @Override
-                        public void onMarkerDrag(Marker arg0) {
-                        }
-                    });
-
-
-
-
                 }
-            }
 
 
                 return false;
@@ -1339,23 +1120,49 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
-
-        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-        db.getGeomFromDatabase();
-
-        db.getNovedades();
-
-
-        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        String provider = service.getBestProvider(criteria, false);
-        Location location = service.getLastKnownLocation(provider);
-        LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18));
     }
 
+    public void borrar_poligono_seleccionado(){
+
+        if(polygon_sel!=null){
+            polygon_sel.remove();
+        }
+
+    }
+
+    public void update_atributos(String datos){
+
+        try {
+
+            atributos=new JSONObject(datos);
+
+        } catch (Throwable t) {
+
+        }
+    }
+
+    public void drag_punto_edicion(final int tipo_edicion){
+
+        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+
+            @Override
+            public void onMarkerDragStart(Marker arg0) {
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void onMarkerDragEnd(Marker arg0) {
+
+                dragMarker(arg0,tipo_edicion);
+
+            }
+
+            @Override
+            public void onMarkerDrag(Marker arg0) {
+            }
+        });
+
+    }
 
 
 
@@ -1383,8 +1190,6 @@ public class MainActivity extends AppCompatActivity
     public void dibujo_linea(){
 
         tipo_edicion=2;
-
-
 
         FloatingActionButton add_punto = (FloatingActionButton) findViewById(R.id.add_punto);
 
@@ -1429,22 +1234,17 @@ public class MainActivity extends AppCompatActivity
                 }
 
 
-
-                Polyline_shape=mMap.addPolyline(opts.width(2));
+                Polyline_shape=mMap.addPolyline(opts.width(15));
                 Polyline_shape.setTag("edit_polygono");
                 Polyline_shape.setClickable(true);
-                distancia(Polyline_shape.getPoints());
 
+
+                distancia(Polyline_shape.getPoints());
 
 
                 marker.setTag("edicion");
 
                 markers.add(marker);
-
-
-                double distance = SphericalUtil.computeLength(points);
-
-                //Mensajes.makeText(MainActivity.this, "Distancia:\n"+ Double.toString(distance), Mensajes.LENGTH_LONG).show();
 
             }
         });
@@ -1517,16 +1317,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-
-
-
-
-
-
-
-
-
     }
 
     //Permisos para acceder a utilidades del dispositivo.
@@ -1538,12 +1328,7 @@ public class MainActivity extends AppCompatActivity
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+
                     return;
                 }
                 mMap.setMyLocationEnabled(true);
@@ -1556,7 +1341,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
-        Toast.makeText(this, "Current location:\n" + location, Toast.LENGTH_LONG).show();
+
     }
 
 
@@ -1582,26 +1367,26 @@ public class MainActivity extends AppCompatActivity
         latitud.setText("Lat: "+String.format("%.4f", mylat));
         longitud.setText("Lon: "+String.format("%.4f", mylon));
 
-    }
+        float zoom=mMap.getCameraPosition().zoom;
 
-public void edicion_puntos(LatLng ptos){
-    for (Marker marker : markers) {
-        if (marker.getTag().equals("edicion")) { //if a marker has desired tag
-            marker.remove();
+        if(zoom<13){
+
+            for (Marker marker : label) {
+                marker.setVisible(false);
+            }
+
+        }else{
+
+            for (Marker marker : label) {
+                marker.setVisible(true);
+            }
+
         }
+
+
     }
-    markers.clear();
 
-    Marker mimarker=createMarker( ptos.latitude,ptos.longitude,"ivan","edicion");
-
-    markers.add(mimarker);
-}
-
-    @SuppressLint("RestrictedApi")
-    public void edicion(List<LatLng> ptos){
-
-
-        //se borran los marcadores de edición.
+    public void edicion_puntos(LatLng ptos){
         for (Marker marker : markers) {
             if (marker.getTag().equals("edicion")) { //if a marker has desired tag
                 marker.remove();
@@ -1609,15 +1394,30 @@ public void edicion_puntos(LatLng ptos){
         }
         markers.clear();
 
-        drop_markers_intermediate();
 
+
+        Marker mimarker=createMarker( ptos.latitude,ptos.longitude,"ivan","edicion");
+
+
+
+
+
+        markers.add(mimarker);
+    }
+
+    @SuppressLint("RestrictedApi")
+    public void edicion(List<LatLng> ptos){
+
+
+        drop_markers_edicion();
+
+        drop_markers_intermediate();
 
         for (LatLng punto : ptos) {
             Marker mimarker=createMarker( punto.latitude,punto.longitude,"ivan","edicion");
 
             markers.add(mimarker);
         }
-
 
         add_markers_intermediate(ptos);
 
@@ -1646,6 +1446,14 @@ public void edicion_puntos(LatLng ptos){
             }
         }
         markers_intermedios.clear();
+    }
+    public void drop_markers_edicion(){
+        for (Marker marker : markers) {
+            if (marker.getTag().equals("edicion")) { //if a marker has desired tag
+                marker.remove();
+            }
+        }
+        markers.clear();
     }
 
     public void dragMarker(Marker arg0, int tipo_edicion){
@@ -1688,11 +1496,9 @@ public void edicion_puntos(LatLng ptos){
         if(tipo_edicion==1){
             edit_point(edit.get(0));
         }
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.save_edicion);
-        fab.setVisibility(View.VISIBLE);
-        FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
-        discard_save_editor.setVisibility(View.VISIBLE);
+        tipo_edicion_guardar=1;
+        show_save_edicion();
+        show_discard_save_edicion();
         hide_menu_grupo_edicion();
         GeometriaUpdate=true;
     }
@@ -1769,7 +1575,7 @@ public void edicion_puntos(LatLng ptos){
         TextView distancia_campo = (TextView)findViewById(R.id.distancia);
         double distancia=SphericalUtil.computeLength(puntos);
 
-        distancia_campo.setText("Distancia: "+String.format("%.2f",distancia)+" m");
+        distancia_campo.setText("Longitud: "+String.format("%.2f",distancia)+" m");
         distancia_campo.setTextColor(Color.parseColor("#DF0000"));
         show_msg_distancia();
     }
@@ -1813,9 +1619,147 @@ public void edicion_puntos(LatLng ptos){
         return mPerth;
     }
 
+    public void borrar_novedad(int id,int tipo_geometria){
+        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,null,tipo_geometria,null,null,null);
+        Boolean paso=novedad.eliminarNovedad();
+        mitoast.generarToast("Elemento borrado");
+    }
+
+    public void borrar_geometria(){
+
+        hide_delete_geom();
+        hide_undo_geom();
+        hide_save_edicion();
+        hide_discard_save_edicion();
+        drop_markers_intermediate();
+        drop_markers_edicion();
+
+        if(tipo_edicion==1){
+            for(int i=0;i<puntos.size();i++){
+
+                if(puntos.get(i).getId().equals(codId)){
+                    try {
+                        int id= Integer.parseInt(atributos.get("id").toString());
+
+                        borrar_novedad(id,1);
+
+                        puntos.get(i).remove();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }
+
+        if(tipo_edicion==2){
+            for(int i=0;i<line.size();i++){
+
+                if(line.get(i).getId().equals(codId)){
+
+                    try {
+                        int id= Integer.parseInt(atributos.get("id").toString());
+
+                        borrar_novedad(id,2);
+
+                        line.get(i).remove();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+            }
+            if(Polyline_shape!=null){
+                Polyline_shape.remove();
+            }
+            Polyline_shape=null;
+        }
+        if(tipo_edicion==3){
+            for(int i=0;i<polygon.size();i++){
+
+                if(polygon.get(i).getId().equals(codId)){
+
+                    try {
+                        int id= Integer.parseInt(atributos.get("id").toString());
+
+                        borrar_novedad(id,3);
+
+                        polygon.get(i).remove();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            borrar_poligono_seleccionado();
+
+            if(Polygon_shape!=null){
+                Polygon_shape.remove();
+            }
+
+            Polygon_shape=null;
+        }
+    }
+
+public void cortar_geometria(){
+
+
+        hide_add_punto();
+
+        String poligono=analisis.PoligonoWKT(polygon_sel);
+
+        String linea=analisis.LineaWKT(Polyline_shape);
+
+
+        String resultado=analisis.CutPolygonByLine(poligono,linea);
+
+        analisis.MultipolygonToPolygon(resultado);
+
+        drop_markers_edicion();
+
+        borrar_poligono_seleccionado();
+
+
+        mitoast.generarToast("Poligono Cortado");
+
+
+        for(int i=0;i<polygon.size();i++){
+
+            if(polygon.get(i).getId().equals(codId)){
+
+                try {
+                    int id= Integer.parseInt(atributos.get("id").toString());
+
+                    Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,null,3,null,null,null);
+
+                    Boolean paso=novedad.eliminarNovedad();
+                    Boolean cambio_estado=novedad.cambioEstadoGeometria();
+
+                    polygon.get(i).remove();
+                    mitoast.generarToast("Elemento borrado");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        markers.clear();
+        Polyline_shape.remove();
+        Polyline_shape=null;
+        hide_cut_geom();
+        hide_undo_geom();
 
 
 
+
+}
 
 
 public void show_add_punto(){
@@ -1831,7 +1775,7 @@ public void hide_add_punto(){
 
 public void hide_delete_geom(){
     final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
-    delete_geom.setVisibility(View.INVISIBLE);
+    delete_geom.setVisibility(View.GONE);
     hide_menu_grupo_edicion();
 }
 
@@ -1839,7 +1783,6 @@ public void show_delete_geom(){
     final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
     delete_geom.setVisibility(View.VISIBLE);
 }
-
 
 public void show_undo_geom(){
     FloatingActionButton undo_edit = (FloatingActionButton) findViewById(R.id.undo_edit);
@@ -1872,7 +1815,7 @@ public void hide_discard_save_edicion(){
 
 public void hide_cut_geom(){
     final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
-    cut_geom.setVisibility(View.INVISIBLE);
+    cut_geom.setVisibility(View.GONE);
     hide_menu_grupo_edicion();
 }
 
@@ -1909,7 +1852,7 @@ public void show_edit_atributos(){
 
 public void hide_edit_atributos(){
     com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
-    edit_atributos.setVisibility(View.INVISIBLE);
+    edit_atributos.setVisibility(View.GONE);
 }
 
 public void show_edit_join(){
@@ -1919,7 +1862,7 @@ public void show_edit_join(){
 }
 public void hide_edit_join(){
     final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
-    edit_join.setVisibility(View.INVISIBLE);
+    edit_join.setVisibility(View.GONE);
     hide_menu_grupo_edicion();
 
 }
@@ -1933,9 +1876,71 @@ public void show_menu_grupo_edicion(){
 public void hide_menu_grupo_edicion(){
     final com.getbase.floatingactionbutton.FloatingActionsMenu menu_editor = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.menu_editor);
     menu_editor.collapse();
-    menu_editor.setVisibility(View.INVISIBLE);
+    menu_editor.setVisibility(View.GONE);
 }
 
+public void controlToolsGoogle(){
+
+
+    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+            .findFragmentById(R.id.map);
+    mapFragment.getMapAsync(this);
+
+    int ZoomControl_id = 0x1;
+    int position_control_id = 0x2;
+    int brujula_control_id = 0x5;
+
+
+    // Find ZoomControl view
+    View zoomControls = mapFragment.getView().findViewById(ZoomControl_id);
+
+    if (zoomControls != null && zoomControls.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+        // ZoomControl is inside of RelativeLayout
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) zoomControls.getLayoutParams();
+
+        // Align it to - parent top|left
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+        // Update margins, set to 10dp
+        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                getResources().getDisplayMetrics());
+        params.setMargins(margin, 400, margin, margin);
+    }
+
+    View positioncontrol = mapFragment.getView().findViewById(position_control_id);
+
+    if (positioncontrol != null && positioncontrol.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+        // ZoomControl is inside of RelativeLayout
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) positioncontrol.getLayoutParams();
+
+        // Align it to - parent top|left
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+        // Update margins, set to 10dp
+        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                getResources().getDisplayMetrics());
+        params.setMargins(margin, 250, margin, margin);
+    }
+    View brujulacontrol = mapFragment.getView().findViewById(brujula_control_id);
+
+    if (brujulacontrol != null && brujulacontrol.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+        // ZoomControl is inside of RelativeLayout
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) brujulacontrol.getLayoutParams();
+
+        // Align it to - parent top|left
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+        // Update margins, set to 10dp
+        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                getResources().getDisplayMetrics());
+        params.setMargins(margin, 500, margin, margin);
+    }
+
+
+}
 
 
 

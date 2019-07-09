@@ -1,16 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view"
     android:fontFamily="@font/roboto">
 
+
+    <item
+        android:id="@+id/nav_usuario"
+        android:title="Usuario" />
+
     <item android:title="Herramientas" >
         <menu>
+            <item
+                android:id="@+id/buscar_ceed"
+                android:icon="@drawable/ic_main_search"
+                android:title="Busqueda Sectores" />
+            <item
+                android:id="@+id/zoom_obras"
+                android:icon="@drawable/ic_main_search"
+                android:title="Zoom Obras" />
+            <item
+                android:id="@+id/ver_labels"
+                android:icon="@drawable/ic_menu_labels"
+                app:actionLayout="@layout/switch_item_menu"
+                android:title="Etiquetas" />
+
         <item
             android:id="@+id/mapas_offline"
             android:icon="@drawable/ic_mapas_offline"
             android:title="Mapas sin conexión" />
-        <item
+
+            <item
             android:id="@+id/medir_distancia"
             android:icon="@drawable/ic_medir_distancia"
             android:title="Medir distancia" />
@@ -51,6 +72,10 @@
                 android:id="@+id/nav_acerca"
                 android:icon="@drawable/ic_menu_acerca"
                 android:title="Acerca" />
+            <item
+                android:id="@+id/nav_salir"
+                android:icon="@drawable/ic_menu_salir"
+                android:title="Salir" />
 
         </menu>
     </item>

@@ -8,12 +8,16 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="256dp">
+
+
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -25,6 +29,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="0dp"
             tools:context=".MapsActivity" />
+
+
 
 
         <ImageView
@@ -73,6 +79,40 @@
         </LinearLayout>
 
 
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:id="@+id/dialogo_edicion"
+            android:visibility="invisible"
+            android:orientation="vertical" >
 
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                layout="@layout/dialog_asignacion" >
+            </include>
+
+
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/dialogo_atributos_obra"
+            android:visibility="invisible"
+            android:orientation="vertical" >
+
+
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/dialog_atributos_obra" >
+            </include>
+
+        </LinearLayout>
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

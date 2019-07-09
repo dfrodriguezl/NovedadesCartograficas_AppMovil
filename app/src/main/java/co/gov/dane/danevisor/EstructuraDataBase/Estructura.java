@@ -25,16 +25,29 @@ public class Estructura {
         public static final String ESTADO = "estado";
         public static final String OBSERVACIONES = "observaciones";
         public static final String GEOMETRIA_INI = "geometria_ini";
-
+        public static final String USUARIO_ASIGNADO = "usuario_asignado";
     }
 
     public static abstract class NovedadEntry implements BaseColumns {
         public static final String TABLE_NAME ="novedad";
+        public static final String ID_DISPOSITIVO ="id_dispositivo";
         public static final String ID = "id";
         public static final String TIPO_GEOMETRIA = "tipo_geometria";
         public static final String WKT = "wkt";
         public static final String TIPO = "tipo";
         public static final String DESCRIPCION = "descripcion";
+
+    }
+    public static abstract class ObrasEntry implements BaseColumns {
+        public static final String TABLE_NAME ="obras";
+        public static final String SERIAL ="serial";
+        public static final String FINICIO = "finicio";
+        public static final String NOFORMULAR = "noformular";
+        public static final String NOMBREOBRA = "nombreobra";
+        public static final String DIREOBRA = "direobra";
+        public static final String BARRIO = "barrio";
+        public static final String GEOMETRIA = "geometria";
+
 
     }
 

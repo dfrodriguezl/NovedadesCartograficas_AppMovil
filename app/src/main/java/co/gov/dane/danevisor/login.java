@@ -25,11 +25,12 @@ import co.gov.dane.danevisor.EstructuraDataBase.Estructura;
 
 public class login extends AppCompatActivity {
 
-
+    private Session session;
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.login);
+
 
         Button btn_login= (Button) findViewById(R.id.btn_login);
 
@@ -63,6 +64,9 @@ public class login extends AppCompatActivity {
 
 
                 try {
+
+                    Log.d("ESTRUCTURA:",result.getContents());
+
                     JSONObject json=new JSONObject(result.getContents());
 
                     SpatiaLite db=new SpatiaLite(login.this);
@@ -70,7 +74,7 @@ public class login extends AppCompatActivity {
                     org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
 
 
-                    String columns[] = new String[]{Estructura.UsuarioEntry.CLAVE};
+                    String columns[] = new String[]{Estructura.UsuarioEntry.CLAVE,Estructura.UsuarioEntry.USUARIO,Estructura.UsuarioEntry.NOMBRE,Estructura.UsuarioEntry.ROL};
                     String selection = Estructura.UsuarioEntry.USUARIO + " LIKE ?"; // WHERE id LIKE ?
                     String selectionArgs[] = new String[]{json.get("usuario").toString()};
 
@@ -86,10 +90,19 @@ public class login extends AppCompatActivity {
 
                     while(c.moveToNext()){
                         String clave = c.getString(c.getColumnIndex(Estructura.UsuarioEntry.CLAVE));
+                        String usuario = c.getString(c.getColumnIndex(Estructura.UsuarioEntry.USUARIO));
+                        String nombre= c.getString(c.getColumnIndex(Estructura.UsuarioEntry.NOMBRE));
+                        String rol= c.getString(c.getColumnIndex(Estructura.UsuarioEntry.ROL));
+
                         if(clave.equals(json.get("clave").toString())){
                             Intent mainIntent = new Intent(login.this,MainActivity.class);
                             login.this.startActivity(mainIntent);
                             login.this.finish();
+
+                            session = new Session(login.this);
+
+                            session.setusename(usuario,nombre,rol);
+
                         }else{
                             Toast.makeText(this, "QR no Válido", Toast.LENGTH_LONG).show();
 

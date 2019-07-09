@@ -8,13 +8,13 @@
     android:orientation="vertical"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="180dp"
-        android:layout_height="180dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
         android:contentDescription="@string/nav_header_desc"
         app:srcCompat="@drawable/ic_mini_header" />
-
 
 </LinearLayout>
