@@ -16,7 +16,18 @@
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tipo de Geometria por adicionar:" />
+            android:text="Tipo de Geometria por adicionar."
+            android:textColor="@color/dane"
+            android:textSize="20sp"
+            android:padding="10dp"/>
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Novedades Cartográficas"
+            android:padding="5dp"
+            />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -28,6 +39,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="5dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/borde_boton"
                 android:id="@+id/novedad_punto">
 
                 <ImageView
@@ -48,6 +61,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="5dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/borde_boton"
                 android:id="@+id/novedad_linea">
 
                 <ImageView
@@ -69,6 +84,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="5dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/borde_boton"
                 android:id="@+id/novedad_poligono">
 
                 <ImageView
@@ -86,53 +103,71 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp"
-                android:id="@+id/adicionar_obra">
 
-                <ImageView
-
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    app:srcCompat="@drawable/novedad_obra" />
-
-                <TextView
-
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="O. Proyectada" />
-
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp"
-                android:id="@+id/adicionar_ruta_ceed">
-
-                <ImageView
-
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    app:srcCompat="@drawable/novedad_ruta" />
-
-                <TextView
-
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="Recorrido" />
-
-
-            </LinearLayout>
 
 
         </LinearLayout>
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Geometrias de CEED"
+            android:padding="5dp"
+            />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/borde_boton"
+            android:id="@+id/adicionar_obra">
+
+            <ImageView
+
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                app:srcCompat="@drawable/novedad_obra" />
+
+            <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="O. Proyectada" />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/borde_boton"
+            android:id="@+id/adicionar_ruta_ceed">
+
+            <ImageView
+
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                app:srcCompat="@drawable/novedad_ruta" />
+
+            <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Recorrido" />
+
+
+        </LinearLayout>
+    </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Editor DANE</string>
+    <string name="app_name">CEED OBRAS</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Editor Geográfico</string>
@@ -85,7 +85,7 @@
         <item >#50FFA5A5</item>
         <item>#5079D17E</item>
         <item>#50FFB344</item>
-        <item>#50DCF9DB</item>
+        <item>#20DCF9DB</item>
     </string-array>
 
 
@@ -94,6 +94,24 @@
         <item>Nueva</item>
         <item>Culminada</item>
     </string-array>
+
+    <string name="titulo1">ENA Aplicación móvil</string>
+    <string name="contenido1">Aplicación móvil para la delimitación de unidades de producción agropecuaria en campo</string>
+
+    <string name="titulo2">Corte de UPAs</string>
+    <string name="contenido2">Permite realizar recortes de geometrias, teniendo en cuenta preservar la topologia de todos los poligonos</string>
+
+    <string name="titulo3">Unión de UPAs</string>
+    <string name="contenido3">Permite realizar unión de UPAs, las uniones son verificadas topologicamente, garantizando la unión perfecta entre poligonos y sin quedar huecos entre ellos.</string>
+
+    <string name="titulo4">Asignación de Código de UPA</string>
+    <string name="contenido4">Permite adicionar el código de la UPA teniendo en cuenta un consecutivo de 4 digitos, una vez cerrada la UPA, no se puede modificar esta geometria.</string>
+
+    <string name="titulo5">Ambiente Offline (Sin conexión)</string>
+    <string name="contenido5">Permite hacer ediciones en el dispositivo móvil sin conexión, a su vez el mapa en formato .mbtiles permite disponer de una navegación en el mapa sin restricción.</string>
+
+    <string name="titulo6">Otras herramientas.</string>
+    <string name="contenido6">El aplicativo permite realizar mediciones de longitud, de área, ubicar coordenadas, mapas base offline, e incorporación de novedades cartográficas.</string>
 
 
 </resources>

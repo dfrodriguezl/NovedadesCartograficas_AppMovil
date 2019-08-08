@@ -26,4 +26,12 @@
         <item name="android:background">@drawable/background_label_fab</item>
         <item name="android:textColor">@color/blanco</item>
     </style>
+    <style name="iconGenText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#FF0114</item>
+    </style>
+    <style name="iconGenTextENA">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#56D5FF</item>
+    </style>
 </resources>

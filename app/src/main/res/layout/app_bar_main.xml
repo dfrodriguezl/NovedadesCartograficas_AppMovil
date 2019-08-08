@@ -128,6 +128,26 @@
         app:layout_anchor="@+id/relativeLayout"
         app:layout_anchorGravity="right|bottom">
 
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_code_ena"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/dane"
+            app:fab_icon="@drawable/ic_main_locked"
+            app:fab_size="normal"
+            app:fab_title="Cerrar" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/quit_code_ena"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/dane"
+            app:fab_icon="@drawable/ic_main_unlocked"
+            app:fab_size="normal"
+            app:fab_title="Habilitar" />
+
+
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/cut_geom"
             android:layout_width="wrap_content"

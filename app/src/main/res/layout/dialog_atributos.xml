@@ -10,11 +10,111 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="0dp"
         android:gravity="center"
-        android:paddingBottom="3dp"
         android:text="Edición de atributos"
         android:textColor="@color/dane"
         android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="10dp"
+        android:paddingBottom="3dp"
+        android:text="Por favor ingrese los atributos de la nueva geometria."
+
+        android:textSize="15sp" />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/panel_atributos_punto"
+       android:visibility="gone"
+        >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        >
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/dane"
+            android:text="Grupo" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinner_novedad_grupo"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/dane"
+            android:text="Subgrupo" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinner_novedad_subgrupo"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/dane"
+            android:text="Item" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinner_novedad_item"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,11 +123,12 @@
         android:layout_gravity="center">
 
 
+
         <LinearLayout
             android:id="@+id/linear_tipo_novedad"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
+            android:orientation="vertical"
 
             android:padding="10dp">
 
@@ -37,6 +138,7 @@
                 android:text="Tipo de novedad:"
                 android:textSize="15sp"
                 android:layout_weight="2"
+                android:textColor="@color/dane"
 
                 />
 
@@ -63,7 +165,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
+            android:orientation="vertical"
 
             android:padding="10dp">
 
@@ -73,7 +175,7 @@
                 android:text="Estado de Obra:"
                 android:textSize="15sp"
                 android:layout_weight="2"
-
+                android:textColor="@color/dane"
                 />
 
             <Spinner
@@ -97,26 +199,29 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:padding="10dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_weight="2"
                 android:layout_height="wrap_content"
-                android:text="Observaciones:"
+                android:text="Descripcion:"
+                android:textColor="@color/dane"
                 android:textSize="15sp" />
 
             <EditText
                 android:id="@+id/descripcion_novedad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:ems="10"
-                android:hint="Observaciones"
+                android:hint="Descripcion"
                 android:inputType="textMultiLine"
                 android:lines="4"
-                android:textSize="15sp" />
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:background="@drawable/borde_boton"/>
 
 
         </LinearLayout>
@@ -188,6 +293,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/boton_verde"
+            android:textColor="@color/blanco"
             android:padding="10dp"
             android:layout_margin="10dp"
             android:text="Guardar" />
@@ -197,7 +303,7 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/boton_azul"
+            android:textColor="@color/dane"
             android:padding="10dp"
             android:layout_margin="10dp"
             android:text="Cerrar"

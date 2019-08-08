@@ -38,8 +38,9 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="wrap_content"
         android:padding="10dp"
-        android:background="@drawable/borde_boton"
-        android:layout_height="40dp"
+        android:background="@drawable/boton_verde"
+        android:textColor="@color/blanco"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="cerrar"
         android:layout_marginBottom="20dp"/>

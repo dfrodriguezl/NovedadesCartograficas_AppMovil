@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/icono_login"
+                app:srcCompat="@drawable/ic_mini_header"
                 android:layout_marginBottom="20dp"/>
 
 

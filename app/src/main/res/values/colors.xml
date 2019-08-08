@@ -14,7 +14,11 @@
     <color name="rojo">#DF0000</color>
     <color name="negro_transparente">#5000</color>
     <color name="transparente">#00FFFFFF</color>
-
     <color name="poligono_touch">#50C7ECFF</color>
+    <color name="poligono_cerrado_ena">#40FFA3AA</color>
+    <color name="poligono_abierto_ena">#20DCF9DB</color>
+    <color name="poligono_edicion">#50A3E8FF</color>
+    <color name="poligono_touch_boundary">#56D5FF</color>
 
+    <color name="transicion1">#9C9C9C</color>
 </resources>

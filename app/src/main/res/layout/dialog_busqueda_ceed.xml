@@ -14,12 +14,25 @@
         android:orientation="vertical">
 
         <TextView
-            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="0dp"
+            android:gravity="center"
             android:text="Busqueda de Sectores"
-            android:layout_marginBottom="10dp"
-            android:paddingHorizontal="5dp"/>
+            android:textColor="@color/dane"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="10dp"
+            android:paddingBottom="5dp"
+            android:text="Filtre y ubique el sector de su interes."
+
+            android:textSize="15sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,6 +43,7 @@
             android:paddingHorizontal="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/dane"
             android:text="Departamento" />
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,6 +68,7 @@
                 android:paddingHorizontal="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/dane"
                 android:text="Municipio" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -78,6 +93,7 @@
                 android:paddingHorizontal="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/dane"
                 android:text="Clase" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -102,6 +118,7 @@
                 android:paddingHorizontal="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/dane"
                 android:text="Sector Rural" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -127,6 +144,7 @@
                 android:paddingHorizontal="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/dane"
                 android:text="Sección Rural" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -151,6 +169,7 @@
                 android:paddingHorizontal="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/dane"
                 android:text="Centro Poblado" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -176,6 +195,7 @@
                 android:paddingHorizontal="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/dane"
                 android:text="Sector Urbano" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -206,19 +226,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/boton_verde"
+                android:textColor="@color/blanco"
                 android:padding="10dp"
                 android:layout_margin="10dp"
-                android:text="Ver" />
+                android:text="Ubicar" />
 
             <Button
                 android:id="@+id/btn_dialog_cerrar_dialog_ceed"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/boton_azul"
+
                 android:padding="10dp"
                 android:layout_margin="10dp"
-                android:drawableLeft="@drawable/ic_main_noasignar"
+
                 android:text="Cerrar"
                 />
 
