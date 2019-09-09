@@ -27,6 +27,14 @@ public class login extends AppCompatActivity {
         super.onCreate(icicle);
         setContentView(R.layout.login);
 
+        Button acerca_login= (Button) findViewById(R.id.acerca_login);
+        acerca_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(login.this, WelcomeActivity.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+        });
 
         Button btn_login= (Button) findViewById(R.id.btn_login);
 

@@ -62,6 +62,40 @@ public class SpatialAnalysis {
         return String.valueOf(line);
 
     }
+    public String FirstPointPolyline(String pol){
+
+        String punto="";
+
+        try {
+            File spatialDbFile=context.getDatabasePath("geom.db");
+
+            jsqlite.Database db = new jsqlite.Database();
+            db.open(spatialDbFile.getAbsolutePath(), jsqlite.Constants.SQLITE_OPEN_READWRITE
+                    | jsqlite.Constants.SQLITE_OPEN_CREATE);
+
+            StringBuilder sb = new StringBuilder();
+
+            String sql=
+                    "select st_astext(StartPoint(geomfromtext('"+pol+"')))";
+
+            Stmt stmt = db.prepare(sql);
+
+            if (stmt.step()) {
+                sb.append(stmt.column_string(0));
+            }
+            db.close();
+
+            punto=sb.toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+
+        }
+
+        return punto;
+
+    }
 
     public String PoligonoWKT(Polygon pol){
 

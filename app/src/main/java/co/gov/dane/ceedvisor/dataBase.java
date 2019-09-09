@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -143,7 +146,7 @@ public void getGeomFromDatabase(){
                 Util util=new Util(main,main);
                 util.generarLabel(centroide,descripcion,"ENA_LABEL");
 
-
+                main.listado_busqueda.add(new Busqueda(c.getString(c.getColumnIndex(Estructura.GeometriaEntry.ID_PADRE)),centroide,3));
 
 
             }
@@ -277,23 +280,34 @@ public void getObrasCeed(){
                         atributos.put("nombreobra", c.getString(c.getColumnIndex(Estructura.ObrasEntry.NOMBREOBRA)));
                         atributos.put("direccion", c.getString(c.getColumnIndex(Estructura.ObrasEntry.DIREOBRA)));
                         atributos.put("barrio", c.getString(c.getColumnIndex(Estructura.ObrasEntry.BARRIO)));
+                        atributos.put("noformular", c.getString(c.getColumnIndex(Estructura.ObrasEntry.NOFORMULAR)));
 
                         main.puntos.add(main.mMap.addMarker(opts));
                         main.puntos.get(main.puntos.size()-1).setTag(atributos);
-                        main.puntos.get(main.puntos.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ping_obra));
 
+                        int height = 60;
+                        int width = 40;
+                        BitmapDrawable bitmapdraw=(BitmapDrawable)main.getResources().getDrawable(R.drawable.ping_obra);
+                        Bitmap b=bitmapdraw.getBitmap();
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
+                        main.puntos.get(main.puntos.size()-1).setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
 
 
                         //parte del label
                         SpatialAnalysis spatial=new SpatialAnalysis(main,main);
 
+
                         String centroide=spatial.puntoWKT(main.puntos.get(main.puntos.size()-1));
-                        String descripcion=c.getString(c.getColumnIndex(Estructura.ObrasEntry.NOMBREOBRA));
+
+
+                        String descripcion=c.getString(c.getColumnIndex(Estructura.ObrasEntry.NOFORMULAR));
                         String identificador=main.puntos.get(main.puntos.size()-1).getId();
                         Util util=new Util(main,main);
                         util.generarLabel(centroide,descripcion,identificador);
 
+
+                        main.listado_busqueda.add(new Busqueda(c.getString(c.getColumnIndex(Estructura.ObrasEntry.SERIAL)),centroide,3));
 
 
                     } catch (JSONException e) {
@@ -384,6 +398,15 @@ public void getObrasCeed(){
                             main.line.get(main.line.size()-1).setColor(Color.parseColor(atributos.get("color").toString()));
                             main.line.get(main.line.size()-1).setClickable(true);
                             main.line.get(main.line.size()-1).setTag(atributos);
+
+                            if(c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO)).equals("Ruta CEED")){
+                                String punto_inicial=main.analisis.FirstPointPolyline(geometria_ini);
+                                Util util=new Util(main,main);
+
+                                String identificador=main.line.get(main.line.size()-1).getId();
+                                util.generarLabelLinea(punto_inicial,c.getString(c.getColumnIndex(Estructura.NovedadEntry.FECHA)),identificador);
+
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -564,34 +587,31 @@ public void getObrasCeed(){
                             atributos.put("descripcion", c.getString(c.getColumnIndex(Estructura.NovedadEntry.DESCRIPCION)));
 
 
-                            String[] tipo_punto = main.getResources().getStringArray(R.array.novedad_punto);
-
-
-
                             main.puntos.add(main.mMap.addMarker(opts));
                             main.puntos.get(main.puntos.size()-1).setTag(atributos);
 
+                            if(c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO)).equals("ObraProyectada")){
+                                main.puntos.get(main.puntos.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.obra_futura));
+                            }else{
+                                String imagen=c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO));
 
-                            String imagen=c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO));
-
-                            AssetManager mg = main.getResources().getAssets();
-                            InputStream is = null;
-                            try {
-                                is = mg.open("img/"+imagen+".png");
-                                main.puntos.get(main.puntos.size()-1).setIcon(BitmapDescriptorFactory.fromAsset("img/"+imagen+".png"));
-                            } catch (IOException ex) {
-                                //file does not exist
-                            } finally {
-                                if (is != null) {
-                                    try {
-                                        is.close();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
+                                AssetManager mg = main.getResources().getAssets();
+                                InputStream is = null;
+                                try {
+                                    is = mg.open("img/"+imagen+".png");
+                                    main.puntos.get(main.puntos.size()-1).setIcon(BitmapDescriptorFactory.fromAsset("img/"+imagen+".png"));
+                                } catch (IOException ex) {
+                                    //file does not exist
+                                } finally {
+                                    if (is != null) {
+                                        try {
+                                            is.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
                             }
-
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();

@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -33,6 +34,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -57,7 +60,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import com.google.maps.android.SphericalUtil;
 import org.json.JSONException;
@@ -115,6 +121,7 @@ public class MainActivity extends AppCompatActivity
     private SensorManager mSensorManager;
     private float[] mRotationMatrix = new float[16];
     static ArrayList<MapaOffline> listado_mapas_offline;
+    ArrayList<Busqueda> listado_busqueda = new ArrayList<>();
 
     String codId="null";
     Boolean medicion=false;
@@ -135,7 +142,9 @@ public class MainActivity extends AppCompatActivity
     Mensajes mitoast =new Mensajes(MainActivity.this);
     String id_dispositivo;
 
-    FloatingActionButton asignar_tarea=null;
+    private BusquedaAdapter listAdapter;
+    Boolean control_zoom_in=true;
+    Boolean control_zoom_out=true;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -150,7 +159,6 @@ public class MainActivity extends AppCompatActivity
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},00);
 
 
-
         Context context = this;
 
         UniqueId llave=new UniqueId();
@@ -160,6 +168,7 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         FloatingActionButton save_edicion = (FloatingActionButton) findViewById(R.id.save_edicion);
         save_edicion.setVisibility(View.GONE);
@@ -221,22 +230,28 @@ public class MainActivity extends AppCompatActivity
 
                             String imagen=atributos.get("tipo").toString();
 
-                            AssetManager mg = getResources().getAssets();
-                            InputStream is = null;
-                            try {
-                                is = mg.open("img/"+imagen+".png");
-                                puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.fromAsset("img/"+imagen+".png"));
-                            } catch (IOException ex) {
-                                //file does not exist
-                            } finally {
-                                if (is != null) {
-                                    try {
-                                        is.close();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
+                            if(imagen.equals("ObraProyectada")){
+                                puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.obra_futura));
+                            }else{
+                                AssetManager mg = getResources().getAssets();
+                                InputStream is = null;
+                                try {
+                                    is = mg.open("img/"+imagen+".png");
+                                    puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.fromAsset("img/"+imagen+".png"));
+                                } catch (IOException ex) {
+                                    //file does not exist
+                                } finally {
+                                    if (is != null) {
+                                        try {
+                                            is.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
                             }
+
+
 
 
                         } catch (JSONException e) {
@@ -287,10 +302,15 @@ public class MainActivity extends AppCompatActivity
 
                             int tipo_geometria=2;
 
+                            Date todayDate = Calendar.getInstance().getTime();
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                            String fecha = formatter.format(todayDate);
+
+
                             String wkt=analisis.LineaWKT(line.get(line.size()-1));
                             String tipo= atributos.get("tipo").toString();
                             String descripcion= atributos.get("descripcion").toString();
-                            Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
+                            Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion,fecha);
                             Boolean inserto=novedad.insertarNovedad();
                             mitoast.generarToast("Elemento guardado");
 
@@ -298,6 +318,14 @@ public class MainActivity extends AppCompatActivity
                             line.get(line.size()-1).setTag(atributos);
                             line.get(line.size()-1).setColor(Color.parseColor(atributos.get("color").toString()));
                             line.get(line.size()-1).setWidth(15);
+
+                            if(tipo.equals("Ruta CEED")){
+                                String punto_inicial=analisis.FirstPointPolyline(wkt);
+                                Util util=new Util(MainActivity.this,MainActivity.this);
+                                String identificador=line.get(line.size()-1).getId();
+                                util.generarLabelLinea(punto_inicial,fecha,identificador);
+                            }
+
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -574,16 +602,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-                if (atributos.has("atributos")) {
-
                     try {
-                        if(atributos.get("atributos").toString().equals("obra")){
+                        if(atributos.get("tipo").toString().equals("ObraProyectada")){
                             tipo_edicion=4;
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
+
 
                 DialogoEdicion dialog =new DialogoEdicion(MainActivity.this,MainActivity.this,tipo_edicion,true,atributos,codId);
                 dialog.mostrarDialogoEdicion();
@@ -765,23 +791,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        asignar_tarea = (FloatingActionButton) findViewById(R.id.asignar_tarea);
 
-        asignar_tarea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
-                dialogo.MostrarDialogoAsignacion();
-
-                asignar_tarea.setVisibility(View.INVISIBLE);
-                JoinPicker=false;
-                estado_mapa_asignacion();
-                mitoast.generarToast("Comience a seleccionar los poligonos");
-
-
-            }
-        });
 
         hide_add_punto();
         hide_delete_geom();
@@ -805,8 +815,7 @@ public class MainActivity extends AppCompatActivity
 
         controlToolsGoogle();
 
-        mMapTypeSelector = (Spinner) findViewById(R.id.map_type_selector);
-        mMapTypeSelector.setOnItemSelectedListener(this);
+
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -824,9 +833,8 @@ public class MainActivity extends AppCompatActivity
             nav_camara.setIcon(R.drawable.ic_menu_supervisor);
         }else if(rol==2){
             nav_camara.setIcon(R.drawable.ic_menu_encuestador);
-            asignar_tarea.setVisibility(View.INVISIBLE);
         }
-        asignar_tarea.setVisibility(View.INVISIBLE);
+
 
 
         Switch switch1= (Switch)menu.findItem(R.id.ver_labels).getActionView().findViewById(R.id.switchForActionBar);
@@ -846,6 +854,31 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+
+        Switch switch2 = (Switch) menu.findItem(R.id.habilitar_giroscopio).getActionView().findViewById(R.id.switchGiroscopio);
+
+        switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+
+                    mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+                    int delay = 100000; //in microseconds equivalent to 0.1 sec
+                    mSensorManager.registerListener(MainActivity.this,
+                            mAccelerometer,
+                            delay
+                    );
+
+
+                } else {
+                    mSensorManager.unregisterListener(MainActivity.this, mAccelerometer);
+
+                }
+            }
+        });
+
+
 
 
     }
@@ -898,7 +931,46 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView =
+                (SearchView) searchItem.getActionView();
 
+        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                LinearLayout linear_resultados_busqueda = findViewById(R.id.linear_resultados_busqueda);
+
+                linear_resultados_busqueda.setVisibility(View.VISIBLE);
+
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+
+                LinearLayout linear_resultados_busqueda = findViewById(R.id.linear_resultados_busqueda);
+
+                linear_resultados_busqueda.setVisibility(View.GONE);
+
+                return true;
+            }
+        });
+
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                listAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
 
         return true;
     }
@@ -914,11 +986,6 @@ public class MainActivity extends AppCompatActivity
 
             DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
             dialogo.MostrarMapasBase();
-
-        }else if(id == R.id.action_search){
-
-            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
-            dialogo.MostrarDialogoBusqueda();
 
         }
         if (id == R.id.action_novedad) {
@@ -1059,28 +1126,7 @@ public class MainActivity extends AppCompatActivity
             dialogo.MostrarDialogoSincronizar();
 
         }
-        else if (id == R.id.habilitar_giroscopio) {
-
-            if(sensor_activado==0){
-
-                mSensorManager.unregisterListener(this, mAccelerometer);
-                sensor_activado=1;
-            }
-            if(sensor_activado==1){
-
-                mAccelerometer =  mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-                int delay = 100000; //in microseconds equivalent to 0.1 sec
-                mSensorManager.registerListener(this,
-                        mAccelerometer,
-                        delay
-                );
-
-
-                sensor_activado=0;
-            }
-
-
-        }else if (id == R.id.captura) {
+        else if (id == R.id.captura) {
 
             snapShot captura=new snapShot(MainActivity.this);
             captura.capturaPantalla();
@@ -1165,6 +1211,16 @@ public class MainActivity extends AppCompatActivity
         db.getNovedades();
         db.getObrasCeed();
 
+
+        listAdapter = new BusquedaAdapter(MainActivity.this, listado_busqueda);
+
+        ListView listView = (ListView) findViewById(R.id.listview_busqueda);
+
+        listView.setAdapter(listAdapter);
+
+
+
+
         LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
 
 
@@ -1185,26 +1241,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void estado_mapa_asignacion(){
-        mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-            @Override
-            public void onPolygonClick(Polygon polygon) {
-                PolygonOptions opts=new PolygonOptions();
-                opts.addAll(polygon.getPoints());
-
-                if(!JoinPicker){
-                    Polygon p=mMap.addPolygon(opts);
-                    p.setStrokeColor(getResources().getColor(R.color.poligono_touch_boundary));
-                    p.setZIndex(100);
-                    cod_poligonos_union.add(polygon.getId());
-                    polygon_union.add(p);
-
-
-                }
-            }
-        });
-
-    }
 
     public void estado_mapa_edicion(){
 
@@ -1398,12 +1434,12 @@ public class MainActivity extends AppCompatActivity
                             if(atributos.get("tipo").toString().equals("obra")){
 
                                 DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
-                                String serial=atributos.get("serial").toString();
+                                String noformular=atributos.get("noformular").toString();
                                 String  nombreobra=atributos.get("nombreobra").toString();
                                 String  direccion=atributos.get("direccion").toString();
                                 String  barrio=atributos.get("barrio").toString();
 
-                                dialogo.MostrarDialogoObras(serial,nombreobra,direccion,barrio);
+                                dialogo.MostrarDialogoObras(noformular,nombreobra,direccion,barrio);
 
 
                             }else{
@@ -1725,16 +1761,31 @@ public class MainActivity extends AppCompatActivity
         //Zoom del mapa
         float zoom=mMap.getCameraPosition().zoom;
 
+        if(zoom>17){
 
-        if(zoom>15){
-            for (Marker marker : label) {
-                marker.setVisible(true);
+            if(control_zoom_in){
+
+                for (Marker marker : label) {
+                    marker.setVisible(true);
+                }
+                control_zoom_in=false;
             }
+            control_zoom_out=true;
+
         }else{
-            for (Marker marker : label) {
-                marker.setVisible(false);
+            if(control_zoom_out){
+
+                for (Marker marker : label) {
+                    marker.setVisible(false);
+                }
+                control_zoom_out=false;
             }
+            control_zoom_in=true;
         }
+
+
+
+
 
     }
 

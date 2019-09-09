@@ -36,7 +36,7 @@ public class Estructura {
         public static final String WKT = "wkt";
         public static final String TIPO = "tipo";
         public static final String DESCRIPCION = "descripcion";
-
+        public static final String FECHA = "fecha";
     }
     public static abstract class ObrasEntry implements BaseColumns {
         public static final String TABLE_NAME ="obras";

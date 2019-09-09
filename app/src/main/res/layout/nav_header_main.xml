@@ -15,6 +15,6 @@
         android:layout_height="80dp"
         android:layout_gravity="center"
         android:contentDescription="@string/nav_header_desc"
-        app:srcCompat="@drawable/ic_mini_header" />
+        app:srcCompat="@drawable/ic_main_header_menu" />
 
 </LinearLayout>

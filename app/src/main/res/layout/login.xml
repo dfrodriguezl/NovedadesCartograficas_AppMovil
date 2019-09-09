@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     >
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,14 +13,12 @@
         android:orientation="vertical">
 
 
-
-
         <LinearLayout
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp"
-           android:layout_gravity="center"
+            android:layout_gravity="center"
             android:layout_centerInParent="true"
 
 
@@ -45,11 +42,16 @@
                 android:padding="10dp"
                 android:textAlignment="center"
                 android:layout_marginBottom="20dp"
-                android:textSize="15dp"
-                android:visibility="gone"
-                android:text="" />
+                android:textSize="20dp"
 
+                android:text="Inicio de Sesión" />
 
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17dp"
+                android:text="Para el inicio de sesión es necesario escanear el codigo QR. de identificación de usuario." />
 
             <Button
                 android:id="@+id/btn_login"
@@ -57,18 +59,40 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="15dp"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="80dp"
                 android:layout_gravity="center"
-                android:background="@drawable/borde_boton_dane"
+                android:background="@drawable/boton_verde"
+                android:textColor="@color/blanco"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/ic_menu_captura"
+                android:drawableTint="@color/colorPrimary"
                 android:text="Escanear QR"
-                android:textColor="@color/dane" />
+                />
 
 
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="bottom|end"
+            >
 
+            <Button
+                android:id="@+id/acerca_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:textColor="@color/dane"
+                android:drawableTint="@color/dane"
+                android:drawablePadding="5dp"
+                style="?android:attr/borderlessButtonStyle"
+                android:drawableRight="@drawable/ic_menu_ayuda"
+                android:text="Acerca" />
 
+        </LinearLayout>
 
     </RelativeLayout>
 

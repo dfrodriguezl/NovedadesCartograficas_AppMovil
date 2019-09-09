@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import co.gov.dane.ceedvisor.EstructuraDataBase.Estructura;
@@ -34,7 +35,7 @@ public class Controlador {
     String url_geometria_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/geometria_get.php";
     String url_usuarios_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/usuarios_get.php";
 
-    String url_obras_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/obras_get.php";
+    String url_obras_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/obras_get.php?sector=";
 
 
     int descargas=0;
@@ -63,124 +64,91 @@ public class Controlador {
            RequestQueue requestQueue = Volley.newRequestQueue(context);
 
 
-           JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                   Request.Method.GET,
-                   url_geometria_get,
-                   null,
-                   new Response.Listener<JSONArray>() {
-                       @Override
-                       public void onResponse(JSONArray response) {
+           final CeedDB db =new CeedDB(context);
+           final List<String> listado_setu = db.get_SetU("11","1","1","0","0","0");
 
-                           try{
+           Log.d("sectores", String.valueOf(listado_setu));
 
-                               SpatiaLite db=new SpatiaLite(context);
+           SpatiaLite db1=new SpatiaLite(context);
 
-                               org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
-                               sp.delete(Estructura.GeometriaEntry.TABLE_NAME, null, null);
-                               for(int i=0;i<response.length();i++){
+           final org.spatialite.database.SQLiteDatabase sp=db1.getWritableDatabase();
+           sp.delete(Estructura.ObrasEntry.TABLE_NAME, null, null);
 
-                                   JSONObject obj = response.getJSONObject(i);
+           for(int i=0;i<listado_setu.size();i++){
 
-                                   ContentValues values = new ContentValues();
+               String sector=listado_setu.get(i);
 
-                                   values.put(Estructura.GeometriaEntry.ID_PADRE, obj.getString("ID_PADRE"));
-                                   values.put(Estructura.GeometriaEntry.ID_HIJO, obj.getString("ID_HIJO"));
-                                   values.put(Estructura.GeometriaEntry.NOMBRE_ENCUESTA, obj.getString("NOMBRE_ENCUESTA"));
-                                   values.put(Estructura.GeometriaEntry.NOMBRE_CAPA, obj.getString("NOMBRE_CAPA"));
-                                   values.put(Estructura.GeometriaEntry.ESTADO, obj.getInt("ESTADO"));
-                                   values.put(Estructura.GeometriaEntry.OBSERVACIONES, obj.getString("OBSERVACIONES"));
-                                   values.put(Estructura.GeometriaEntry.GEOMETRIA_INI, obj.getString("GEOMETRIA_INI"));
-                                   values.put(Estructura.GeometriaEntry.USUARIO_ASIGNADO, "");
+               String ur=url_obras_get.concat(sector);
 
-                                   sp.insert(Estructura.GeometriaEntry.TABLE_NAME, null, values);
 
+               JsonArrayRequest jsonArrayRequestObras = new JsonArrayRequest(
+                       Request.Method.GET,
+                       ur,
+                       null,
+                       new Response.Listener<JSONArray>() {
+                           @Override
+                           public void onResponse(JSONArray response) {
+
+
+                               try{
+
+
+                                   for(int i=0;i<response.length();i++){
+
+                                       JSONObject obj = response.getJSONObject(i);
+
+                                       ContentValues values = new ContentValues();
+
+                                       values.put(Estructura.ObrasEntry.SERIAL, obj.getString("SERIAL"));
+                                       values.put(Estructura.ObrasEntry.FINICIO, obj.getString("FINICIO"));
+                                       values.put(Estructura.ObrasEntry.NOFORMULAR, obj.getString("NOFORMULAR"));
+                                       values.put(Estructura.ObrasEntry.NOMBREOBRA, obj.getString("NOMBREOBRA"));
+                                       values.put(Estructura.ObrasEntry.DIREOBRA, obj.getString("DIREOBRA"));
+                                       values.put(Estructura.ObrasEntry.BARRIO, obj.getString("BARRIO"));
+                                       values.put(Estructura.ObrasEntry.GEOMETRIA, obj.getString("GEOMETRIA"));
+
+                                       sp.insert(Estructura.ObrasEntry.TABLE_NAME, null, values);
+
+
+                                   }
+
+                               }catch (JSONException e){
+                                   e.printStackTrace();
 
                                }
-                               sp.close();
-
-                           }catch (JSONException e){
-                               e.printStackTrace();
                            }
-                       }
-                   },
-                   new Response.ErrorListener(){
-                       @Override
-                       public void onErrorResponse(VolleyError error){
-                           Log.i("bye",error.toString());
-
-                       }
-                   }
-           );
-
-           // Add JsonArrayRequest to the RequestQueue
-           requestQueue.add(jsonArrayRequest);
-
-
-           JsonArrayRequest jsonArrayRequestObras = new JsonArrayRequest(
-                   Request.Method.GET,
-                   url_obras_get,
-                   null,
-                   new Response.Listener<JSONArray>() {
-                       @Override
-                       public void onResponse(JSONArray response) {
-
-                           Log.d("Resultados:", String.valueOf(response));
-
-                           try{
-
-                               SpatiaLite db=new SpatiaLite(context);
-
-                               org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
-                               sp.delete(Estructura.ObrasEntry.TABLE_NAME, null, null);
-                               for(int i=0;i<response.length();i++){
-
-                                   JSONObject obj = response.getJSONObject(i);
-
-                                   ContentValues values = new ContentValues();
-
-                                   values.put(Estructura.ObrasEntry.SERIAL, obj.getString("SERIAL"));
-                                   values.put(Estructura.ObrasEntry.FINICIO, obj.getString("FINICIO"));
-                                   values.put(Estructura.ObrasEntry.NOFORMULAR, obj.getString("NOFORMULAR"));
-                                   values.put(Estructura.ObrasEntry.NOMBREOBRA, obj.getString("NOMBREOBRA"));
-                                   values.put(Estructura.ObrasEntry.DIREOBRA, obj.getString("DIREOBRA"));
-                                   values.put(Estructura.ObrasEntry.BARRIO, obj.getString("BARRIO"));
-                                   values.put(Estructura.ObrasEntry.GEOMETRIA, obj.getString("GEOMETRIA"));
-
-                                   sp.insert(Estructura.ObrasEntry.TABLE_NAME, null, values);
-
-
-                               }
-                               sp.close();
-                           }catch (JSONException e){
-                               e.printStackTrace();
+                       },
+                       new Response.ErrorListener(){
+                           @Override
+                           public void onErrorResponse(VolleyError error){
+                               Log.i("bye",error.toString());
 
                            }
                        }
-                   },
-                   new Response.ErrorListener(){
-                       @Override
-                       public void onErrorResponse(VolleyError error){
-                           Log.i("bye",error.toString());
+               );
 
-                       }
-                   }
-           );
+               // Add JsonArrayRequest to the RequestQueue
+               requestQueue.add(jsonArrayRequestObras);
 
-           // Add JsonArrayRequest to the RequestQueue
-           requestQueue.add(jsonArrayRequestObras);
+           }
+
+
+
+
+
 
            requestQueue.addRequestFinishedListener(new RequestQueue.RequestFinishedListener<String>() {
                @Override
                public void onRequestFinished(Request<String> request) {
                    descargas=descargas+1;
 
-                   if(descargas>1){
+                   if(descargas==listado_setu.size()){
                        progress.hide();
                        callBack.onSuccess();
 
                        Mensajes mitoast =new Mensajes(context);
                        mitoast.generarToast("Descarga de datos finalizada");
-
+                       sp.close();
                    }
 
                }

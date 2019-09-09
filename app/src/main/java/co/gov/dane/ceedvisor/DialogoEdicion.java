@@ -123,6 +123,7 @@ public class DialogoEdicion {
 
         if(opcion==4){
 
+            /*
             linear_estado_obra.setVisibility(View.VISIBLE);
             linear_descripcion_obra.setVisibility(View.VISIBLE);
 
@@ -132,7 +133,7 @@ public class DialogoEdicion {
             adapter_obra.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
             spinner_estado_obra.setAdapter(adapter_obra);
-
+*/
             LinearLayout linear_tipo_novedad  =(LinearLayout)  mView.findViewById(R.id.linear_tipo_novedad);
             linear_tipo_novedad.setVisibility(View.GONE);
 
@@ -149,7 +150,7 @@ public class DialogoEdicion {
                 main.atributos =new JSONObject();
                 main.atributos.put("tipo", "Ruta CEED");
                 main.atributos.put("descripcion", "CONTROL CEED");
-                main.atributos.put("color","#7D3C98");
+                main.atributos.put("color","#56D5FF");
 
             } catch (JSONException e) {
 
@@ -174,7 +175,14 @@ public class DialogoEdicion {
 
         if(!edicion){
             Mensajes mitoast =new Mensajes(activity);
-            mitoast.generarToast("Ingrese los atributos de la nueva geometria");
+
+            if(opcion==5){
+                mitoast.generarToastMapa("Dibuje el trayecto recorrido");
+            }
+            else{
+                mitoast.generarToast("Ingrese los atributos de la nueva geometria");
+            }
+
             btn_dialog_cerrar_atributos.setVisibility(View.GONE);
             btn_guardar_atributos.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("RestrictedApi")
@@ -182,7 +190,6 @@ public class DialogoEdicion {
                 public void onClick(View v) {
 
                     Spinner tipo_novedad= (Spinner) mView.findViewById(R.id.tipo_novedad);
-                    Spinner estado_obra= (Spinner) mView.findViewById(R.id.estado_obra);
 
                     EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
 
@@ -216,9 +223,8 @@ public class DialogoEdicion {
                         color=array_color[position_spiner];
                     }
                     if(opcion==4){
-                        position_spiner=estado_obra.getSelectedItemPosition();
-                        array_color = main.getResources().getStringArray(R.array.color_estado_obra_punto);
-                        color=array_color[position_spiner];
+                        tipo="ObraProyectada";
+                        color="";
                     }
 
 
@@ -314,10 +320,12 @@ public class DialogoEdicion {
 
                         String tipo="";
 
-                        if(opcion==1){
+                        if(opcion==1 ){
 
                             tipo= imagen.replace(".png", "");
 
+                        }else if(opcion==4){
+                            tipo="ObraProyectada";
                         }else{
                             tipo=tipo_novedad.getSelectedItem().toString();
                         }
@@ -398,14 +406,10 @@ public class DialogoEdicion {
 
                         }
                             if(opcion==4){
-                                position_spiner=tipo_novedad.getSelectedItemPosition();
-                                array_color = main.getResources().getStringArray(R.array.color_estado_obra_punto);
-                                obj.put("atributos","obra");
-                                obj.put("color",array_color[position_spiner]);
                                 for(int i=0;i<main.puntos.size();i++){
                                     if(main.puntos.get(i).getId().equals(id_google)){
                                         main.puntos.get(i).setTag(obj);
-                                        main.puntos.get(i).setIcon(BitmapDescriptorFactory.defaultMarker(Float.parseFloat(array_color[position_spiner])));
+
                                     }
 
                                 }

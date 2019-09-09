@@ -42,7 +42,7 @@ public class WelcomeActivity extends BaseWelcomeActivity {
         addPage(new PageDescriptor(R.string.titulo2, R.string.contenido2, R.drawable.about2, R.color.transicion1));
         addPage(new PageDescriptor(R.string.titulo3, R.string.contenido3, R.drawable.about3, R.color.transicion1));
         addPage(new PageDescriptor(R.string.titulo4, R.string.contenido4, R.drawable.about4, R.color.transicion1));
-        addPage(new PageDescriptor(R.string.titulo5, R.string.contenido5, R.drawable.novedad_poligono, R.color.transicion1));
+        addPage(new PageDescriptor(R.string.titulo5, R.string.contenido5, R.drawable.about5, R.color.transicion1));
         addPage(new PageDescriptor(R.string.titulo6, R.string.contenido6, R.drawable.about6, R.color.transicion1));
     }
 }

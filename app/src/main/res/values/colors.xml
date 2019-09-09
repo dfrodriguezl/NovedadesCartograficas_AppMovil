@@ -5,6 +5,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="dane">#ad2055</color>
     <color name="blanco">#FFFFFF</color>
+    <color name="oscuro">#5E5E5E</color>
     <color name="blanco_transparente">#80FFFFFF</color>
     <color name="gris">#BDC3C7</color>
     <color name="verde">#229954</color>
@@ -20,5 +21,5 @@
     <color name="poligono_edicion">#50A3E8FF</color>
     <color name="poligono_touch_boundary">#56D5FF</color>
 
-    <color name="transicion1">#9C9C9C</color>
+    <color name="transicion1">#FFFFFF</color>
 </resources>

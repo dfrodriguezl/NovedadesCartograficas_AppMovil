@@ -19,6 +19,7 @@ public class Novedades {
     MainActivity main;
     String id_dispositivo;
     String usuario="";
+    String fecha="";
 
     Novedades(Context context, MainActivity main, int id, String id_dispositivo, int tipo_geometria,String wkt,String tipo, String descripcion){
         this.context=context;
@@ -38,6 +39,17 @@ public class Novedades {
         this.wkt=wkt;
         this.tipo=tipo;
         this.descripcion=descripcion;
+    }
+    Novedades(Context context, MainActivity main, int id, String id_dispositivo, int tipo_geometria,String wkt,String tipo, String descripcion,String fecha){
+        this.context=context;
+        this.main=main;
+        this.id=id;
+        this.tipo_geometria=tipo_geometria;
+        this.wkt=wkt;
+        this.tipo=tipo;
+        this.descripcion=descripcion;
+        this.id_dispositivo=id_dispositivo;
+        this.fecha=fecha;
     }
 
     Novedades(Context context, MainActivity main, int id,String usuario){
@@ -63,6 +75,7 @@ public class Novedades {
             values.put(Estructura.NovedadEntry.WKT, wkt);
             values.put(Estructura.NovedadEntry.TIPO, tipo);
             values.put(Estructura.NovedadEntry.DESCRIPCION, descripcion);
+            values.put(Estructura.NovedadEntry.FECHA, fecha);
 
             //llena la tabla de novedades.
             sp.insertWithOnConflict(Estructura.NovedadEntry.TABLE_NAME, null, values,CONFLICT_REPLACE);

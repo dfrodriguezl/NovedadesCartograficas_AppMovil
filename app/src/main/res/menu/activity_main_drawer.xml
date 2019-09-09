@@ -25,6 +25,7 @@
                 android:id="@+id/zoom_ena"
                 android:icon="@drawable/ic_main_search"
                 android:title="Zoom Conglomerados"
+                android:visible="false"
                 />
             <item
                 android:id="@+id/ver_labels"
@@ -52,11 +53,13 @@
         <item
             android:id="@+id/habilitar_giroscopio"
             android:icon="@drawable/ic_enable_orientation"
-            android:title="Habilitar giroscopio"
+            app:actionLayout="@layout/switch_item_giroscopio"
+            android:title="Giroscopio"
             />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_exportar"
+            android:visible="false"
             android:title="Exportar" />
         <item
             android:id="@+id/captura"

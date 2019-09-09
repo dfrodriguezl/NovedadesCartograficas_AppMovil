@@ -40,7 +40,7 @@ public class snapShot {
                         final MediaPlayer mp = MediaPlayer.create(main,R.raw.camera_shutter);
                         mp.start();
 
-                        Toast.makeText(main, "Captura de pantalla: \n"+ now+".png", Toast.LENGTH_LONG).show();
+                        main.mitoast.generarToast("Captura almacendada en:\n"+ruta_capturas);
 
                     }catch (Exception e){
                         e.printStackTrace ();

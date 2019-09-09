@@ -186,124 +186,14 @@ public class DialogoOtros {
         dialog.setCanceledOnTouchOutside(false);
 
     }
-    public void MostrarDialogoAsignacion(){
 
-
-        LinearLayout dialogo= (LinearLayout) main.findViewById(R.id.dialogo_edicion);
-        dialogo.setVisibility(View.VISIBLE);
-
-        dataBase db=new dataBase(main,main);
-
-        Spinner spinner_dialog_asignar = (Spinner) main.findViewById(R.id.spinner_dialog_asignar);
-
-        List<String> listado_usuarios = db.getUsuarios();
-        listado_usuarios.add("Sin Asignar");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
-        adapter.addAll(listado_usuarios);
-        spinner_dialog_asignar.setAdapter(adapter);
-
-        Button btn_dialog_noasignar= (Button) main.findViewById(R.id.btn_dialog_noasignar);
-
-        btn_dialog_noasignar.setOnClickListener(new View.OnClickListener() {
-            LinearLayout dialogo= (LinearLayout) main.findViewById(R.id.dialogo_edicion);
-            @Override
-            public void onClick(View v) {
-                main.asignar_tarea.setVisibility(View.VISIBLE);
-                dialogo.setVisibility(View.INVISIBLE);
-
-                for(Polygon pol:main.polygon_union){
-                    pol.remove();
-                }
-                main.cod_poligonos_union.clear();
-                main.polygon_union.clear();
-                main.estado_mapa_sin_edicion();
-                main.JoinPicker=true;
-
-            }
-        });
-
-        Button btn_dialog_asignar= (Button) main.findViewById(R.id.btn_dialog_asignar);
-
-        btn_dialog_asignar.setOnClickListener(new View.OnClickListener() {
-            LinearLayout dialogo= (LinearLayout) main.findViewById(R.id.dialogo_edicion);
-            @Override
-            public void onClick(View v) {
-
-
-                Spinner spinner_dialog_asignar = (Spinner) main.findViewById(R.id.spinner_dialog_asignar);
-                String usuario_asignado = spinner_dialog_asignar.getSelectedItem().toString();
-
-                usuario_asignado=usuario_asignado.substring(usuario_asignado.lastIndexOf("-") + 1).trim();
-
-                Log.d("User:",usuario_asignado);
-
-                for(String id: main.cod_poligonos_union){
-
-                    for(int i=0;i<main.polygon.size();i++){
-
-                        if(main.polygon.get(i).getId().equals(id)){
-
-                            main.update_atributos(main.polygon.get(i).getTag().toString());
-
-                            if (main.atributos.has("id")) {
-                                try {
-                                    Integer identificador= Integer.valueOf(main.atributos.get("id").toString());
-
-                                    Novedades novedad=new Novedades(main,main,identificador,usuario_asignado);
-
-                                    novedad.asignacion_geometria();
-
-                                    if(usuario_asignado.equals("Sin Asignar")){
-                                        main.polygon.get(i).setStrokeColor(Color.BLACK);
-                                    }else{
-                                        main.polygon.get(i).setStrokeColor(Color.GREEN);
-                                    }
-
-
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-
-
-                        }
-                    }
-
-                }
-
-
-
-
-                main.asignar_tarea.setVisibility(View.VISIBLE);
-                dialogo.setVisibility(View.INVISIBLE);
-
-                for(Polygon pol:main.polygon_union){
-                    pol.remove();
-                }
-                main.cod_poligonos_union.clear();
-                main.polygon_union.clear();
-                main.estado_mapa_sin_edicion();
-                main.JoinPicker=true;
-                main.mitoast.generarToast("Elementos asignados");
-
-
-
-
-            }
-        });
-
-    }
-
-    public void MostrarDialogoObras(String serial,String nombreobra,String direccion, String barrio){
+    public void MostrarDialogoObras(String noformular,String nombreobra,String direccion, String barrio){
 
         final LinearLayout dialogo= (LinearLayout) main.findViewById(R.id.dialogo_atributos_obra);
         dialogo.setVisibility(View.VISIBLE);
 
-        TextView tetxo_serial=main.findViewById(R.id.dialogo_atributos_obra_serial);
-        tetxo_serial.setText(serial);
+        TextView tetxo_noformular=main.findViewById(R.id.dialogo_atributos_obra_noformular);
+        tetxo_noformular.setText(noformular);
 
         TextView tetxo_nombreobra=main.findViewById(R.id.dialogo_atributos_obra_nombreobra);
         tetxo_nombreobra.setText(nombreobra);
@@ -542,63 +432,6 @@ public class DialogoOtros {
 
     }
 
-    public void MostrarDialogoBusqueda(){
-
-
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(main);
-        final View mView =main.getLayoutInflater().inflate(R.layout.dialog_busqueda,null);
-        mBuilder.setView(mView);
-        final AlertDialog dialog =mBuilder.create();
-
-        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
-
-        wmlp.gravity = Gravity.TOP | Gravity.CENTER;
-        wmlp.y = 200;   //y position
-
-        wmlp.width=mView.getWidth();
-        dialog.getWindow().setDimAmount(0);
-        dialog.show();
-
-
-        Button buscar =mView.findViewById(R.id.btn_dialog_busqueda);
-
-        EditText busqueda= mView.findViewById(R.id.editText_dialog_busqueda);
-
-        busqueda.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-
-                if (event.getAction() == KeyEvent.ACTION_DOWN)
-                {
-                    switch (keyCode)
-                    {
-                        case KeyEvent.KEYCODE_ENTER:
-                            final EditText busqueda= mView.findViewById(R.id.editText_dialog_busqueda);
-
-                            busqueda(busqueda);
-                            return true;
-                        default:
-                            break;
-                    }
-                }
-                return false;
-            }
-        });
-
-        buscar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final EditText busqueda= mView.findViewById(R.id.editText_dialog_busqueda);
-
-                busqueda(busqueda);
-
-            }
-        });
-
-
-
-    }
 
     public void busqueda(EditText busqueda){
 

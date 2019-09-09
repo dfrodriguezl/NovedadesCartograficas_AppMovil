@@ -41,7 +41,7 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar','.so'])
 
-    implementation 'com.github.sevar83:android-spatialite:2.0+'
+    implementation 'com.github.sevar83:android-spatialite:2.0.0'
     compile project(path: ':geopaparazzilibrary')
 
     implementation 'com.journeyapps:zxing-android-embedded:3.5.0'
