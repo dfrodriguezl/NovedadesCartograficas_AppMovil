@@ -1,0 +1,37 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:2:1-7:12
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:2:1-7:12
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:2:1-7:12
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:2:1-7:12
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:2:1-7:12
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:2:1-7:12
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:2:1-7:12
+	package
+		ADDED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:3:5-41
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+	android:versionName
+		ADDED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:5:5-32
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:2:11-69
+	android:versionCode
+		ADDED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml:4:5-29
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+uses-sdk
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+		ADDED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+		ADDED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
+		INJECTED from D:\Ivan Carrillo\Proyectos de Android\NovedadesCarto\geopaparazzilibrary\AndroidManifest.xml
