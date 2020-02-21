@@ -17,4 +17,13 @@
         android:contentDescription="@string/nav_header_desc"
         app:srcCompat="@drawable/ic_main_header_menu" />
 
+    <TextView
+        android:textSize="15dp"
+        android:id="@+id/version_app"
+        android:textColor="@color/negro_transparente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Versión 0.0.0" />
+
 </LinearLayout>

@@ -30,57 +30,37 @@
 
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-
-        >
-
+        android:paddingHorizontal="50dp"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/subir_cambios_sincronizacion"
-            android:padding="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Subir Datos"
-            android:background="@drawable/boton_verde"
-            android:textColor="@color/blanco"
-            android:layout_margin="10dp"
             style="?android:attr/borderlessButtonStyle"
-            />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/boton_verde"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:drawableLeft="@drawable/ic_cloud_upload"
+            android:drawableTint="@color/blanco"
+            android:text="Subir Datos"
+            android:textColor="@color/blanco" />
 
         <Button
-            android:id="@+id/descargar_datos_nube"
-            android:padding="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Descargar datos"
-            android:background="@drawable/borde_boton_dane"
+            android:id="@+id/btn_dialog_sincronizar_close"
             style="?android:attr/borderlessButtonStyle"
-
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_margin="10dp"
+            android:padding="10dp"
+            android:text="Cerrar"
 
-            />
-
-
+            android:textColor="@color/dane" />
     </LinearLayout>
-
-
-    <Button
-        android:id="@+id/btn_dialog_sincronizar_close"
-        android:padding="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Cerrar"
-
-        android:layout_margin="10dp"
-        style="?android:attr/borderlessButtonStyle"
-
-        android:textColor="@color/dane"
-        />
-
 
 
     <TextView

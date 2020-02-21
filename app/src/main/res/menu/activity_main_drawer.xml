@@ -17,22 +17,25 @@
                 android:id="@+id/buscar_ceed"
                 android:icon="@drawable/ic_main_search"
                 android:title="Busqueda Sectores" />
+            <!--
             <item
                 android:id="@+id/zoom_obras"
                 android:icon="@drawable/ic_main_search"
                 android:title="Zoom Obras" />
+                -->
             <item
                 android:id="@+id/zoom_ena"
                 android:icon="@drawable/ic_main_search"
                 android:title="Zoom Conglomerados"
                 android:visible="false"
                 />
+            <!--
             <item
                 android:id="@+id/ver_labels"
                 android:icon="@drawable/ic_menu_labels"
                 app:actionLayout="@layout/switch_item_menu"
                 android:title="Etiquetas" />
-
+            -->
         <item
             android:id="@+id/mapas_offline"
             android:icon="@drawable/ic_mapas_offline"
@@ -63,12 +66,24 @@
             android:title="Exportar" />
         <item
             android:id="@+id/captura"
-            android:icon="@drawable/ic_menu_captura"
+            android:icon="@drawable/ic_printscreen"
             android:title="Captura" />
+
+            <item
+                android:id="@+id/get_bar_code"
+                android:icon="@drawable/ic_scan_barcode"
+                android:title="Escanear QR" />
+
+
         <item
             android:id="@+id/sincronizar"
             android:icon="@drawable/ic_main_sincronizar"
             android:title="Sincronización" />
+        <item
+                android:id="@+id/nav_backup"
+                android:icon="@drawable/ic_databse"
+                android:iconTint="@color/dane"
+                android:title="Backup" />
         </menu>
     </item>
 
@@ -76,8 +91,8 @@
         <menu>
             <item
                 android:id="@+id/nav_ayuda"
-                android:icon="@drawable/ic_menu_ayuda"
-                android:title="Ayuda" />
+                android:icon="@drawable/ic_guia_uso"
+                android:title="Guia de Uso" />
             <item
                 android:id="@+id/nav_acerca"
                 android:icon="@drawable/ic_menu_acerca"

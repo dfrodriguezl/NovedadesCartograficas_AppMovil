@@ -20,6 +20,7 @@
     <color name="poligono_abierto_ena">#20DCF9DB</color>
     <color name="poligono_edicion">#50A3E8FF</color>
     <color name="poligono_touch_boundary">#56D5FF</color>
+    <color name="gris_oscuro">#7B7B7B</color>
 
     <color name="transicion1">#FFFFFF</color>
 </resources>

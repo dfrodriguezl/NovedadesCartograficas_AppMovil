@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:paddingLeft="10dp"
-        android:paddingBottom="3dp"
+        android:paddingBottom="10dp"
         android:text="Por favor ingrese los atributos de la nueva geometria."
 
         android:textSize="15sp" />
@@ -31,15 +31,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/panel_atributos_punto"
-       android:visibility="gone"
+
+
         >
 
     <LinearLayout
+        android:id="@+id/panel_grupo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp"
+        android:paddingHorizontal="10dp"
+
         >
 
         <TextView
@@ -47,10 +49,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/dane"
-            android:text="Grupo" />
+            android:text="Grupo"
+            android:layout_marginBottom="3dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:background="@drawable/borde_spinner"
             android:orientation="horizontal">
 
             <Spinner
@@ -63,20 +68,25 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/panel_subgrupo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="10dp">
 
         <TextView
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/dane"
-            android:text="Subgrupo" />
+            android:text="Subgrupo"
+            android:layout_marginBottom="3dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:background="@drawable/borde_spinner"
             android:orientation="horizontal">
 
             <Spinner
@@ -89,20 +99,24 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/panel_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:paddingHorizontal="10dp">
 
         <TextView
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/dane"
+            android:layout_marginBottom="3dp"
             android:text="Item" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:background="@drawable/borde_spinner"
             android:orientation="horizontal">
 
             <Spinner
@@ -116,91 +130,20 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center">
-
-
-
-        <LinearLayout
-            android:id="@+id/linear_tipo_novedad"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-
-            android:padding="10dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Tipo de novedad:"
-                android:textSize="15sp"
-                android:layout_weight="2"
-                android:textColor="@color/dane"
-
-                />
-
-            <Spinner
-                android:id="@+id/tipo_novedad"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-
-
-        </LinearLayout>
-
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/linear_estado_obra"
-        android:layout_gravity="center">
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-
-            android:padding="10dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Estado de Obra:"
-                android:textSize="15sp"
-                android:layout_weight="2"
-                android:textColor="@color/dane"
-                />
-
-            <Spinner
-                android:id="@+id/estado_obra"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center">
-
+        android:layout_gravity="center"
+        android:layout_marginVertical="10dp"
+        android:paddingHorizontal="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp">
+            >
 
             <TextView
                 android:layout_width="match_parent"
@@ -235,49 +178,7 @@
         android:orientation="vertical">
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        android:layout_gravity="center">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Otras caracteristicas:"
-        android:textSize="15sp" />
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center">
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <TextView
-                android:id="@+id/address1"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:maxLines="5"
-                android:lines="4"
-                android:text="...">
-
-            </TextView>
-
-        </LinearLayout>
-    </LinearLayout>
-    </LinearLayout>
-
-
-
 
 
     <LinearLayout

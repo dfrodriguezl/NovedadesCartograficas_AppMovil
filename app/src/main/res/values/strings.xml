@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CEED OBRAS</string>
+    <string name="app_name">Novedad Carto</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Editor Geográfico</string>
@@ -93,6 +93,43 @@
         <item>Seguimiento</item>
         <item>Nueva</item>
         <item>Culminada</item>
+    </string-array>
+
+
+    <string-array name="investigacion">
+        <item>GEIH</item>
+        <item>ECV</item>
+        <item>ENIG</item>
+        <item>ENTI</item>
+        <item>EGIT</item>
+        <item>ENUT</item>
+        <item>ECC</item>
+        <item>ECSC</item>
+        <item>ELPS</item>
+        <item>FRTB</item>
+        <item>GEIH_MICRO</item>
+        <item>ECP</item>
+        <item>EGED</item>
+        <item>CAM</item>
+        <item>PRUEBA</item>
+        <item>MTP_ETNIAS</item>
+        <item>GEIH_PAR</item>
+        <item>GEIHCB</item>
+        <item>GEIHND</item>
+        <item>ENPH</item>
+        <item>MOCOA</item>
+        <item>ENPH_PIL</item>
+        <item>ENLEC</item>
+        <item>MTP</item>
+        <item>ENLEC_PIL</item>
+        <item>MTP_PIL</item>
+        <item>RURAL</item>
+        <item>ELCO</item>
+        <item>ENCSPA</item>
+        <item>GEIH - PILOTO</item>
+        <item>ENTIC</item>
+        <item>OTROS</item>
+
     </string-array>
 
     <string name="titulo1">CEED Seguimiento de Obras</string>
