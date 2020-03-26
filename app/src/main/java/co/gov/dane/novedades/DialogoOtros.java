@@ -523,7 +523,7 @@ public class DialogoOtros {
             @Override
             public void onClick(View v) {
                 DialogoEdicion dialogEditor =new DialogoEdicion(main,main,1);
-                dialogEditor.mostrarDialogoEdicion();
+                dialogEditor.mostrarDialogoEdicionPL(false);
                 dialog.hide();
             }
         });
@@ -533,7 +533,7 @@ public class DialogoOtros {
             @Override
             public void onClick(View v) {
                 DialogoEdicion dialogEditor =new DialogoEdicion(main,main,2);
-                dialogEditor.mostrarDialogoEdicion();
+                dialogEditor.mostrarDialogoEdicionPL(false);
                 dialog.hide();
             }
         });

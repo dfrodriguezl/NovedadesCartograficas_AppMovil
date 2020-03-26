@@ -69,11 +69,18 @@
             android:icon="@drawable/ic_printscreen"
             android:title="Captura" />
 
-            <item
-                android:id="@+id/get_bar_code"
-                android:icon="@drawable/ic_scan_barcode"
-                android:title="Escanear QR" />
+        <item
+            android:id="@+id/get_bar_code"
+            android:icon="@drawable/ic_scan_barcode"
+            android:title="Escanear QR" />
 
+
+        <item
+            android:id="@+id/habilitar_tracking"
+            android:icon="@drawable/ic_track"
+            app:actionLayout="@layout/switch_item_tracking"
+            android:title="Habilitar Track"
+            />
 
         <item
             android:id="@+id/sincronizar"

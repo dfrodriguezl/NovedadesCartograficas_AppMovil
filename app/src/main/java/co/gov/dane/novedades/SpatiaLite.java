@@ -11,7 +11,7 @@ import co.gov.dane.novedades.EstructuraDataBase.Estructura;
 
 public class SpatiaLite extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "geom.db";
 
 
@@ -32,7 +32,9 @@ public class SpatiaLite extends SQLiteOpenHelper {
             + Estructura.NovedadEntry.WKT + " TEXT NOT NULL,"
             + Estructura.NovedadEntry.TIPO + " TEXT,"
             + Estructura.NovedadEntry.DESCRIPCION + " TEXT, "
-            + Estructura.NovedadEntry.FECHA + " TEXT "
+            + Estructura.NovedadEntry.FECHA + " TEXT ,"
+            + Estructura.NovedadEntry.LAT_GPS + " TEXT, "
+            + Estructura.NovedadEntry.LON_GPS + " TEXT "
             + ")";
 
     public static final String CREAR_GEOMETRIA="CREATE TABLE " + Estructura.GeometriaEntry.TABLE_NAME + " ("

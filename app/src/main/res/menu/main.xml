@@ -11,6 +11,12 @@
         />
         -->
     <item
+        android:id="@+id/tomar_foto"
+        android:title="Tomar Foto"
+        android:icon="@drawable/ic_menu_captura"
+        app:showAsAction="always"
+        />
+    <item
         android:id="@+id/action_novedad"
         android:title="Novedad"
         android:icon="@drawable/ic_main_action_add_novedad"

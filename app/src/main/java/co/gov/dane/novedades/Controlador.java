@@ -44,8 +44,6 @@ public class Controlador {
     String subir_novedades="https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
 
 
-
-
     int descargas=0;
 
     public Controlador(Context context){
@@ -314,6 +312,9 @@ public class Controlador {
                 barProgressDialog.setMax(c.getCount());//In this part you can set the  MAX value of data
                 barProgressDialog.show();
 
+
+                final RequestQueue requestQueue = Volley.newRequestQueue(context);
+
                 if (c.moveToFirst()) {
                     do {
 
@@ -325,14 +326,11 @@ public class Controlador {
                         final String novedad=c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO));
                         final String geometria=c.getString(c.getColumnIndex(Estructura.NovedadEntry.WKT));
                         final String id_dispositivo=c.getString(c.getColumnIndex(Estructura.NovedadEntry.ID_DISPOSITIVO));
+                        final String lat_gps=c.getString(c.getColumnIndex(Estructura.NovedadEntry.LAT_GPS));
+                        final String lon_gps=c.getString(c.getColumnIndex(Estructura.NovedadEntry.LON_GPS));
 
-                        final RequestQueue requestQueue = Volley.newRequestQueue(context);
 
                         String url = subir_novedades;
-
-
-
-
 
                         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                                 new Response.Listener<String>() {
@@ -344,7 +342,8 @@ public class Controlador {
                                 new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-                                        error.printStackTrace();
+                                        Log.d("des",descripcion);
+                                        Log.d("error",String.valueOf(error));
                                     }
                                 }
                         ) {
@@ -361,6 +360,8 @@ public class Controlador {
                                 params.put("usuario", usuario);
                                 params.put("id_dispositivo", id_dispositivo);
                                 params.put("investigacion", investigacion);
+                                params.put("lat_gps", lat_gps);
+                                params.put("lon_gps", lon_gps);
                                 return params;
                             }
                             @Override
@@ -374,29 +375,6 @@ public class Controlador {
                         postRequest.setShouldCache(false);
 
                         requestQueue.add(postRequest);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
                     } while (c.moveToNext());

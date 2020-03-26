@@ -63,10 +63,7 @@ public class DialogoEdicion {
 
     }
 
-
-    public void mostrarDialogoEdicion(){
-
-
+    public void mostrarDialogoEdicionPL(Boolean WindowVisible){
         db =new CeedDB(main);
         utilidad=new Util(main,main);
 
@@ -89,10 +86,8 @@ public class DialogoEdicion {
         dialog.getWindow().setDimAmount(0);
 
 
-
-
-
-
+        Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
+        Button btn_dialog_cerrar_atributos= (Button) mView.findViewById(R.id.btn_dialog_cerrar_atributos);
 
 
         if(opcion==1){
@@ -106,39 +101,27 @@ public class DialogoEdicion {
             SpinnerNovedadLinea(mView,0,0);
 
         }
-        if(opcion==3){
-            LinearLayout panel_subgrupo  =(LinearLayout)  mView.findViewById(R.id.panel_subgrupo);
-            panel_subgrupo.setVisibility(View.GONE);
-            LinearLayout panel_item  =(LinearLayout)  mView.findViewById(R.id.panel_item);
-            panel_item.setVisibility(View.GONE);
-            SpinnerNovedadPoligono(mView,0);
 
+        if(!WindowVisible){
+            if(opcion==1){
+                main.dibujo_punto();
+                main.show_add_punto();
+            }
+            if(opcion==2){
+                main.dibujo_linea();
+                main.show_add_punto();
+            }
+        }else{
+            dialog.show();
         }
 
-
-
-        dialog.show();
-
-
-        Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
-        Button btn_dialog_cerrar_atributos= (Button) mView.findViewById(R.id.btn_dialog_cerrar_atributos);
-
-
-        if(!edicion){
-
-            Mensajes mitoast =new Mensajes(activity);
-
-
-            mitoast.generarToast("Ingrese los atributos de la nueva geometria");
-
+        if(WindowVisible){
 
             btn_dialog_cerrar_atributos.setVisibility(View.GONE);
             btn_guardar_atributos.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("RestrictedApi")
                 @Override
                 public void onClick(View v) {
-
-
 
                     EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
 
@@ -182,18 +165,118 @@ public class DialogoEdicion {
 
                     }
 
+                    dialog.dismiss();
+
+                    if(opcion==1){
+                        main.drawP();
+                    }
+                    if(opcion==2){
+                        main.drawL(1);
+                    }
+
+                }
+            });
+
+
+        }
+
+
+    }
+
+
+    public void mostrarDialogoEdicion(){
+
+
+        db =new CeedDB(main);
+        utilidad=new Util(main,main);
+
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+
+        AlertDialog.Builder mBuilder =new AlertDialog.Builder(activity);
+
+        final View mView =inflater.inflate(R.layout.dialog_atributos,null);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog =mBuilder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+        wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+        wmlp.y = 200;   //y position
+
+        wmlp.width=mView.getWidth();
+        dialog.getWindow().setDimAmount(0);
+
+        if(opcion==1){
+
+            SpinnerNovedadPunto(mView,0,0,0);
+
+        }
+        if(opcion==2){
+            LinearLayout panel_item  =(LinearLayout)  mView.findViewById(R.id.panel_item);
+            panel_item.setVisibility(View.GONE);
+            SpinnerNovedadLinea(mView,0,0);
+
+        }
+
+        if(opcion==3){
+            LinearLayout panel_subgrupo  =(LinearLayout)  mView.findViewById(R.id.panel_subgrupo);
+            panel_subgrupo.setVisibility(View.GONE);
+            LinearLayout panel_item  =(LinearLayout)  mView.findViewById(R.id.panel_item);
+            panel_item.setVisibility(View.GONE);
+            SpinnerNovedadPoligono(mView,0);
+
+        }
+
+        dialog.show();
+
+
+        Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
+        Button btn_dialog_cerrar_atributos= (Button) mView.findViewById(R.id.btn_dialog_cerrar_atributos);
+
+
+        if(!edicion){
+
+            Mensajes mitoast =new Mensajes(activity);
+
+
+            mitoast.generarToast("Ingrese los atributos de la nueva geometria");
+
+            btn_dialog_cerrar_atributos.setVisibility(View.GONE);
+            btn_guardar_atributos.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("RestrictedApi")
+                @Override
+                public void onClick(View v) {
+
+                    EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
+
+                    String tipo="";
+
+                    String descripcion=descripcion_novedad.getText().toString();
+
+                    String color="";
+
+
+                    if(opcion==3){
+                        Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
+                        tipo=spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                        color=db.get_PoligonoColor(tipo);
+                    }
+
+                    try {
+                        main.atributos =new JSONObject();
+                        main.atributos.put("tipo", tipo);
+                        main.atributos.put("descripcion", descripcion);
+                        main.atributos.put("color",color);
+
+                    } catch (JSONException e) {
+
+                    }
+
 
                     dialog.dismiss();
 
-
-                    if(opcion==1){
-                        main.dibujo_punto();
-                        main.show_add_punto();
-                    }
-                    if(opcion==2){
-                        main.dibujo_linea();
-                        main.show_add_punto();
-                    }
                     if(opcion==3){
                         if (tipo.equals("3") ){// se implementa la unión de manzanas
                             main.mitoast.generarToast("Seleccione más de una Manzana");
@@ -213,6 +296,8 @@ public class DialogoEdicion {
 
                 }
             });
+
+
         }
         else if(edicion){
             btn_dialog_cerrar_atributos.setVisibility(View.VISIBLE);
@@ -231,12 +316,22 @@ public class DialogoEdicion {
 
                         int subgrupo=0;
                         if(grupo==0){
-                            subgrupo= Integer.parseInt(tipo.substring(2, 4))-2;
+                            subgrupo= Integer.parseInt(tipo.substring(2, 4))-1;
                         }else{
                             subgrupo= Integer.parseInt(tipo.substring(2, 4))-1;
                         }
 
-                        final int item= Integer.parseInt(tipo.substring(4, 6))-1;
+
+                        int item=0;
+                        if(grupo==0 && subgrupo==0){
+                            item= Integer.parseInt(tipo.substring(4, 6))-8;
+                        }else{
+                            item= Integer.parseInt(tipo.substring(4, 6))-1;
+                        }
+
+                        Log.d("grupo:", String.valueOf(grupo));
+                        Log.d("subgrupo:", String.valueOf(subgrupo));
+                        Log.d("item:", String.valueOf(item));
 
                         SpinnerNovedadPunto(mView,grupo,subgrupo,item);
 

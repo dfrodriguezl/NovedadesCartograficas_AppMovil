@@ -3,6 +3,9 @@ package co.gov.dane.novedades;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
+import android.location.Location;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import co.gov.dane.novedades.EstructuraDataBase.Estructura;
 
@@ -76,6 +79,12 @@ public class Novedades {
             values.put(Estructura.NovedadEntry.TIPO, tipo);
             values.put(Estructura.NovedadEntry.DESCRIPCION, descripcion);
             values.put(Estructura.NovedadEntry.FECHA, fecha);
+
+            Location location = main.getLastKnownLocation();
+            if(location!= null) {
+                values.put(Estructura.NovedadEntry.LAT_GPS, location.getLatitude());
+                values.put(Estructura.NovedadEntry.LON_GPS, location.getLongitude());
+            }
 
             //llena la tabla de novedades.
             sp.insertWithOnConflict(Estructura.NovedadEntry.TABLE_NAME, null, values,CONFLICT_REPLACE);

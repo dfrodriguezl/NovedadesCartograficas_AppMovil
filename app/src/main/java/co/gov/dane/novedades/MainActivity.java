@@ -2,11 +2,11 @@ package co.gov.dane.novedades;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -15,14 +15,23 @@ import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -32,8 +41,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -41,6 +54,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -76,7 +90,6 @@ import com.google.maps.android.SphericalUtil;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -167,6 +180,22 @@ public class MainActivity extends AppCompatActivity
 
     SpatiaLiteManzanas spm;
 
+    String currentPhotoPath;
+    Uri photoURI;
+    private static final int REQUEST_TAKE_PHOTO = 1;
+    Float Latitude, Longitude;
+
+    //para el tracking
+    int tracking=0;
+    final Handler handler = new Handler();
+    Runnable runnable;
+    Polyline Polyline_tracking;
+    Boolean seguir_tracking=false;
+
+
+    private GoogleApiClient googleApiClient;
+
+
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,327 +248,32 @@ public class MainActivity extends AppCompatActivity
                 drop_markers_edicion();
 
 
-
                 if(tipo_edicion_guardar==1 ){
 
                     if(tipo_edicion==1){
 
-
-                        MarkerOptions opts=new MarkerOptions();
-
-                        if (Point_shape != null) {
-                            opts.position(Point_shape.getPosition());
+                        if(!GeometriaUpdate){
+                            DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,1);
+                            dialogEditor.mostrarDialogoEdicionPL(true);
+                        }else{
+                            drawP();
                         }
-
-
-
-                        try {
-                            dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-
-                            Integer id=db.getMaxIdNovedad()+1;
-
-                            if (atributos.has("id")) {
-                                id= Integer.valueOf(atributos.get("id").toString());
-                            }
-                            atributos.put("id",String.valueOf(id));
-
-                            puntos.add(mMap.addMarker(opts));
-
-                            int tipo_geometria=1;
-                            String wkt=analisis.puntoWKT(puntos.get(puntos.size()-1));
-                            String tipo= atributos.get("tipo").toString();
-                            String descripcion= atributos.get("descripcion").toString();
-                            Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
-                            Boolean inserto=novedad.insertarNovedad();
-
-
-
-                            mitoast.generarToast("Elemento guardado");
-
-                            puntos.get(puntos.size()-1).setTag(atributos);
-
-                            String imagen=atributos.get("tipo").toString();
-
-                            if(imagen.equals("ObraProyectada")){
-                                puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.obra_futura));
-                            }else{
-                                AssetManager mg = getResources().getAssets();
-                                InputStream is = null;
-                                try {
-                                    is = mg.open("img/"+imagen+".png");
-                                    puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.fromAsset("img/"+imagen+".png"));
-                                } catch (IOException ex) {
-                                    //file does not exist
-                                } finally {
-                                    if (is != null) {
-                                        try {
-                                            is.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                            }
-
-
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                        if(GeometriaUpdate){
-                            for(int i=0;i<puntos.size();i++){
-
-                                if(puntos.get(i).getId().equals(codId)){
-                                    puntos.get(i).remove();
-                                }
-                            }
-                        }
-
-
-                        Point_shape.remove();
-                        Point_shape=null;
 
                     }
 
 
                     if(tipo_edicion==2){
 
-                        List<LatLng> points = new ArrayList<>();
-                        PolylineOptions opts=new PolylineOptions();
-
-                        if (Polyline_shape != null) {
-                            points=Polyline_shape.getPoints();
-                            for (LatLng location : points) {
-                                opts.add(location);
-                            }
+                        if(!GeometriaUpdate){
+                            DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,2);
+                            dialogEditor.mostrarDialogoEdicionPL(true);
+                        }else{
+                            drawL(1);
                         }
-
-
-
-                        try {
-                            dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-
-                            Integer id=db.getMaxIdNovedad()+1;
-                            if (atributos.has("id")) {
-                                id= Integer.valueOf(atributos.get("id").toString());
-                            }
-                            atributos.put("id",String.valueOf(id));
-                            line.add(mMap.addPolyline(opts.width(8)));
-                            line.get(line.size()-1).setClickable(true);
-
-                            int tipo_geometria=2;
-
-                            Date todayDate = Calendar.getInstance().getTime();
-                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                            String fecha = formatter.format(todayDate);
-
-
-                            String wkt=analisis.LineaWKT(line.get(line.size()-1));
-                            String tipo= atributos.get("tipo").toString();
-                            String descripcion= atributos.get("descripcion").toString();
-                            Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion,fecha);
-                            Boolean inserto=novedad.insertarNovedad();
-                            mitoast.generarToast("Elemento guardado");
-
-
-                            line.get(line.size()-1).setTag(atributos);
-                            line.get(line.size()-1).setColor(Color.parseColor(atributos.get("color").toString()));
-                            line.get(line.size()-1).setWidth(8);
-
-                            Util util=new Util(MainActivity.this,MainActivity.this);
-                            CeedDB ceeddb=new CeedDB(MainActivity.this);
-
-                            String style=ceeddb.get_LineaStyle(tipo);
-
-                            List<PatternItem> patron=util.LineStyle(style);
-                            line.get(line.size()-1).setPattern(patron);
-
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-
-
-                        if(GeometriaUpdate){
-                            for(int i=0;i<line.size();i++){
-
-                                if(line.get(i).getId().equals(codId)){
-                                    line.get(line.size()-1).setTag(line.get(i).getTag());
-                                    line.get(i).remove();
-                                }
-                            }
-                        }
-
-
-                        Polyline_shape.remove();
-                        Polyline_shape=null;
-
                     }
 
                     if(tipo_edicion==3){
-
-
-                        String wkt=analisis.PoligonoWKT(Polygon_shape);
-                        Boolean valido=analisis.PolygonValid(wkt);
-
-                        if(valido){
-
-                            List<LatLng> points = new ArrayList<>();
-                            PolygonOptions opts=new PolygonOptions();
-
-                            if (Polygon_shape != null) {
-                                points=Polygon_shape.getPoints();
-                                for (LatLng location : points) {
-                                    opts.add(location);
-                                }
-                            }
-
-
-
-                            try {
-                                dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-
-                                Integer id=db.getMaxIdNovedad()+1;
-                                if (atributos.has("id")) {
-                                    id= Integer.valueOf(atributos.get("id").toString());
-                                }
-                                atributos.put("id",String.valueOf(id));
-                                polygon.add(mMap.addPolygon(opts));
-                                polygon.get(polygon.size()-1).setClickable(true);
-
-                                int tipo_geometria=3;
-
-                                String tipo= atributos.get("tipo").toString();
-                                String descripcion= atributos.get("descripcion").toString();
-                                Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
-                                Boolean inserto=novedad.insertarNovedad();
-                                mitoast.generarToast("Elemento guardado");
-
-                                Log.d("color_poligono:",atributos.get("color").toString());
-
-                                polygon.get(polygon.size()-1).setTag(atributos);
-                                polygon.get(polygon.size()-1).setFillColor(Color.parseColor(atributos.get("color").toString()));
-                                polygon.get(polygon.size()-1).setZIndex(2);
-
-                                borrar_poligono_seleccionado();
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-
-
-                            if(GeometriaUpdate){
-                                for(int i=0;i<polygon.size();i++){
-
-                                    if(polygon.get(i).getId().equals(codId)){
-                                        polygon.get(i).remove();
-                                    }
-                                }
-                            }
-
-                        }else{
-                            mitoast.generarToast("Poligono no valido");
-                        }
-
-
-
-                        Polygon_shape.remove();
-                        Polygon_shape=null;
-
-
-                    }
-                    if(tipo_edicion==4){
-
-
-                        for(Polygon pol:polygon_union){
-
-                            Polygon_shape=pol;
-
-
-                            String wkt=analisis.PoligonoWKT(Polygon_shape);
-                            Boolean valido=analisis.PolygonValid(wkt);
-
-                            if(valido){
-
-                                List<LatLng> points = new ArrayList<>();
-                                PolygonOptions opts=new PolygonOptions();
-
-                                if (Polygon_shape != null) {
-                                    points=Polygon_shape.getPoints();
-                                    for (LatLng location : points) {
-                                        opts.add(location);
-                                    }
-                                }
-
-
-
-                                try {
-                                    dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-
-                                    Integer id=db.getMaxIdNovedad()+1;
-
-                                    atributos.put("id",String.valueOf(id));
-                                    polygon.add(mMap.addPolygon(opts));
-                                    polygon.get(polygon.size()-1).setClickable(true);
-
-                                    int tipo_geometria=3;
-
-                                    String tipo=atributos.get("tipo").toString();
-                                    String descripcion= atributos.get("descripcion").toString();
-                                    Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
-                                    Boolean inserto=novedad.insertarNovedad();
-                                    mitoast.generarToast("Elemento guardado");
-
-                                    Log.d("color_poligono:",atributos.get("color").toString());
-
-                                    polygon.get(polygon.size()-1).setTag(atributos);
-                                    polygon.get(polygon.size()-1).setFillColor(Color.parseColor(atributos.get("color").toString()));
-                                    polygon.get(polygon.size()-1).setZIndex(2);
-                                    borrar_poligono_seleccionado();
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-
-
-                            }else{
-                                mitoast.generarToast("Poligono no valido");
-                            }
-
-
-
-                            Polygon_shape.remove();
-                            Polygon_shape=null;
-
-
-                            //pol.remove();
-
-
-                            //polygon_union.clear();
-
-                            //borrar_poligono_seleccionado();
-
-
-
-                            JoinPicker=true;
-
-
-                        }
-
-                        for(Polygon pol:polygon_union){
-                            pol.remove();
-                        }
-
-                        polygon_union.clear();
-
+                        drawPg();
                     }
 
                     GeometriaUpdate=false;
@@ -722,16 +456,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-                    try {
-                        if(atributos.get("tipo").toString().equals("ObraProyectada")){
-                            tipo_edicion=4;
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
                 DialogoEdicion dialog =new DialogoEdicion(MainActivity.this,MainActivity.this,tipo_edicion,true,atributos,codId);
+
                 dialog.mostrarDialogoEdicion();
                 hide_menu_grupo_edicion();
 
@@ -786,6 +512,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView1 = (NavigationView) findViewById(R.id.nav_view);
         navigationView1.setItemIconTintList(null);
+
         Menu menu = navigationView1.getMenu();
         MenuItem nav_camara = menu.findItem(R.id.nav_usuario);
 
@@ -800,12 +527,13 @@ public class MainActivity extends AppCompatActivity
 
         int rol =session.getrol();
 
+        /*
         if(rol==1){
             nav_camara.setIcon(R.drawable.ic_menu_supervisor);
         }else if(rol==2){
             nav_camara.setIcon(R.drawable.ic_menu_encuestador);
         }
-
+*/
 
         /*
         Switch switch1= (Switch)menu.findItem(R.id.ver_labels).getActionView().findViewById(R.id.switchForActionBar);
@@ -828,6 +556,7 @@ public class MainActivity extends AppCompatActivity
         */
 
         Switch switch2 = (Switch) menu.findItem(R.id.habilitar_giroscopio).getActionView().findViewById(R.id.switchGiroscopio);
+        Switch switchTracking = (Switch) menu.findItem(R.id.habilitar_tracking).getActionView().findViewById(R.id.switchTracking);
 
         switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -849,6 +578,104 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        switchTracking.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    LinearLayout ver_tracking_window= (LinearLayout) findViewById(R.id.ver_tracking_window);
+                    ver_tracking_window.setVisibility(View.VISIBLE);
+                }else{
+                    LinearLayout ver_tracking_window= (LinearLayout) findViewById(R.id.ver_tracking_window);
+                    ver_tracking_window.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        LinearLayout ver_tracking_window= (LinearLayout) findViewById(R.id.ver_tracking_window);
+        ver_tracking_window.setVisibility(View.GONE);
+
+        final Button track =(Button) findViewById(R.id.start);
+
+        final Button stop =(Button) findViewById(R.id.stop);
+
+        final TextView texto_tracking=(TextView) findViewById(R.id.texto_tracking);
+        texto_tracking.setVisibility(View.GONE);
+
+        final Animation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(500); //You can manage the blinking time with this parameter
+        anim.setStartOffset(20);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setRepeatCount(Animation.INFINITE);
+
+        track.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                texto_tracking.setVisibility(View.VISIBLE);
+                stop.setVisibility(View.VISIBLE);
+
+
+                //estamos en modo pausa del tracking
+                if(tracking==1){
+                    seguir_tracking=false;
+                    texto_tracking.getAnimation().cancel();
+                    texto_tracking.setText("Pausa.");
+                    track.setBackground(ContextCompat.getDrawable(MainActivity.this,R.drawable.borde_coordenadas));
+                    track.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_play, 0, 0, 0);
+                    handler.removeCallbacks(runnable);
+                    Log.d("hola","pausa_tracking");
+
+                }
+                // Estamos en modo tracking
+                if(tracking==0){
+
+                    seguir_tracking=true;
+
+                    runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            tracking();
+                            handler.postDelayed(this, 1000);
+                        }
+                    };
+
+                    texto_tracking.startAnimation(anim);
+                    texto_tracking.setText("Rec.");
+                    track.setBackground(ContextCompat.getDrawable(MainActivity.this,R.drawable.borde_boton_dane));
+                    track.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_pause, 0, 0, 0);
+                    handler.postDelayed(runnable, 1000);
+
+                }
+
+                if(tracking==0){
+                    tracking=1;
+                }else{
+                    tracking=0;
+                }
+
+
+            }
+        });
+
+
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                texto_tracking.setVisibility(View.GONE);
+                stop.setVisibility(View.GONE);
+                track.setBackground(ContextCompat.getDrawable(MainActivity.this,R.drawable.borde_coordenadas));
+                track.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_play, 0, 0, 0);
+
+                handler.removeCallbacks(runnable);
+                seguir_tracking=false;
+                tracking=0;
+                tipo_edicion=2;
+                drawL(2);
+
+
+            }
+        });
 
 
         //censo economico
@@ -879,20 +706,62 @@ public class MainActivity extends AppCompatActivity
 
 
     }
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("estamos en:","start");
+    }
 
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        Log.d("estamos en:","resume");
+/*
+        if(seguir_tracking){
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    tracking();
+                    handler.postDelayed(this, 1000);
+                }
+            };
+
+            handler.postDelayed(runnable, 1000);
+        }
+*/
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        Log.d("estamos en:","stop");
+
+    if(seguir_tracking){
+        handler.removeCallbacks(runnable);
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                tracking();
+                handler.postDelayed(this, 1000);
+            }
+        };
+
+        handler.postDelayed(runnable, 1000);
     }
 
+
+
+    }
     @Override
     protected void onPause() {
         super.onPause();
 
         mSensorManager.unregisterListener(this);
+
+        Log.d("estamos en:","paua");
+
     }
 
     @Override
@@ -949,6 +818,33 @@ public class MainActivity extends AppCompatActivity
 
             DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
             dialogo.MostrarDialogoNovedad();
+
+        }
+
+        if (id == R.id.tomar_foto) {
+
+            if(userLocation(MainActivity.this)){
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Ensure that there's a camera activity to handle the intent
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+
+                    }
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        photoURI = FileProvider.getUriForFile(getApplicationContext(), "co.gov.dane.novedades.fileprovider", photoFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                    }
+                }
+            }
+
+
 
         }
 
@@ -1178,7 +1074,7 @@ public class MainActivity extends AppCompatActivity
 
         db.getNovedades();
         db.getObrasCeed();
-
+        dibujarFotos();
 
         listAdapter = new BusquedaAdapter(MainActivity.this, listado_busqueda);
 
@@ -1187,17 +1083,8 @@ public class MainActivity extends AppCompatActivity
         listView.setAdapter(listAdapter);
 
 
+        Location location = getLastKnownLocation();
 
-
-        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-
-        if ( !service.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-
-        }else{
-            Criteria criteria = new Criteria();
-            String provider = service.getBestProvider(criteria, true);
-            Location location = service.getLastKnownLocation(provider);
             if(location!= null){
                 LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
 
@@ -1230,17 +1117,14 @@ public class MainActivity extends AppCompatActivity
 
                             atributos.put("descripcion",entry.getKey());
 
+
                             manzanas.get(manzanas.size()-1).setTag(atributos);
+                            Log.d("hola:","hola");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
                     }
-
-
-
-
-
 
                 }else{
 
@@ -1248,7 +1132,7 @@ public class MainActivity extends AppCompatActivity
 
             }
 
-        }
+
 
 
         //Location location = getLastKnownLocation();
@@ -1267,7 +1151,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private Location getLastKnownLocation() {
+    public Location getLastKnownLocation() {
         mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
         List<String> providers = mLocationManager.getProviders(true);
         Location bestLocation = null;
@@ -1497,6 +1381,29 @@ public class MainActivity extends AppCompatActivity
 
 
 
+                    } else if(String.valueOf(marker.getTag()).contains("foto:")){
+
+                        String url_foto= String.valueOf(marker.getTag());
+
+                        url_foto=url_foto.substring(url_foto.lastIndexOf(":") + 1).trim();
+                        Log.d("soy:",url_foto);
+
+
+
+                        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+                        AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+                        final View mView =inflater.inflate(R.layout.dialog_show_foto,null);
+                        mBuilder.setView(mView);
+
+
+                        final AlertDialog dialog =mBuilder.create();
+                        dialog.show();
+
+                        ImageView imagen_qr= (ImageView) mView.findViewById(R.id.imagen_qr);
+
+                        imagen_qr.setImageBitmap(BitmapFactory.decodeFile(url_foto));
+
                     }else{
 
 
@@ -1640,6 +1547,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View view) {
+
                 tipo_edicion=2;
 
                 if(control_dibujo>1){
@@ -1652,13 +1560,13 @@ public class MainActivity extends AppCompatActivity
 
                 control_dibujo=control_dibujo+1;
 
+                Punto mipunto = null;
 
                 LatLng center = mMap.getCameraPosition().target;
-
-
-                Punto mipunto=new Punto(center);
-
+                mipunto=new Punto(center);
                 Marker marker=createMarker(mipunto.getLat(), mipunto.getLng(), "pto", "");
+                marker.setTag("edicion");
+                markers.add(marker);
 
                 List<LatLng> points = new ArrayList<>();
 
@@ -1675,8 +1583,6 @@ public class MainActivity extends AppCompatActivity
                     opts.add(mipunto.getPunto());
                 }
 
-
-
                 if (Polyline_shape != null) {
                     Polyline_shape.remove();
                 }
@@ -1686,24 +1592,50 @@ public class MainActivity extends AppCompatActivity
                 Polyline_shape.setTag("edit_polygono");
                 Polyline_shape.setClickable(true);
 
-
-
                 distancia(Polyline_shape.getPoints());
-
-
-                marker.setTag("edicion");
-
-                markers.add(marker);
 
             }
         });
 
+    }
 
+    public void tracking(){
 
+        Log.d("recolectando:","ando");
 
+        Punto mipunto = null;
 
+        Location locacion = getLastKnownLocation();
+        LatLng userLocation = new LatLng(locacion.getLatitude(),locacion.getLongitude());
+        mipunto=new Punto(userLocation);
+
+        List<LatLng> points = new ArrayList<>();
+
+        PolylineOptions opts=new PolylineOptions();
+
+        if (Polyline_tracking != null) {
+            points=Polyline_tracking.getPoints();
+            Log.d("total:", String.valueOf(points.size()));
+            for (LatLng location : points) {
+                opts.add(location);
+            }
+            points.add(mipunto.getPunto());
+            opts.add(mipunto.getPunto());
+        }else{
+            opts.add(mipunto.getPunto());
+        }
+
+        if (Polyline_tracking != null) {
+            Polyline_tracking.remove();
+        }
+
+        Polyline_tracking=mMap.addPolyline(opts.width(10));
+        Polyline_tracking.setTag("edit_polygono");
+        Polyline_tracking.setClickable(true);
+        Polyline_tracking.setColor( getResources().getColor(R.color.rojo));
 
     }
+
 
 
 
@@ -2390,6 +2322,257 @@ public void borrar_poligono(int id){
 
 }
 
+public void drawL(int opcion){
+
+    try {
+
+    List<LatLng> points = new ArrayList<>();
+    PolylineOptions opts=new PolylineOptions();
+
+
+
+    //dibujo de linea normal
+    if(opcion==1){
+        if (Polyline_shape != null) {
+            points=Polyline_shape.getPoints();
+            for (LatLng location : points) {
+                opts.add(location);
+            }
+        }
+    }
+    //dibujo de track
+    else if(opcion==2){
+        if (Polyline_tracking != null) {
+            points=Polyline_tracking.getPoints();
+            for (LatLng location : points) {
+                opts.add(location);
+            }
+        }
+        atributos.put("tipo","0207");
+        atributos.put("descripcion","Tracking");
+        atributos.put("color","#E63722");
+    }
+
+
+
+        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+
+        Integer id=db.getMaxIdNovedad()+1;
+        if (atributos.has("id")) {
+            id= Integer.valueOf(atributos.get("id").toString());
+        }
+        atributos.put("id",String.valueOf(id));
+        line.add(mMap.addPolyline(opts.width(8)));
+        line.get(line.size()-1).setClickable(true);
+
+        int tipo_geometria=2;
+
+        Date todayDate = Calendar.getInstance().getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String fecha = formatter.format(todayDate);
+
+
+        String wkt=analisis.LineaWKT(line.get(line.size()-1));
+        String tipo= atributos.get("tipo").toString();
+        String descripcion= atributos.get("descripcion").toString();
+        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion,fecha);
+        Boolean inserto=novedad.insertarNovedad();
+        mitoast.generarToast("Elemento guardado");
+
+
+        line.get(line.size()-1).setTag(atributos);
+        line.get(line.size()-1).setColor(Color.parseColor(atributos.get("color").toString()));
+        line.get(line.size()-1).setWidth(8);
+
+        Util util=new Util(MainActivity.this,MainActivity.this);
+        CeedDB ceeddb=new CeedDB(MainActivity.this);
+
+        String style=ceeddb.get_LineaStyle(tipo);
+
+        List<PatternItem> patron=util.LineStyle(style);
+        line.get(line.size()-1).setPattern(patron);
+
+
+
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
+
+
+
+
+    if(GeometriaUpdate){
+        for(int i=0;i<line.size();i++){
+
+            if(line.get(i).getId().equals(codId)){
+                line.get(line.size()-1).setTag(line.get(i).getTag());
+                line.get(i).remove();
+            }
+        }
+    }
+
+    if(opcion==1){
+        Polyline_shape.remove();
+        Polyline_shape=null;
+    }else if(opcion==2){
+           Polyline_tracking.remove();
+        Polyline_tracking=null;
+    }
+
+
+
+
+}
+
+public void drawP(){
+    MarkerOptions opts=new MarkerOptions();
+
+    if (Point_shape != null) {
+        opts.position(Point_shape.getPosition());
+    }
+
+
+
+    try {
+        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+
+        Integer id=db.getMaxIdNovedad()+1;
+
+        if (atributos.has("id")) {
+            id= Integer.valueOf(atributos.get("id").toString());
+        }
+        atributos.put("id",String.valueOf(id));
+
+        puntos.add(mMap.addMarker(opts));
+
+        int tipo_geometria=1;
+        String wkt=analisis.puntoWKT(puntos.get(puntos.size()-1));
+        String tipo= atributos.get("tipo").toString();
+        String descripcion= atributos.get("descripcion").toString();
+        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
+        Boolean inserto=novedad.insertarNovedad();
+
+
+
+        mitoast.generarToast("Elemento guardado");
+
+        puntos.get(puntos.size()-1).setTag(atributos);
+
+        String imagen=atributos.get("tipo").toString();
+
+        if(imagen.equals("ObraProyectada")){
+            puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.obra_futura));
+        }else{
+            AssetManager mg = getResources().getAssets();
+            InputStream is = null;
+            try {
+                is = mg.open("img/"+imagen+".png");
+                puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.fromAsset("img/"+imagen+".png"));
+            } catch (IOException ex) {
+                //file does not exist
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+
+
+
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
+
+
+    if(GeometriaUpdate){
+        for(int i=0;i<puntos.size();i++){
+
+            if(puntos.get(i).getId().equals(codId)){
+                puntos.get(i).remove();
+            }
+        }
+    }
+
+
+    Point_shape.remove();
+    Point_shape=null;
+}
+
+public void drawPg(){
+    String wkt=analisis.PoligonoWKT(Polygon_shape);
+    Boolean valido=analisis.PolygonValid(wkt);
+
+    if(valido){
+
+        List<LatLng> points = new ArrayList<>();
+        PolygonOptions opts=new PolygonOptions();
+
+        if (Polygon_shape != null) {
+            points=Polygon_shape.getPoints();
+            for (LatLng location : points) {
+                opts.add(location);
+            }
+        }
+
+
+
+        try {
+            dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+
+            Integer id=db.getMaxIdNovedad()+1;
+            if (atributos.has("id")) {
+                id= Integer.valueOf(atributos.get("id").toString());
+            }
+            atributos.put("id",String.valueOf(id));
+            polygon.add(mMap.addPolygon(opts));
+            polygon.get(polygon.size()-1).setClickable(true);
+
+            int tipo_geometria=3;
+
+            String tipo= atributos.get("tipo").toString();
+            String descripcion= atributos.get("descripcion").toString();
+            Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
+            Boolean inserto=novedad.insertarNovedad();
+            mitoast.generarToast("Elemento guardado");
+
+            Log.d("color_poligono:",atributos.get("color").toString());
+
+            polygon.get(polygon.size()-1).setTag(atributos);
+            polygon.get(polygon.size()-1).setFillColor(Color.parseColor(atributos.get("color").toString()));
+            polygon.get(polygon.size()-1).setZIndex(2);
+
+            borrar_poligono_seleccionado();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+        if(GeometriaUpdate){
+            for(int i=0;i<polygon.size();i++){
+
+                if(polygon.get(i).getId().equals(codId)){
+                    polygon.get(i).remove();
+                }
+            }
+        }
+
+    }else{
+        mitoast.generarToast("Poligono no valido");
+    }
+
+
+
+    Polygon_shape.remove();
+    Polygon_shape=null;
+
+}
 
 
 public void show_add_punto(){
@@ -2676,8 +2859,150 @@ public void controlToolsGoogle(){
 
     }
 
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        //File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        String ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        File storageDir = new File(ruta_foto);
+
+
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+    private void GetCoordenadasFoto(String Path){
+
+        ExifInterface exif = null;
+
+        try {
+            exif = new ExifInterface(Path);
+
+            String LATITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+            String LATITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+            String LONGITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+            String LONGITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+
+
+            if((LATITUDE !=null)
+                    && (LATITUDE_REF !=null)
+                    && (LONGITUDE != null)
+                    && (LONGITUDE_REF !=null))
+            {
+
+                if(LATITUDE_REF.equals("N")){
+                    Latitude = convertToDegree(LATITUDE);
+                }
+                else{
+                    Latitude = 0 - convertToDegree(LATITUDE);
+                }
+
+                if(LONGITUDE_REF.equals("E")){
+                    Longitude = convertToDegree(LONGITUDE);
+                }
+                else{
+                    Longitude = 0 - convertToDegree(LONGITUDE);
+                }
+
+            }
+
+            Log.d("Longitude:", String.valueOf(Longitude));
+            Log.d("Latitude:", String.valueOf(Latitude));
+
+            if(Longitude!=null && Latitude!=null){
+                Marker foto=mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(Latitude, Longitude))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.foto)));
+
+                foto.setTag("foto:"+Path);
+            }
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void dibujarFotos(){
+        String ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        File FotoPath = new File(ruta_foto);
+
+        if (FotoPath.exists()) {
+            File[] files = FotoPath.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                GetCoordenadasFoto(String.valueOf(file)) ;
+            }
+        }
+
+    }
+
+
+
+    private Float convertToDegree(String stringDMS){
+        Float result = null;
+        String[] DMS = stringDMS.split(",", 3);
+
+        String[] stringD = DMS[0].split("/", 2);
+        Double D0 = new Double(stringD[0]);
+        Double D1 = new Double(stringD[1]);
+        Double FloatD = D0/D1;
+
+        String[] stringM = DMS[1].split("/", 2);
+        Double M0 = new Double(stringM[0]);
+        Double M1 = new Double(stringM[1]);
+        Double FloatM = M0/M1;
+
+        String[] stringS = DMS[2].split("/", 2);
+        Double S0 = new Double(stringS[0]);
+        Double S1 = new Double(stringS[1]);
+        Double FloatS = S0/S1;
+
+        result = new Float(FloatD + (FloatM/60) + (FloatS/3600));
+
+        return result;
+
+
+    };
+
+
+    public static Boolean userLocation(Context context)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+// This is new method provided in API 28
+            LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            return lm.isLocationEnabled();
+        } else {
+// This is Deprecated in API 28
+            int mode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE,
+                    Settings.Secure.LOCATION_MODE_OFF);
+            return  (mode != Settings.Secure.LOCATION_MODE_OFF);
+
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+
+            String ImageFilepath = photoURI.getPath().replace("//", "/");
+            GetCoordenadasFoto(ImageFilepath);
+
+        }
 
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);

@@ -141,6 +141,77 @@
         </LinearLayout>
 
 
+
+        <LinearLayout
+            android:id="@+id/ver_tracking_window"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="220dp"
+            android:background="@drawable/borde_coordenadas"
+            android:orientation="horizontal"
+            android:padding="5dp"
+
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Track"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="5dp"/>
+
+                <TextView
+                    android:id="@+id/texto_tracking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="rec."
+                    android:textColor="@color/rojo"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="5dp"/>
+
+                <Button
+                    android:id="@+id/start"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="50dp"
+                    android:background="@drawable/borde_coordenadas"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_play"
+                    android:paddingStart="12dp"
+                    android:paddingLeft="12dp"
+                    android:layout_marginBottom="5dp"
+                    android:text=""/>
+                <Button
+                    android:id="@+id/stop"
+                    android:background="@drawable/borde_coordenadas"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_stop"
+                    android:paddingStart="12dp"
+                    android:paddingLeft="12dp"
+                    android:visibility="gone"
+                    android:text=""/>
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
+
+
+
+
+
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

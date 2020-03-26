@@ -67,7 +67,7 @@ public class login extends AppCompatActivity {
 
                         session = new Session(login.this);
 
-                        session.setusename(username.getText().toString(),"encuestador","1",investigacion);
+                        session.setusename(username.getText().toString(),"Usuario: "+username.getText().toString(),"1",investigacion);
 
 
                         Intent mainIntent = new Intent(login.this,MainActivity.class);

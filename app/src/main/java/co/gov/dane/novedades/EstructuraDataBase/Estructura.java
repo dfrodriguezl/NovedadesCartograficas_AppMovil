@@ -37,6 +37,8 @@ public class Estructura {
         public static final String TIPO = "tipo";
         public static final String DESCRIPCION = "descripcion";
         public static final String FECHA = "fecha";
+        public static final String LAT_GPS = "lat_gps";
+        public static final String LON_GPS = "lon_gps";
     }
     public static abstract class ObrasEntry implements BaseColumns {
         public static final String TABLE_NAME ="obras";
