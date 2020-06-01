@@ -81,6 +81,7 @@ public class splash extends Activity {
         String ruta_capturas=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"Capturas";
         String ruta_db=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db";
         String ruta_backup=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"backup";
+        String ruta_fotos=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"Fotos";
 
         File folder_mbtile = new File(ruta_mbtiles);
 
@@ -98,6 +99,10 @@ public class splash extends Activity {
         File folder_backup = new File(ruta_backup);
         if (!folder_backup.exists()) {
             folder_backup.mkdirs();
+        }
+        File folder_fotos = new File(ruta_fotos);
+        if (!folder_fotos.exists()) {
+            folder_fotos.mkdirs();
         }
 
 

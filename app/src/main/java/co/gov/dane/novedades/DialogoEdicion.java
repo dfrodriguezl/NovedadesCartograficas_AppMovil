@@ -503,12 +503,14 @@ public class DialogoEdicion {
 
 
                         } catch (JSONException e) {
+                            Log.e("error:", e.toString());
 
                         }
 
 
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                       ;
+                        Log.e("error:", e.toString());
                     }
 
                     main.drop_markers_edicion();

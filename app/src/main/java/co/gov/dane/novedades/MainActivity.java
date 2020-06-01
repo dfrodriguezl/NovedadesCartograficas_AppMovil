@@ -274,6 +274,91 @@ public class MainActivity extends AppCompatActivity
 
                     if(tipo_edicion==3){
                         drawPg();
+                    }if(tipo_edicion==4){
+
+
+                        for(Polygon pol:polygon_union){
+
+                            Polygon_shape=pol;
+
+
+                            String wkt=analisis.PoligonoWKT(Polygon_shape);
+                            Boolean valido=analisis.PolygonValid(wkt);
+
+                            if(valido){
+
+                                List<LatLng> points = new ArrayList<>();
+                                PolygonOptions opts=new PolygonOptions();
+
+                                if (Polygon_shape != null) {
+                                    points=Polygon_shape.getPoints();
+                                    for (LatLng location : points) {
+                                        opts.add(location);
+                                    }
+                                }
+
+
+
+                                try {
+                                    dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+
+                                    Integer id=db.getMaxIdNovedad()+1;
+
+                                    atributos.put("id",String.valueOf(id));
+                                    polygon.add(mMap.addPolygon(opts));
+                                    polygon.get(polygon.size()-1).setClickable(true);
+
+                                    int tipo_geometria=3;
+
+                                    String tipo=atributos.get("tipo").toString();
+                                    String descripcion= atributos.get("descripcion").toString();
+                                    Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
+                                    Boolean inserto=novedad.insertarNovedad();
+                                    mitoast.generarToast("Elemento guardado");
+
+                                    Log.d("color_poligono:",atributos.get("color").toString());
+
+                                    polygon.get(polygon.size()-1).setTag(atributos);
+                                    polygon.get(polygon.size()-1).setFillColor(Color.parseColor(atributos.get("color").toString()));
+                                    polygon.get(polygon.size()-1).setZIndex(2);
+                                    borrar_poligono_seleccionado();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+
+
+                            }else{
+                                mitoast.generarToast("Poligono no valido");
+                            }
+
+
+
+                            Polygon_shape.remove();
+                            Polygon_shape=null;
+
+
+                            //pol.remove();
+
+
+                            //polygon_union.clear();
+
+                            //borrar_poligono_seleccionado();
+
+
+
+                            JoinPicker=true;
+
+
+                        }
+
+                        for(Polygon pol:polygon_union){
+                            pol.remove();
+                        }
+
+                        polygon_union.clear();
+
                     }
 
                     GeometriaUpdate=false;
@@ -824,6 +909,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.tomar_foto) {
 
             if(userLocation(MainActivity.this)){
+
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 // Ensure that there's a camera activity to handle the intent
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -833,7 +919,7 @@ public class MainActivity extends AppCompatActivity
                         photoFile = createImageFile();
                     } catch (IOException ex) {
                         // Error occurred while creating the File
-
+                        Log.d("nop",ex.getMessage());
                     }
                     // Continue only if the File was successfully created
                     if (photoFile != null) {
@@ -841,7 +927,11 @@ public class MainActivity extends AppCompatActivity
                         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                         startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                     }
+                }else{
+
                 }
+            }else{
+                Log.d("no","sirve");
             }
 
 
@@ -1292,6 +1382,7 @@ public class MainActivity extends AppCompatActivity
                     hide_menu_grupo_edicion();
 
                     try {
+                        Log.d("hola","aquii...");
 
                         if(atributos.get("tipo").equals("3")){// se implementa para la unión
 
