@@ -145,7 +145,6 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
 public void iniciar(){
     Session session = new Session(context);
-
     String usuario=session.getusename();
 
     if(usuario.equals("")){

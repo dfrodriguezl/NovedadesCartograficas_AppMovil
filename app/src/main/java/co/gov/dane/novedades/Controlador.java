@@ -37,7 +37,7 @@ public class Controlador {
     private Context context;
 
     String url_geometria_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/geometria_get.php";
-    String url_usuarios_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/usuarios_get.php";
+    String url_usuarios_get = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/recuentos/servicios/login.php";
 
     String url_obras_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/obras_get.php?sector=";
 
@@ -173,99 +173,59 @@ public class Controlador {
 
     }
 */
-/* servicio para traer los usuarios -- se comenta dado que el login provisionalmente es por cédula.
-    public  void getUsers(final VolleyCallBack callBack){
 
+    public  void getUsers(final String usuario, final String clave,final VolleyCallBack callBack){
 
+        final RequestQueue requestQueue = Volley.newRequestQueue(context);
         Boolean hay_internet=isNetworkAvailable();
 
         if(hay_internet){
 
-            RequestQueue requestQueue = Volley.newRequestQueue(context);
+            String url = url_usuarios_get;
 
-            JsonArrayRequest jsonRequestUusaurios = new JsonArrayRequest(
-                    Request.Method.GET,
-                    url_usuarios_get,
-                    null,
-                    new Response.Listener<JSONArray>() {
+            StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>() {
                         @Override
-                        public void onResponse(JSONArray response) {
-
-                            try{
-                                SpatiaLite db=new SpatiaLite(context);
-
-                                org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
-
-                                //borra la tabla de usuarios cada vez.
-                                sp.delete(Estructura.UsuarioEntry.TABLE_NAME, null, null);
-
-                                for(int i=0;i<response.length();i++){
-
-                                    JSONObject obj = response.getJSONObject(i);
-
-                                    Log.d("Usuarios:", String.valueOf(obj));
-
-                                    ContentValues values = new ContentValues();
-
-                                    values.put(Estructura.UsuarioEntry.ID, obj.getInt("ID"));
-                                    values.put(Estructura.UsuarioEntry.USUARIO, obj.getString("USUARIO"));
-                                    values.put(Estructura.UsuarioEntry.CLAVE, obj.getString("CLAVE"));
-                                    values.put(Estructura.UsuarioEntry.NOMBRE, obj.getString("NOMBRE"));
-                                    values.put(Estructura.UsuarioEntry.CORREO, obj.getString("CORREO"));
-                                    values.put(Estructura.UsuarioEntry.VIGENCIA, obj.getString("VIGENCIA"));
-                                    values.put(Estructura.UsuarioEntry.ROL, obj.getInt("ROL"));
-
-                                    //llena la tabla de usuarios.
-                                    sp.insert(Estructura.UsuarioEntry.TABLE_NAME, null, values);
-
-                                }
-                                sp.close();
-                                callBack.onSuccess();
-
-                            }catch (JSONException e){
-                                e.printStackTrace();
-                            }
+                        public void onResponse(String response) {
+                            Log.d("response",response);
+                            callBack.onSuccess(response);
                         }
                     },
-                    new Response.ErrorListener(){
+                    new Response.ErrorListener() {
                         @Override
-                        public void onErrorResponse(VolleyError error){
+                        public void onErrorResponse(VolleyError error) {
 
-                            callBack.onSuccess();
-
+                            Log.d("error",String.valueOf(error));
                         }
                     }
-            );
+            ) {
+                @Override
+                protected Map<String, String> getParams()
+                {
+                    Map<String, String>  params = new HashMap<>();
 
+                    params.put("usr", usuario);
+                    params.put("pwd",clave);
 
+                    return params;
+                }
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("Content-Type","application/x-www-form-urlencoded");
+                    return params;
+                }
+            };
 
-            requestQueue.add(jsonRequestUusaurios);
+            postRequest.setShouldCache(false);
 
+            requestQueue.add(postRequest);
 
 
         } else{
 
-            SpatiaLite db=new SpatiaLite(context);
-
-            org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
-            Cursor res =  sp.rawQuery( "select count(*) from usuarios", null );
-
-            int usuarios=0;
-            while (res.moveToNext()) {
-                usuarios= Integer.parseInt(res.getString(0));
-            }
-
-            res.close();
-            db.close();
-
-            if(usuarios>0){
-                callBack.onSuccess();
-            }else{
-                Mensajes mitoast =new Mensajes(context);
-                mitoast.generarToast("Debe conectarse a internet la primer vez");
-            }
-
-
+            Mensajes mitoast =new Mensajes(context);
+            mitoast.generarToast("Debe conectarse a internet");
 
     }
 
@@ -273,7 +233,7 @@ public class Controlador {
 
     }
 
-*/
+
 
 
     public void uploadData(){

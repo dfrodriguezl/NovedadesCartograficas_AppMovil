@@ -39,7 +39,12 @@
         <activity
             android:name="co.gov.dane.novedades.login"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="co.gov.dane.novedades" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
 
         </activity>
         <activity
@@ -49,12 +54,16 @@
 
         </activity>
         <activity
-            android:name="co.gov.dane.novedades.splash">
+            android:name="co.gov.dane.novedades.splash"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
+
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

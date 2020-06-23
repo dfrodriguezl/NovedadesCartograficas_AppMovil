@@ -68,13 +68,32 @@ public class splash extends Activity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         if(hasAllPermissionsGranted(grantResults)){
 
+
+            Bundle extras=getIntent().getExtras();
+            String usuario,investigacion;
+            if (extras != null) {
+                usuario = extras.getString("username");
+                investigacion = extras.getString("id_encuesta");
+
+                session = new Session(splash.this);
+                session.setusename(usuario,"Usuario: "+usuario,"1",investigacion);
+
+                Mensajes mensaje=new Mensajes(this);
+                mensaje.generarToast("Login externo");
+
+            }
             logica();
+
+
 
         }else {
             Mensajes mensaje=new Mensajes(this);
             mensaje.generarToast("Debe aceptar todos los permisos!");
         }
     }
+
+
+
     public void logica(){
         //creación de los Folder para el aplicativo
         String ruta_mbtiles=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"mbtiles";
