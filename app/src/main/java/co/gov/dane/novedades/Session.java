@@ -20,6 +20,11 @@ public class Session {
         prefs.edit().putString("investigacion", investigacion).commit();
     }
 
+    public void setusename(String geom){
+        prefs.edit().putString("geom", geom).commit();
+    }
+
+
     public String getusename() {
         String usename = prefs.getString("username","");
         return usename;
@@ -35,6 +40,10 @@ public class Session {
     public String getInvestigacion() {
         String investigacion = prefs.getString("investigacion","");
         return investigacion;
+    }
+    public String getGeom(){
+        String geom = prefs.getString("geom","");
+        return geom;
     }
 
     public void borrarSession(){

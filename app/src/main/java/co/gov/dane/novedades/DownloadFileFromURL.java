@@ -78,6 +78,7 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
                 Date fecha_ultima_modificacion = dateFormatGmt.parse(fecha_sistema);
 
                 File file = new File(Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+ File.separator+fileName);
+
                 if(file.exists()){
 
                     //fechas del fichero en el dispositivo
@@ -86,7 +87,7 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
                     String fecha_hoy=dateFormatGmt.format(fecha_actual);
                     Date fecha_actual1 = dateFormatGmt.parse(fecha_hoy);
 
-
+                    Log.d("fecha_ultima_mod", String.valueOf(fecha_ultima_modificacion));
                     if (fecha_actual.compareTo(fecha_ultima_modificacion)<0)
                     {
                         descarga(url,lenghtOfFile,fileName);
@@ -144,20 +145,7 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
     }
 
 public void iniciar(){
-    Session session = new Session(context);
-    String usuario=session.getusename();
 
-    if(usuario.equals("")){
-
-        Intent mainIntent = new Intent(context,login.class);
-        context.startActivity(mainIntent);
-        ((Activity)context).finish();
-
-    }else{
-        Intent mainIntent = new Intent(context,MainActivity.class);
-        context.startActivity(mainIntent);
-        ((Activity)context).finish();
-    }
 }
 
     public void descarga(URL url,int lenghtOfFile,String fileName ){

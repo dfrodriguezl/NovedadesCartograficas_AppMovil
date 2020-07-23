@@ -288,6 +288,20 @@ public class DialogoOtros {
             }
         });
 
+
+        Button descargar_insumos= (Button) mView.findViewById(R.id.descargar_insumos);
+
+        descargar_insumos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(main, DescargaInsumos.class);
+                main.startActivity(i);
+                main.finish();
+
+            }
+        });
+
+
         dialog.setCanceledOnTouchOutside(false);
 
     }

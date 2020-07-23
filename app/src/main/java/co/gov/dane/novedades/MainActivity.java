@@ -215,8 +215,21 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+        session = new Session(MainActivity.this);
 
-        spm=new SpatiaLiteManzanas(MainActivity.this);
+
+        final String archivo = Environment.getExternalStorageDirectory()+ File.separator + "Editor Dane" + File.separator +"db"+ File.separator +session.getGeom();
+
+        File fichero = new File(archivo);
+
+        if(fichero.exists()){
+            spm=new SpatiaLiteManzanas(MainActivity.this,session.getGeom());
+        }else{
+            spm=new SpatiaLiteManzanas(MainActivity.this,"");
+        }
+
+
+
 
         Context context = this;
 
@@ -600,16 +613,17 @@ public class MainActivity extends AppCompatActivity
 
         Menu menu = navigationView1.getMenu();
         MenuItem nav_camara = menu.findItem(R.id.nav_usuario);
+        MenuItem nav_mgn = menu.findItem(R.id.nav_mgn);
 
 
         TextView version_app = (TextView) navigationView.getHeaderView(0).findViewById(R.id.version_app);
 
         version_app.setText("Versión "+versionName);
 
-        session = new Session(MainActivity.this);
+
         String nombre=session.getnombre();
         nav_camara.setTitle(nombre);
-
+        nav_mgn.setTitle("MGN: "+session.getGeom());
         int rol =session.getrol();
 
         /*
@@ -1089,7 +1103,15 @@ public class MainActivity extends AppCompatActivity
             DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
             dialogo.MostrarDialogoCoordenadas();
 
-        } else if (id == R.id.nav_acerca) {
+        } else if (id == R.id.nav_mgn_puntero) {
+
+            LatLng center = mMap.getCameraPosition().target;
+            ManzanasMGN(center);
+
+        }
+
+
+        else if (id == R.id.nav_acerca) {
 
             DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
             dialogo.MostrarDialogoAcerca();
@@ -1190,31 +1212,9 @@ public class MainActivity extends AppCompatActivity
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,18));
 
 
-                    Map<String,PolygonOptions> pol_get=spm.getManzanas(userLocation);
+                    //LatLng posi=new LatLng(5.700435,-76.6377383);
 
-                    for (Map.Entry<String, PolygonOptions> entry : pol_get.entrySet()) {
-
-                        manzanas.add(mMap.addPolygon(entry.getValue()));
-                        manzanas.get(manzanas.size()-1).setClickable(true);
-                        manzanas.get(manzanas.size()-1).setZIndex(0);
-                        manzanas.get(manzanas.size()-1).setStrokeWidth(5);
-
-                        JSONObject atributos=new JSONObject();
-                        try {
-
-                            atributos.put("id",entry.getKey());
-                            atributos.put("tipo","MANZANAS");
-
-                            atributos.put("descripcion",entry.getKey());
-
-
-                            manzanas.get(manzanas.size()-1).setTag(atributos);
-                            Log.d("hola:","hola");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
+                    ManzanasMGN(userLocation);
 
                 }else{
 
@@ -1229,16 +1229,41 @@ public class MainActivity extends AppCompatActivity
 
 
 
+    }
+
+    public void ManzanasMGN(LatLng userLocation){
+
+        Map<String,PolygonOptions> pol_get=spm.getManzanas(userLocation);
+
+        for (Map.Entry<String, PolygonOptions> entry : pol_get.entrySet()) {
+
+            manzanas.add(mMap.addPolygon(entry.getValue()));
+            manzanas.get(manzanas.size()-1).setClickable(true);
+            manzanas.get(manzanas.size()-1).setZIndex(0);
+            manzanas.get(manzanas.size()-1).setStrokeWidth(5);
+
+            JSONObject atributos=new JSONObject();
+            try {
+
+                atributos.put("id",entry.getKey());
+                atributos.put("tipo","MANZANAS");
+
+                atributos.put("descripcion",entry.getKey());
 
 
+                manzanas.get(manzanas.size()-1).setTag(atributos);
+                Log.d("hola:","hola");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-
-
-
-
-
+        }
 
     }
+
+
+
+
 
 
     public Location getLastKnownLocation() {

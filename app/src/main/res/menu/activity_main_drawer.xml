@@ -10,6 +10,9 @@
     <item
         android:id="@+id/nav_usuario"
         android:title="Usuario" />
+    <item
+        android:id="@+id/nav_mgn"
+        android:title="MGN:" />
 
     <item android:title="Herramientas" >
         <menu>
@@ -33,7 +36,7 @@
             <item
                 android:id="@+id/ver_labels"
                 android:icon="@drawable/ic_menu_labels"
-                app:actionLayout="@layout/switch_item_menu"
+                app:actionLayout="@listado/switch_item_menu"
                 android:title="Etiquetas" />
             -->
         <item
@@ -53,6 +56,13 @@
             android:id="@+id/nav_buscar_coordenadas"
             android:icon="@drawable/ic_menu_buscar_coordenadas"
             android:title="Buscar coordenadas" />
+
+            <item
+                android:id="@+id/nav_mgn_puntero"
+                android:icon="@drawable/ic_mgn_puntero"
+                android:title="MGN Centro de Mapa" />
+
+
         <item
             android:id="@+id/habilitar_giroscopio"
             android:icon="@drawable/ic_enable_orientation"

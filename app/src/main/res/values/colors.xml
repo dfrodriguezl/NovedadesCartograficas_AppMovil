@@ -21,6 +21,6 @@
     <color name="poligono_edicion">#50A3E8FF</color>
     <color name="poligono_touch_boundary">#56D5FF</color>
     <color name="gris_oscuro">#7B7B7B</color>
-
+    <color name="raton">#6D6D6D</color>
     <color name="transicion1">#FFFFFF</color>
 </resources>

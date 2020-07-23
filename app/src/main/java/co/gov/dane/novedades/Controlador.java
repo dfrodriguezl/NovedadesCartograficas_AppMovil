@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -43,7 +44,7 @@ public class Controlador {
 
     String subir_novedades="https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
 
-
+    String folder_insumos="http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_list.php?folder=geometria_novedades";
     int descargas=0;
 
     public Controlador(Context context){
@@ -232,6 +233,57 @@ public class Controlador {
 
 
     }
+
+
+    public  void getInfo(final VolleyCallBackJSON callBack){
+
+
+        Boolean hay_internet=isNetworkAvailable();
+
+
+        if(hay_internet){
+
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
+
+            JsonObjectRequest request = new JsonObjectRequest (
+                    Request.Method.GET,
+                    folder_insumos,
+                    null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+
+                                callBack.onSuccess(response);
+
+
+                        }
+                    },
+                    new Response.ErrorListener(){
+                        @Override
+                        public void onErrorResponse(VolleyError error){
+                            Log.d("error", String.valueOf(error));
+                        }
+                    }
+            );
+
+
+            request.setShouldCache(false);
+            requestQueue.add(request);
+
+
+
+        } else{
+
+
+
+
+        }
+
+
+
+    }
+
 
 
 

@@ -7,10 +7,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -127,50 +125,35 @@ public class splash extends Activity {
 
         DownloadFileFromURL mTask = new DownloadFileFromURL(splash.this);
 
-        mTask.execute("http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name=ceed.db");
 
-        //copia la base de datos de geometria de manzanas a la base de datos interna de la aplicación
-        try{
+        try {
+            String  hola=mTask.execute("http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name=ceed.db").get();
 
-            final String inFileName = Environment.getExternalStorageDirectory()+ File.separator + "Editor Dane" + File.separator +"db"+ File.separator +"geom.db";
-            final String renombre = Environment.getExternalStorageDirectory()+ File.separator + "Editor Dane" + File.separator +"db"+ File.separator +"geom_imported.db";
+            Session session = new Session(splash.this);
+            String usuario=session.getusename();
 
-            File dbFile = new File(inFileName);
+            if(usuario.equals("")){
 
-            if(dbFile.exists()){
-                FileInputStream fis = new FileInputStream(dbFile);
+                Intent mainIntent = new Intent(splash.this,login.class);
+                splash.this.startActivity(mainIntent);
+                ((Activity)splash.this).finish();
 
-                String outFileName = "/data/data/co.gov.dane.novedades/databases/manzanas.db";
-
-                // Open the empty db as the output stream
-                OutputStream output = new FileOutputStream(outFileName);
-
-                // Transfer bytes from the inputfile to the outputfile
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = fis.read(buffer))>0){
-                    output.write(buffer, 0, length);
-                }
-
-                // Close the streams
-                output.flush();
-                output.close();
-                fis.close();
-                File from = new File(inFileName);
-                File to=new File(renombre);
-                from.renameTo(to);
+            }else{
+                Intent mainIntent = new Intent(splash.this,MainActivity.class);
+                splash.this.startActivity(mainIntent);
+                ((Activity)splash.this).finish();
             }
 
 
-        }catch (Exception e){
 
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
 
-
     }
-
-
 
 
 

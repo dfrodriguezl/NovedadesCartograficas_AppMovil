@@ -32,7 +32,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingHorizontal="50dp"
+        android:paddingHorizontal="20dp"
         android:orientation="vertical">
 
         <Button
@@ -46,8 +46,23 @@
             android:layout_margin="10dp"
             android:drawableLeft="@drawable/ic_cloud_upload"
             android:drawableTint="@color/blanco"
-            android:text="Subir Datos"
+            android:text="Enviar los datos al DANE"
             android:textColor="@color/blanco" />
+
+        <Button
+            android:id="@+id/descargar_insumos"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/boton_verde"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:drawableLeft="@drawable/ic_descargar"
+            android:drawableTint="@color/blanco"
+            android:text="Descargar GEOMETRIA"
+            android:textColor="@color/blanco" />
+
 
         <Button
             android:id="@+id/btn_dialog_sincronizar_close"
