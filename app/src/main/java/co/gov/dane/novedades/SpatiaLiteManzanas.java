@@ -2,6 +2,7 @@ package co.gov.dane.novedades;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -20,6 +21,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 
 public class SpatiaLiteManzanas extends SQLiteOpenHelper {
@@ -30,9 +32,9 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
 
     private Context context;
     private String databaseName;
-    public SpatiaLiteManzanas(Context context,String databaseName) {
+    public SpatiaLiteManzanas(Context context,String databaseName, String url) {
 
-        super(context, DATABASE_NAME+databaseName, null, DATABASE_VERSION);
+        super(context, url + databaseName, null, DATABASE_VERSION);
 
         this.context=context;
         this.databaseName=databaseName;
@@ -56,7 +58,13 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
 
 
          try{
-             SpatiaLiteManzanas db1=new SpatiaLiteManzanas(context,databaseName);
+             String ruta_db = null;
+             if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+                 ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+             }else{
+                 ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+             }
+             SpatiaLiteManzanas db1=new SpatiaLiteManzanas(context,databaseName,ruta_db);
              org.spatialite.database.SQLiteDatabase sp1=db1.getWritableDatabase();
 
              Coordinate c_punto=new Coordinate(userLocation.longitude,userLocation.latitude);
@@ -109,7 +117,14 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
      public PolygonOptions getManzana (String id_manzana){
          PolygonOptions poligono=new PolygonOptions();
 
-         SpatiaLiteManzanas db1=new SpatiaLiteManzanas(context,databaseName);
+         String ruta_db = null;
+         if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+             ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+         }else{
+             ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+         }
+
+         SpatiaLiteManzanas db1=new SpatiaLiteManzanas(context,databaseName,ruta_db);
          org.spatialite.database.SQLiteDatabase sp1=db1.getWritableDatabase();
 
          Cursor c = sp1.rawQuery(
@@ -150,7 +165,14 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
 
     public Boolean puntoDentro(String punto, String polygono){
 
-        SpatiaLiteManzanas db1=new SpatiaLiteManzanas(context,databaseName);
+
+        String ruta_db = null;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+        }else{
+            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+        }
+        SpatiaLiteManzanas db1=new SpatiaLiteManzanas(context,databaseName,ruta_db);
         org.spatialite.database.SQLiteDatabase sp1=db1.getWritableDatabase();
 
         Cursor c = sp1.rawQuery(

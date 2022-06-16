@@ -12,7 +12,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.ExifInterface;
@@ -23,22 +22,23 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.view.GravityCompat;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
@@ -93,7 +93,10 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.drawerlayout.widget.DrawerLayout;
 import ir.mahdi.mzip.zip.ZipArchive;
+
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 
 public class MainActivity extends AppCompatActivity
@@ -218,14 +221,27 @@ public class MainActivity extends AppCompatActivity
         session = new Session(MainActivity.this);
 
 
-        final String archivo = Environment.getExternalStorageDirectory()+ File.separator + "Editor Dane" + File.separator +"db"+ File.separator +session.getGeom();
+        String archivo = null;
+
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            archivo = Environment.getExternalStorageDirectory()+ File.separator + "Editor Dane" + File.separator +"db"+ File.separator +session.getGeom();
+        }else{
+            archivo = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator +"db"+ File.separator +session.getGeom();
+        }
 
         File fichero = new File(archivo);
+        String ruta_db = null;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+        }else{
+            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+        }
 
         if(fichero.exists()){
-            spm=new SpatiaLiteManzanas(MainActivity.this,session.getGeom());
+
+            spm=new SpatiaLiteManzanas(MainActivity.this,session.getGeom(),ruta_db);
         }else{
-            spm=new SpatiaLiteManzanas(MainActivity.this,"");
+            spm=new SpatiaLiteManzanas(MainActivity.this,"",ruta_db);
         }
 
 
@@ -1162,7 +1178,12 @@ public class MainActivity extends AppCompatActivity
 
         //Mapa base del aplciativo
         listado_mapas_offline = new ArrayList<>();
-        String ruta_mbtiles=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"mbtiles";
+        String ruta_mbtiles=null;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_mbtiles=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"mbtiles";
+        }else{
+            ruta_mbtiles= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"mbtiles";
+        }
         File dir = new File(ruta_mbtiles);
         if(dir.exists()){
             String[] files = dir.list(
@@ -2501,7 +2522,15 @@ public void drawL(int opcion){
         line.get(line.size()-1).setWidth(8);
 
         Util util=new Util(MainActivity.this,MainActivity.this);
-        CeedDB ceeddb=new CeedDB(MainActivity.this);
+
+        String ruta_db;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }else{
+            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }
+
+        CeedDB ceeddb=new CeedDB(MainActivity.this,ruta_db);
 
         String style=ceeddb.get_LineaStyle(tipo);
 
@@ -2924,7 +2953,13 @@ public void controlToolsGoogle(){
     public void backup_db(){
 
 
-        String path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"backup"+ File.separator;
+        String path_backup = null;
+
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            path_backup= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"backup"+ File.separator;
+        }else{
+            path_backup= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"backup"+ File.separator;
+        }
 
 
         try{
@@ -2982,7 +3017,16 @@ public void controlToolsGoogle(){
         String imageFileName = "JPEG_" + timeStamp + "_";
         //File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
-        String ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+
+        String ruta_foto = null;
+
+
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_foto= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        }else{
+            ruta_foto= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        }
+
         File storageDir = new File(ruta_foto);
 
 
@@ -3052,7 +3096,15 @@ public void controlToolsGoogle(){
     }
 
     public void dibujarFotos(){
+
         String ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_foto= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        }else{
+            ruta_foto= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        }
+
         File FotoPath = new File(ruta_foto);
 
         if (FotoPath.exists()) {

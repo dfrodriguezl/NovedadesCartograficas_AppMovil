@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
+import android.os.Build;
+import android.os.Environment;
+import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -28,15 +28,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.zxing.integration.android.IntentIntegrator;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class DialogoOtros {
 
@@ -616,8 +618,14 @@ public class DialogoOtros {
             }
         });
 
+        String ruta_db;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }else{
+            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }
 
-        final CeedDB db =new CeedDB(main);
+        final CeedDB db =new CeedDB(main,ruta_db);
 
 
         Spinner spinner_ceed_dpto = (Spinner) mView.findViewById(R.id.spinner_ceed_dpto);

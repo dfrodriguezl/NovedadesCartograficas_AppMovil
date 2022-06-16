@@ -148,7 +148,9 @@
         <item>ENTIC</item>
         <item>OTROS</item>
         <item>CONVENIO IGAC</item>
-
+        <item>CONTEO_CE</item>
+        <item>CE</item>
+        <item>ENA</item>
     </string-array>
 
 

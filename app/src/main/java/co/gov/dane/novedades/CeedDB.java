@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.os.Environment;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -12,14 +13,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
+
 public class CeedDB  extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "ceed.db";
 
-    public static final String  ruta_db=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+DATABASE_NAME;
+    public static String  ruta_db=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+DATABASE_NAME;
 
-    public CeedDB(Context context) {
-        super(context, ruta_db , null, 1);
+
+
+    public CeedDB(Context context, String ruta) {
+        super(context, ruta , null, 1);
     }
 
 
@@ -33,6 +38,7 @@ public class CeedDB  extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
 
     public List<String> getDpto() {
         List<String> labels = new ArrayList<String>();

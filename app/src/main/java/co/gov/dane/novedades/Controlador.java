@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -42,13 +43,15 @@ public class Controlador {
 
     String url_obras_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/obras_get.php?sector=";
 
-    String subir_novedades="https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
+    String subir_novedades = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
+//    String subir_novedades = "https://nowsoft.app/geoportal/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
 
-    String folder_insumos="http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_list.php?folder=geometria_novedades";
-    int descargas=0;
+    String folder_insumos = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_list.php?folder=geometria_novedades";
 
-    public Controlador(Context context){
-        this.context=context;
+    int descargas = 0;
+
+    public Controlador(Context context) {
+        this.context = context;
     }
 
 
@@ -175,12 +178,12 @@ public class Controlador {
     }
 */
 
-    public  void getUsers(final String usuario, final String clave,final VolleyCallBack callBack){
+    public void getUsers(final String usuario, final String clave, final VolleyCallBack callBack) {
 
         final RequestQueue requestQueue = Volley.newRequestQueue(context);
-        Boolean hay_internet=isNetworkAvailable();
+        Boolean hay_internet = isNetworkAvailable();
 
-        if(hay_internet){
+        if (hay_internet) {
 
             String url = url_usuarios_get;
 
@@ -188,7 +191,7 @@ public class Controlador {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Log.d("response",response);
+                            Log.d("response", response);
                             callBack.onSuccess(response);
                         }
                     },
@@ -196,24 +199,24 @@ public class Controlador {
                         @Override
                         public void onErrorResponse(VolleyError error) {
 
-                            Log.d("error",String.valueOf(error));
+                            Log.d("error", String.valueOf(error));
                         }
                     }
             ) {
                 @Override
-                protected Map<String, String> getParams()
-                {
-                    Map<String, String>  params = new HashMap<>();
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
 
                     params.put("usr", usuario);
-                    params.put("pwd",clave);
+                    params.put("pwd", clave);
 
                     return params;
                 }
+
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String,String> params = new HashMap<String, String>();
-                    params.put("Content-Type","application/x-www-form-urlencoded");
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Content-Type", "application/x-www-form-urlencoded");
                     return params;
                 }
             };
@@ -223,29 +226,28 @@ public class Controlador {
             requestQueue.add(postRequest);
 
 
-        } else{
+        } else {
 
-            Mensajes mitoast =new Mensajes(context);
+            Mensajes mitoast = new Mensajes(context);
             mitoast.generarToast("Debe conectarse a internet");
 
+        }
+
+
     }
 
 
-
-    }
-
-
-    public  void getInfo(final VolleyCallBackJSON callBack){
+    public void getInfo(final VolleyCallBackJSON callBack) {
 
 
-        Boolean hay_internet=isNetworkAvailable();
+        Boolean hay_internet = isNetworkAvailable();
 
 
-        if(hay_internet){
+        if (hay_internet) {
 
             RequestQueue requestQueue = Volley.newRequestQueue(context);
 
-            JsonObjectRequest request = new JsonObjectRequest (
+            JsonObjectRequest request = new JsonObjectRequest(
                     Request.Method.GET,
                     folder_insumos,
                     null,
@@ -254,14 +256,14 @@ public class Controlador {
                         public void onResponse(JSONObject response) {
 
 
-                                callBack.onSuccess(response);
+                            callBack.onSuccess(response);
 
 
                         }
                     },
-                    new Response.ErrorListener(){
+                    new Response.ErrorListener() {
                         @Override
-                        public void onErrorResponse(VolleyError error){
+                        public void onErrorResponse(VolleyError error) {
                             Log.d("error", String.valueOf(error));
                         }
                     }
@@ -269,34 +271,28 @@ public class Controlador {
 
 
             request.setShouldCache(false);
+
             requestQueue.add(request);
 
 
-
-        } else{
-
-
+        } else {
 
 
         }
 
 
-
     }
 
 
+    public void uploadData() {
 
+        Boolean hay_internet = isNetworkAvailable();
 
+        if (hay_internet) {
 
-    public void uploadData(){
-
-        Boolean hay_internet=isNetworkAvailable();
-
-        if(hay_internet){
-
-            Session session=new Session(context);
-            final String usuario=session.getusename();
-            final String investigacion=session.getInvestigacion();
+            Session session = new Session(context);
+            final String usuario = session.getusename();
+            final String investigacion = session.getInvestigacion();
 
             ProgressDialog barProgressDialog = new ProgressDialog(context);
 
@@ -306,9 +302,9 @@ public class Controlador {
 
 
             try {
-                SpatiaLite db=new SpatiaLite(context);
+                SpatiaLite db = new SpatiaLite(context);
 
-                org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+                org.spatialite.database.SQLiteDatabase sp = db.getWritableDatabase();
 
 
                 Cursor c = sp.query(
@@ -332,14 +328,14 @@ public class Controlador {
 
                         barProgressDialog.incrementProgressBy(1);
 
-                        final String id=c.getString(c.getColumnIndex(Estructura.NovedadEntry.ID));
-                        final String tipo=c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO_GEOMETRIA));
-                        final String descripcion=c.getString(c.getColumnIndex(Estructura.NovedadEntry.DESCRIPCION));
-                        final String novedad=c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO));
-                        final String geometria=c.getString(c.getColumnIndex(Estructura.NovedadEntry.WKT));
-                        final String id_dispositivo=c.getString(c.getColumnIndex(Estructura.NovedadEntry.ID_DISPOSITIVO));
-                        final String lat_gps=c.getString(c.getColumnIndex(Estructura.NovedadEntry.LAT_GPS));
-                        final String lon_gps=c.getString(c.getColumnIndex(Estructura.NovedadEntry.LON_GPS));
+                        final String id = c.getString(c.getColumnIndex(Estructura.NovedadEntry.ID));
+                        final String tipo = c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO_GEOMETRIA));
+                        final String descripcion = c.getString(c.getColumnIndex(Estructura.NovedadEntry.DESCRIPCION));
+                        final String novedad = c.getString(c.getColumnIndex(Estructura.NovedadEntry.TIPO));
+                        final String geometria = c.getString(c.getColumnIndex(Estructura.NovedadEntry.WKT));
+                        final String id_dispositivo = c.getString(c.getColumnIndex(Estructura.NovedadEntry.ID_DISPOSITIVO));
+                        final String lat_gps = c.getString(c.getColumnIndex(Estructura.NovedadEntry.LAT_GPS));
+                        final String lon_gps = c.getString(c.getColumnIndex(Estructura.NovedadEntry.LON_GPS));
 
 
                         String url = subir_novedades;
@@ -348,24 +344,23 @@ public class Controlador {
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        Log.d("response",response);
+                                        Log.d("response", response);
                                     }
                                 },
                                 new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-                                        Log.d("des",descripcion);
-                                        Log.d("error",String.valueOf(error));
+                                        Log.d("des", descripcion);
+                                        Log.d("error", String.valueOf(error));
                                     }
                                 }
                         ) {
                             @Override
-                            protected Map<String, String> getParams()
-                            {
-                                Map<String, String>  params = new HashMap<>();
+                            protected Map<String, String> getParams() {
+                                Map<String, String> params = new HashMap<>();
 
                                 params.put("id", id);
-                                params.put("tipo",tipo);
+                                params.put("tipo", tipo);
                                 params.put("descripcion", descripcion);
                                 params.put("novedad", novedad);
                                 params.put("geometria", geometria);
@@ -376,10 +371,11 @@ public class Controlador {
                                 params.put("lon_gps", lon_gps);
                                 return params;
                             }
+
                             @Override
                             public Map<String, String> getHeaders() throws AuthFailureError {
-                                Map<String,String> params = new HashMap<String, String>();
-                                params.put("Content-Type","application/x-www-form-urlencoded");
+                                Map<String, String> params = new HashMap<String, String>();
+                                params.put("Content-Type", "application/x-www-form-urlencoded");
                                 return params;
                             }
                         };
@@ -395,7 +391,7 @@ public class Controlador {
                     c.close();
                 }
 
-                Mensajes mitoast =new Mensajes(context);
+                Mensajes mitoast = new Mensajes(context);
                 mitoast.generarToast("Datos Enviados");
 
                 barProgressDialog.dismiss();
@@ -405,14 +401,14 @@ public class Controlador {
 
             } catch (SQLiteConstraintException e) {
 
-                Mensajes mitoast =new Mensajes(context);
+                Mensajes mitoast = new Mensajes(context);
                 mitoast.generarToast("Error al subir información");
 
             }
 
 
-        }else{
-            Mensajes mitoast =new Mensajes(context);
+        } else {
+            Mensajes mitoast = new Mensajes(context);
             mitoast.generarToast("No hay conexión a internet");
         }
 

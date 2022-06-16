@@ -1,8 +1,11 @@
 package co.gov.dane.novedades;
 
+import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
+
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class Item {
     private String itemName;
@@ -22,7 +25,13 @@ public class Item {
     public int getItemDescription() {
 
 
-        final String archivo = Environment.getExternalStorageDirectory()+ File.separator + "Editor Dane" + File.separator +"db"+ File.separator +getItemName();
+        String archivo = null;
+
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            archivo= Environment.getExternalStorageDirectory()+ File.separator + "Editor Dane" + File.separator +"db"+ File.separator +getItemName();
+        }else{
+            archivo= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator +"db"+ File.separator +getItemName();
+        }
 
         File fichero = new File(archivo);
 

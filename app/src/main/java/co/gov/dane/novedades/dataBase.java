@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -27,6 +29,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,6 +37,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import co.gov.dane.novedades.EstructuraDataBase.Estructura;
+
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class dataBase  {
 
@@ -179,7 +184,7 @@ public int getMaxIdNovedad(){
     if(c.getCount()>0){
         c.moveToFirst();
         String max_id=c.getString(0);
-        if(max_id.equals("")){
+        if(max_id == null || max_id.equals("")){
             sp.close();
             return 0;
         }else{
@@ -343,7 +348,13 @@ public void getObrasCeed(){
 
     public void getNovedades(){
 
-        CeedDB ceeddb =new CeedDB(main);
+        String ruta_db;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }else{
+            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }
+        CeedDB ceeddb =new CeedDB(main,ruta_db);
         Util utilidad=new Util(main,main);
 
         try {

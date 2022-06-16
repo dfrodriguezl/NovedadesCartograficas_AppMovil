@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.support.v7.app.AlertDialog;
+import android.os.Build;
+import android.os.Environment;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,9 +25,12 @@ import com.google.android.gms.maps.model.PatternItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class DialogoEdicion {
 
@@ -64,7 +69,14 @@ public class DialogoEdicion {
     }
 
     public void mostrarDialogoEdicionPL(Boolean WindowVisible){
-        db =new CeedDB(main);
+        String ruta_db;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }else{
+            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }
+
+        db =new CeedDB(main,ruta_db);
         utilidad=new Util(main,main);
 
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
@@ -186,8 +198,14 @@ public class DialogoEdicion {
 
     public void mostrarDialogoEdicion(){
 
+        String ruta_db;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }else{
+            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }
 
-        db =new CeedDB(main);
+        db =new CeedDB(main,ruta_db);
         utilidad=new Util(main,main);
 
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );

@@ -15,6 +15,7 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
 
         <activity android:name=".DescargaInsumos" android:theme="@style/AppTheme.NoActionBar"></activity>
@@ -62,7 +63,7 @@
             android:value="@string/google_maps_key" />
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="co.gov.dane.novedades.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">

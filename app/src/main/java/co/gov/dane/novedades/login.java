@@ -2,26 +2,17 @@ package co.gov.dane.novedades;
 
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import co.gov.dane.novedades.EstructuraDataBase.Estructura;
 
 public class login extends AppCompatActivity {
 
@@ -65,37 +56,44 @@ public class login extends AppCompatActivity {
 
                 Controlador con=new Controlador(login.this);
 
-                con.getUsers(usuario,clave,new VolleyCallBack() {
-                    @Override
-                    public void onSuccess(String response) {
+                //Temporal changes
+                session = new Session(login.this);
+                session.setusename(username.getText().toString(),"Usuario: "+usuario,"1",investigacion);
+                Intent mainIntent = new Intent(login.this,MainActivity.class);
+                login.this.startActivity(mainIntent);
+                login.this.finish();
 
-                        try {
-
-                            JSONObject obj = new JSONObject(response);
-                            String estado=obj.getString("estado");
-
-                            if(estado.equals("true")){
-
-                                session = new Session(login.this);
-                                session.setusename(username.getText().toString(),"Usuario: "+usuario,"1",investigacion);
-                                Intent mainIntent = new Intent(login.this,MainActivity.class);
-                                login.this.startActivity(mainIntent);
-                                login.this.finish();
-
-                            }else{
-                                Mensajes mitoast =new Mensajes(login.this);
-                                mitoast.generarToast("Datos incorrectos");
-
-                            }
-
-                        } catch (Throwable t) {
-
-                        }
-
-
-
-                    }
-                });
+//                con.getUsers(usuario,clave,new VolleyCallBack() {
+//                    @Override
+//                    public void onSuccess(String response) {
+//
+//                        try {
+//
+//                            JSONObject obj = new JSONObject(response);
+//                            String estado=obj.getString("estado");
+//
+//                            if(estado.equals("true")){
+//
+//                                session = new Session(login.this);
+//                                session.setusename(username.getText().toString(),"Usuario: "+usuario,"1",investigacion);
+//                                Intent mainIntent = new Intent(login.this,MainActivity.class);
+//                                login.this.startActivity(mainIntent);
+//                                login.this.finish();
+//
+//                            }else{
+//                                Mensajes mitoast =new Mensajes(login.this);
+//                                mitoast.generarToast("Datos incorrectos");
+//
+//                            }
+//
+//                        } catch (Throwable t) {
+//
+//                        }
+//
+//
+//
+//                    }
+//                });
 
 
 

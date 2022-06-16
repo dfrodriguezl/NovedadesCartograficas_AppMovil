@@ -7,24 +7,26 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.concurrent.ExecutionException;
+
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class splash extends Activity {
     private Session session;
-    /** Duration of wait **/
+    /**
+     * Duration of wait
+     **/
     private final int SPLASH_DISPLAY_LENGTH = 2000;
     public static final int MULTIPLE_PERMISSIONS = 6; // code you want.
     private static final int MY_PERMISSIONS_REQUEST_ACCOUNTS = 101;
 
 
-    String[] permissions = new String[] {
+    String[] permissions = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.READ_PHONE_STATE,
@@ -35,16 +37,18 @@ public class splash extends Activity {
     };
 
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.splash);
 
 
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1){
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             ActivityCompat.requestPermissions(this, permissions, MY_PERMISSIONS_REQUEST_ACCOUNTS);
-        }else{
+        } else {
             logica();
         }
 
@@ -64,41 +68,53 @@ public class splash extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        if(hasAllPermissionsGranted(grantResults)){
+        if (hasAllPermissionsGranted(grantResults)) {
 
 
-            Bundle extras=getIntent().getExtras();
-            String usuario,investigacion;
+            Bundle extras = getIntent().getExtras();
+            String usuario, investigacion;
             if (extras != null) {
                 usuario = extras.getString("username");
                 investigacion = extras.getString("id_encuesta");
 
                 session = new Session(splash.this);
-                session.setusename(usuario,"Usuario: "+usuario,"1",investigacion);
+                session.setusename(usuario, "Usuario: " + usuario, "1", investigacion);
 
-                Mensajes mensaje=new Mensajes(this);
+                Mensajes mensaje = new Mensajes(this);
                 mensaje.generarToast("Login externo");
 
             }
             logica();
 
 
-
-        }else {
-            Mensajes mensaje=new Mensajes(this);
+        } else {
+            Mensajes mensaje = new Mensajes(this);
             mensaje.generarToast("Debe aceptar todos los permisos!");
         }
     }
 
 
-
-    public void logica(){
+    public void logica() {
         //creación de los Folder para el aplicativo
-        String ruta_mbtiles=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"mbtiles";
-        String ruta_capturas=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"Capturas";
-        String ruta_db=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db";
-        String ruta_backup=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"backup";
-        String ruta_fotos=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"Fotos";
+        String ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "mbtiles";
+        String ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Capturas";
+        String ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db";
+        String ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup";
+        String ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "mbtiles";
+            ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Capturas";
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db";
+            ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup";
+            ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        } else {
+            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "mbtiles";
+            ruta_capturas = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Capturas";
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db";
+            ruta_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "backup";
+            ruta_fotos = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        }
 
         File folder_mbtile = new File(ruta_mbtiles);
 
@@ -123,27 +139,28 @@ public class splash extends Activity {
         }
 
 
-        DownloadFileFromURL mTask = new DownloadFileFromURL(splash.this);
+        DownloadFileFromURL mTask = new DownloadFileFromURL(splash.this, "ceed.db");
 
 
         try {
-            String  hola=mTask.execute("http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name=ceed.db").get();
+//            String  hola=mTask.execute("https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name=ceed.db").get();
+//            String hola = mTask.execute("https://nowsoft.app/geoportal/descargas/edicion_mobile/ceed.db").get();
+            String hola = mTask.execute("https://geoportal.dane.gov.co/descargas/edicion_mobile/ceed.db").get();
 
             Session session = new Session(splash.this);
-            String usuario=session.getusename();
+            String usuario = session.getusename();
 
-            if(usuario.equals("")){
+            if (usuario.equals("")) {
 
-                Intent mainIntent = new Intent(splash.this,login.class);
+                Intent mainIntent = new Intent(splash.this, login.class);
                 splash.this.startActivity(mainIntent);
-                ((Activity)splash.this).finish();
+                ((Activity) splash.this).finish();
 
-            }else{
-                Intent mainIntent = new Intent(splash.this,MainActivity.class);
+            } else {
+                Intent mainIntent = new Intent(splash.this, MainActivity.class);
                 splash.this.startActivity(mainIntent);
-                ((Activity)splash.this).finish();
+                ((Activity) splash.this).finish();
             }
-
 
 
         } catch (ExecutionException e) {
@@ -154,7 +171,6 @@ public class splash extends Activity {
 
 
     }
-
 
 
 }

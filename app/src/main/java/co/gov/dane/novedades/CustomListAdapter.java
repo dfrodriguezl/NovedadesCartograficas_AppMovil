@@ -1,13 +1,11 @@
 package co.gov.dane.novedades;
 
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.ContextMenu;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 
 public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.MyViewHolder> {
@@ -59,11 +56,11 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.My
 
             String archivo=formulario.get(i).getItemName();
 
-                DownloadFileFromURL mTask = new DownloadFileFromURL(context);
+                DownloadFileFromURL mTask = new DownloadFileFromURL(context,null);
 
 
 
-                    mTask.execute("http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name=geometria_novedades/"+archivo);
+                    mTask.execute("https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name=geometria_novedades/"+archivo);
 
 
 
