@@ -3,6 +3,7 @@ package co.gov.dane.novedades;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -44,6 +45,7 @@ import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -73,6 +75,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -1147,6 +1150,8 @@ public class MainActivity extends AppCompatActivity
             DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.scanQR();
 
+        } else if (id == R.id.nav_restore_backup) {
+            importDatabase();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -3202,6 +3207,132 @@ public void controlToolsGoogle(){
             super.onActivityResult(requestCode, resultCode, data);
         }
 
+    }
+
+    private void importDatabase(){
+        String path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+        } else {
+            path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+        }
+        File directory = new File(path_backup);
+        File[] files = directory.listFiles();
+//        Log.d("LengthFiles",String.valueOf(files.length));
+        if(files.length > 0){
+            LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService( MainActivity.this.LAYOUT_INFLATER_SERVICE );
+            AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
+            final View mView =inflater.inflate(R.layout.dialog_restore,null);
+            mBuilder.setView(mView);
+            final AlertDialog dialog = mBuilder.create();
+            LinearLayout restaurar = (LinearLayout) mView.findViewById(R.id.guardar_formulario);
+            final Spinner tipoComplemento = (Spinner) mView.findViewById(R.id.file_restore);
+            List<String> filesR = new ArrayList<>();
+            for(File f:files){
+                if(f.getName().contains("zip")){
+                    filesR.add(f.getName());
+                }
+
+            }
+            final ArrayAdapter<String> filesSpinner = new ArrayAdapter(MainActivity.this,android.R.layout.simple_spinner_item,
+                    filesR);
+            tipoComplemento.setAdapter(filesSpinner);
+            mBuilder.show();
+
+            restaurar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Confirmación");
+                    builder.setMessage("Si es una copia de seguridad muy antigua tiene el riesgo de perder " +
+                            "información. ¿Desea restaurar el backup?");
+                    builder.setIcon(R.drawable.ic_menu_salir);
+                    builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            String fileSel = tipoComplemento.getSelectedItem().toString();
+                            dialog.dismiss();
+                            restaurarBD(fileSel, dialog);
+
+                        }
+                    });
+
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    builder.show();
+
+                }
+
+            });
+
+        }else{
+            Mensajes mensaje = new Mensajes(this);
+            mensaje.generarToast("No hay backups disponibles para restaurar");
+        }
+
+    }
+
+    private void restaurarBD(String file, DialogInterface dialog){
+        String path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+        } else {
+            path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+        }
+        Mensajes mensaje = new Mensajes(this);
+        File directory = new File(path_backup);
+        File[] files = directory.listFiles();
+        File fileR = null;
+        String filename;
+        String name;
+        for(File f:files){
+            if(f.getName().equals(file)){
+                fileR = f;
+            }
+        }
+
+        if(fileR != null){
+            ZipArchive zipArchive = new ZipArchive();
+            zipArchive.unzip(fileR.getAbsolutePath(),path_backup,"bf81f34965eddf8f3c291848ae64015f");
+
+            name = fileR.getName().substring(0,fileR.getName().length() - 4);
+
+            filename = path_backup + name + ".db";
+            try {
+                InputStream mInput = new FileInputStream(filename);
+                String outFileName = MainActivity.this.getDatabasePath("geom.db").getPath();
+                OutputStream mOutput = new FileOutputStream(outFileName);
+                byte[] mBuffer = new byte[1024];
+                int mLength;
+                while((mLength = mInput.read(mBuffer)) > 0){
+                    mOutput.write(mBuffer,0,mLength);
+                }
+                mOutput.flush();
+                mOutput.close();
+                mInput.close();
+                File fD = new File(filename);
+                fD.delete();
+                dialog.dismiss();
+                refresh();
+                mensaje.generarToast("Restauración exitosa");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                mensaje.generarToast("Error al restaurar el backup seleccionado");
+            } catch (IOException e) {
+                e.printStackTrace();
+                mensaje.generarToast("Error al restaurar el backup seleccionado");
+            }
+        }
+
+    }
+
+    private void refresh() {
+        finish();
+        startActivity(getIntent());
     }
 
 }

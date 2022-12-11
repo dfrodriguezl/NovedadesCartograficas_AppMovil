@@ -58,4 +58,21 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">#56D5FF</item>
     </style>
+    <style name="titulo" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">15dp</item>
+        <item name="android:textColor">@color/dane</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    <style name="btn_rojo" parent="@android:style/Widget.Button">
+        <item name="android:textSize">15dp</item>
+        <item name="android:textColor">@color/blanco</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:background">@drawable/borde_button</item>
+    </style>
 </resources>

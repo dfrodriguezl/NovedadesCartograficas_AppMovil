@@ -101,6 +101,12 @@
                 android:icon="@drawable/ic_databse"
                 android:iconTint="@color/dane"
                 android:title="Backup" />
+
+            <item
+                android:id="@+id/nav_restore_backup"
+                android:icon="@drawable/ic_baseline_settings_backup_restore_24"
+                android:iconTint="@color/dane"
+                android:title="Restaurar Backup" />
         </menu>
     </item>
 

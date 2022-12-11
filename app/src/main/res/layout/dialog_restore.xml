@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@color/blanco"
+    tools:context="co.gov.dane.novedades.MainActivity">
+
+    <TextView
+        style="@style/titulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Restaurar backup
+"
+        android:textColor="@color/dane"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/textView22"
+        style="@style/titulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Seleccione el backup a restaurar" />
+
+    <Spinner
+    android:id="@+id/file_restore"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+<!--    <com.toptoche.searchablespinnerlibrary.SearchableSpinner-->
+<!--        android:id="@+id/file_restore"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="textPersonName"-->
+<!--        style="@android:style/Widget.Holo.Light.Spinner"/>-->
+
+
+    <LinearLayout
+        style="@style/btn_rojo"
+        android:padding="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/guardar_formulario">
+
+        <ImageView
+            android:layout_margin="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            app:srcCompat="@drawable/ic_save"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Restaurar"
+            android:textColor="@color/blanco" />
+    </LinearLayout>
+
+</LinearLayout>

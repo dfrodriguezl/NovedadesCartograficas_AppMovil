@@ -4,5 +4,5 @@ import org.json.JSONObject;
 
 public interface VolleyCallBackJSON {
     void onSuccess(JSONObject result);
-
+    void onError();
 }

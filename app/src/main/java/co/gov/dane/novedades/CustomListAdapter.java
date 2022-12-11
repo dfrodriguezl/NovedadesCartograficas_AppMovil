@@ -60,7 +60,7 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.My
 
 
 
-                    mTask.execute("https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name=geometria_novedades/"+archivo);
+                    mTask.execute("https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name="+archivo);
 
 
 
@@ -114,8 +114,6 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.My
             item_download=(ImageView) view.findViewById(R.id.item_download);
             checkBox=(CheckBox)view.findViewById(R.id.activar);
         }
-
-
 
     }
 

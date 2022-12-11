@@ -3,7 +3,11 @@ package co.gov.dane.novedades;
 import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,7 +17,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
+
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class DescargaInsumos extends AppCompatActivity {
 
@@ -27,10 +34,36 @@ public class DescargaInsumos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_descarga_insumos);
 
+        String ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db";
+
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db";
+        } else {
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db";
+        }
+
+        final File directory = new File(ruta_db);
 
 
-
-
+//        ArrayList<Item> itemsArrayList = new ArrayList<Item>();
+//        File directory = new File(ruta_db);
+//        File[] files = directory.listFiles();
+//
+//        for(int i = 0; i < files.length; i++){
+//            Item row = new Item(files[i].getName(),"");
+//            itemsArrayList.add(row);
+//        }
+//
+//        recyclerView = (RecyclerView) findViewById(R.id.recycler_view1);
+//
+//        mAdapter = new CustomListAdapter(itemsArrayList,DescargaInsumos.this);
+//
+//        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+//        recyclerView.setLayoutManager(mLayoutManager);
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        recyclerView.addItemDecoration(new DividerItemDecoration(DescargaInsumos.this, LinearLayoutManager.VERTICAL));
+//
+//        recyclerView.setAdapter(mAdapter);
 
 
 
@@ -60,6 +93,14 @@ public class DescargaInsumos extends AppCompatActivity {
                 }
 
 
+        File[] files = directory.listFiles();
+
+        for(int i = 0; i < files.length; i++){
+            Item row = new Item(files[i].getName(),"");
+            itemsArrayList.add(row);
+        }
+
+
                 recyclerView = (RecyclerView) findViewById(R.id.recycler_view1);
 
                 mAdapter = new CustomListAdapter(itemsArrayList,DescargaInsumos.this);
@@ -74,6 +115,28 @@ public class DescargaInsumos extends AppCompatActivity {
 
             }
 
+            @Override
+            public void onError() {
+                ArrayList<Item> itemsArrayList =new ArrayList<Item>();
+                File[] files = directory.listFiles();
+
+                for(int i = 0; i < files.length; i++){
+                    Item row = new Item(files[i].getName(),"");
+                    itemsArrayList.add(row);
+                }
+
+
+                recyclerView = (RecyclerView) findViewById(R.id.recycler_view1);
+
+                mAdapter = new CustomListAdapter(itemsArrayList,DescargaInsumos.this);
+
+                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                recyclerView.addItemDecoration(new DividerItemDecoration(DescargaInsumos.this, LinearLayoutManager.VERTICAL));
+
+                recyclerView.setAdapter(mAdapter);
+            }
         });
 
 

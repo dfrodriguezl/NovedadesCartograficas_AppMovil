@@ -46,14 +46,13 @@ public class Controlador {
     String subir_novedades = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
 //    String subir_novedades = "https://nowsoft.app/geoportal/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
 
-    String folder_insumos = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_list.php?folder=geometria_novedades";
+    String folder_insumos = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_list.php";
 
     int descargas = 0;
 
     public Controlador(Context context) {
         this.context = context;
     }
-
 
 /*
     public  void getData(final VolleyCallBack callBack){
@@ -265,6 +264,7 @@ public class Controlador {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.d("error", String.valueOf(error));
+                            callBack.onError();
                         }
                     }
             );
