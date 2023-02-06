@@ -92,6 +92,13 @@
             android:title="Habilitar Track"
             />
 
+            <item
+                android:id="@+id/habilitar_dibujo_gps"
+                android:icon="@drawable/ic_location"
+                android:title="Habilitar Trazo GPS"
+                android:visible="true"
+                app:actionLayout="@layout/switch_item_tracking" />
+
         <item
             android:id="@+id/sincronizar"
             android:icon="@drawable/ic_main_sincronizar"

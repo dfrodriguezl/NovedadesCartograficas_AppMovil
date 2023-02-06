@@ -7,8 +7,7 @@
     tools:context=".MainActivity">
 
 
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,43 +16,75 @@
         tools:layout_editor_absoluteY="0dp">
 
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:background="@drawable/borde_header_nav"
+            android:elevation="4dp"
+            android:padding="0dp">
 
+            <ImageView
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="0dp"
-                    android:background="@drawable/borde_header_nav"
-                    android:elevation="4dp"
-                    android:padding="0dp">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_icon_dane" />
 
-                    <ImageView
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_icon_dane"
-                        />
-
-                    <ImageView
-                        android:paddingLeft="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_icon_app"
-                        />
-                </androidx.appcompat.widget.Toolbar>
-
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                app:srcCompat="@drawable/ic_icon_app" />
+        </androidx.appcompat.widget.Toolbar>
 
 
         <include layout="@layout/content_main" />
 
 
-
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/captura_gps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="150dp"
+        android:background="@drawable/borde_coordenadas"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imageView8"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:padding="3dp"
+            app:srcCompat="@drawable/ic_baseline_gps_fixed_24" />
+
+        <TextView
+            android:id="@+id/captura_gps_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:text="Capturar ubicación"
+            android:textSize="16sp" />
+    </LinearLayout>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/save_edicion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/verde"
+        app:srcCompat="@drawable/ic_main_save_editor" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/save_edicion_track"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
@@ -72,7 +103,15 @@
         app:srcCompat="@drawable/ic_main_discard_editor" />
 
 
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/discard_save_editor_track"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        app:backgroundTint="@color/rojo"
+        app:srcCompat="@drawable/ic_main_discard_editor" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_punto"

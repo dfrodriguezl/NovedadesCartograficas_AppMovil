@@ -23,12 +23,15 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
+
 import androidx.annotation.NonNull;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AlertDialog;
+
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -36,10 +39,12 @@ import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
@@ -55,6 +60,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdate;
@@ -73,6 +79,7 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -85,6 +92,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -99,11 +107,12 @@ import org.json.JSONObject;
 import androidx.drawerlayout.widget.DrawerLayout;
 import ir.mahdi.mzip.zip.ZipArchive;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,GoogleMap.OnMyLocationClickListener,AdapterView.OnItemSelectedListener,
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleMap.OnMyLocationClickListener, AdapterView.OnItemSelectedListener,
         GoogleMap.OnCameraMoveListener, SensorEventListener {
 
     private Menu menu;
@@ -128,16 +137,16 @@ public class MainActivity extends AppCompatActivity
 
     private int tipo_edicion;
 
-     List<Polyline> line=new ArrayList<>();
+    List<Polyline> line = new ArrayList<>();
 
-    List<Polygon> polygon=new ArrayList<>();
+    List<Polygon> polygon = new ArrayList<>();
 
-    List<Marker> puntos=new ArrayList<>();
+    List<Marker> puntos = new ArrayList<>();
 
-    List<Marker> label=new ArrayList<>();
+    List<Marker> label = new ArrayList<>();
 
-    int sensor_activado=1;
-    int tipo_edicion_guardar=1;
+    int sensor_activado = 1;
+    int tipo_edicion_guardar = 1;
 
     List<Marker> markers = new ArrayList<>();
     List<Marker> markers_intermedios = new ArrayList<>();
@@ -147,42 +156,42 @@ public class MainActivity extends AppCompatActivity
     Marker Point_shape;
 
     Polygon polygon_sel;
-    List<Polygon> polygon_union=new ArrayList<>();
+    List<Polygon> polygon_union = new ArrayList<>();
 
     private SensorManager mSensorManager;
     private float[] mRotationMatrix = new float[16];
     static ArrayList<MapaOffline> listado_mapas_offline;
     ArrayList<Busqueda> listado_busqueda = new ArrayList<>();
 
-    String codId="null";
-    Boolean medicion=false;
-    int control_dibujo=1;
+    String codId = "null";
+    Boolean medicion = false;
+    int control_dibujo = 1;
 
-    List<String> cod_poligonos_union=new ArrayList<>();
+    List<String> cod_poligonos_union = new ArrayList<>();
 
-    SpatialAnalysis analisis=new SpatialAnalysis(MainActivity.this,MainActivity.this);
+    SpatialAnalysis analisis = new SpatialAnalysis(MainActivity.this, MainActivity.this);
 
 
-    Boolean JoinPicker=true;
+    Boolean JoinPicker = true;
 
-    Boolean GeometriaUpdate=false;
-    Boolean isChecked=false;
+    Boolean GeometriaUpdate = false;
+    Boolean isChecked = false;
 
-    JSONObject atributos=new JSONObject();
+    JSONObject atributos = new JSONObject();
 
-    Mensajes mitoast =new Mensajes(MainActivity.this);
+    Mensajes mitoast = new Mensajes(MainActivity.this);
     String id_dispositivo;
 
     private BusquedaAdapter listAdapter;
-    Boolean control_zoom_in=true;
-    Boolean control_zoom_out=true;
+    Boolean control_zoom_in = true;
+    Boolean control_zoom_out = true;
 
     //control zoom de puntos
-    Boolean control_zoom_in_puntos=true;
-    Boolean control_zoom_out_puntos=true;
+    Boolean control_zoom_in_puntos = true;
+    Boolean control_zoom_out_puntos = true;
 
     LocationManager mLocationManager;
-    private List<Polygon> manzanas =new ArrayList<>();
+    private List<Polygon> manzanas = new ArrayList<>();
 
     SpatiaLiteManzanas spm;
 
@@ -192,11 +201,11 @@ public class MainActivity extends AppCompatActivity
     Float Latitude, Longitude;
 
     //para el tracking
-    int tracking=0;
+    int tracking = 0;
     final Handler handler = new Handler();
     Runnable runnable;
     Polyline Polyline_tracking;
-    Boolean seguir_tracking=false;
+    Boolean seguir_tracking = false;
 
 
     private GoogleApiClient googleApiClient;
@@ -209,9 +218,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
 
-
-        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},00);
-        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},00);
+        ActivityCompat.requestPermissions(this, new String[]{WRITE_EXTERNAL_STORAGE}, 00);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 00);
 
         String versionName = "0.0.0";
         try {
@@ -226,35 +234,33 @@ public class MainActivity extends AppCompatActivity
 
         String archivo = null;
 
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            archivo = Environment.getExternalStorageDirectory()+ File.separator + "Editor Dane" + File.separator +"db"+ File.separator +session.getGeom();
-        }else{
-            archivo = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator +"db"+ File.separator +session.getGeom();
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            archivo = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + session.getGeom();
+        } else {
+            archivo = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + session.getGeom();
         }
 
         File fichero = new File(archivo);
         String ruta_db = null;
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
-        }else{
-            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator;
+        } else {
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator;
         }
 
-        if(fichero.exists()){
+        if (fichero.exists()) {
 
-            spm=new SpatiaLiteManzanas(MainActivity.this,session.getGeom(),ruta_db);
-        }else{
-            spm=new SpatiaLiteManzanas(MainActivity.this,"",ruta_db);
+            spm = new SpatiaLiteManzanas(MainActivity.this, session.getGeom(), ruta_db);
+        } else {
+            spm = new SpatiaLiteManzanas(MainActivity.this, "", ruta_db);
         }
-
-
 
 
         Context context = this;
 
-        UniqueId llave=new UniqueId();
+        UniqueId llave = new UniqueId();
 
-        id_dispositivo= llave.id(context);
+        id_dispositivo = llave.id(context);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -280,79 +286,79 @@ public class MainActivity extends AppCompatActivity
                 drop_markers_edicion();
 
 
-                if(tipo_edicion_guardar==1 ){
+                if (tipo_edicion_guardar == 1) {
 
-                    if(tipo_edicion==1){
+                    if (tipo_edicion == 1) {
 
-                        if(!GeometriaUpdate){
-                            DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,1);
+                        if (!GeometriaUpdate) {
+                            DialogoEdicion dialogEditor = new DialogoEdicion(MainActivity.this, MainActivity.this, 1);
                             dialogEditor.mostrarDialogoEdicionPL(true);
-                        }else{
+                        } else {
                             drawP();
                         }
 
                     }
 
 
-                    if(tipo_edicion==2){
+                    if (tipo_edicion == 2) {
 
-                        if(!GeometriaUpdate){
-                            DialogoEdicion dialogEditor =new DialogoEdicion(MainActivity.this,MainActivity.this,2);
+                        if (!GeometriaUpdate) {
+                            DialogoEdicion dialogEditor = new DialogoEdicion(MainActivity.this, MainActivity.this, 2);
                             dialogEditor.mostrarDialogoEdicionPL(true);
-                        }else{
+                        } else {
                             drawL(1);
                         }
                     }
 
-                    if(tipo_edicion==3){
+                    if (tipo_edicion == 3) {
                         drawPg();
-                    }if(tipo_edicion==4){
+                    }
+                    if (tipo_edicion == 4) {
 
 
-                        for(Polygon pol:polygon_union){
+                        for (Polygon pol : polygon_union) {
 
-                            Polygon_shape=pol;
+                            Polygon_shape = pol;
 
 
-                            String wkt=analisis.PoligonoWKT(Polygon_shape);
-                            Boolean valido=analisis.PolygonValid(wkt);
+                            String wkt = analisis.PoligonoWKT(Polygon_shape);
+                            Boolean valido = analisis.PolygonValid(wkt);
 
-                            if(valido){
+                            if (valido) {
 
                                 List<LatLng> points = new ArrayList<>();
-                                PolygonOptions opts=new PolygonOptions();
+                                PolygonOptions opts = new PolygonOptions();
 
                                 if (Polygon_shape != null) {
-                                    points=Polygon_shape.getPoints();
+                                    points = Polygon_shape.getPoints();
                                     for (LatLng location : points) {
                                         opts.add(location);
                                     }
                                 }
 
 
-
                                 try {
-                                    dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+                                    dataBase db = new dataBase(MainActivity.this, MainActivity.this);
 
-                                    Integer id=db.getMaxIdNovedad()+1;
+                                    Integer id = db.getMaxIdNovedad() + 1;
 
-                                    atributos.put("id",String.valueOf(id));
+                                    atributos.put("id", String.valueOf(id));
                                     polygon.add(mMap.addPolygon(opts));
-                                    polygon.get(polygon.size()-1).setClickable(true);
+                                    polygon.get(polygon.size() - 1).setClickable(true);
 
-                                    int tipo_geometria=3;
+                                    int tipo_geometria = 3;
 
-                                    String tipo=atributos.get("tipo").toString();
-                                    String descripcion= atributos.get("descripcion").toString();
-                                    Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
-                                    Boolean inserto=novedad.insertarNovedad();
+                                    String tipo = atributos.get("tipo").toString();
+                                    String descripcion = atributos.get("descripcion").toString();
+                                    Novedades novedad = new Novedades(MainActivity.this, MainActivity.this, id, id_dispositivo, tipo_geometria, wkt, tipo, descripcion);
+                                    Boolean inserto = novedad.insertarNovedad();
                                     mitoast.generarToast("Elemento guardado");
 
-                                    Log.d("color_poligono:",atributos.get("color").toString());
+                                    Log.d("color_poligono:", atributos.get("color").toString());
 
-                                    polygon.get(polygon.size()-1).setTag(atributos);
-                                    polygon.get(polygon.size()-1).setFillColor(Color.parseColor(atributos.get("color").toString()));
-                                    polygon.get(polygon.size()-1).setZIndex(2);
+                                    polygon.get(polygon.size() - 1).setTag(atributos);
+                                    polygon.get(polygon.size() - 1).setFillColor(Color.parseColor(atributos.get("color").toString()));
+                                    polygon.get(polygon.size() - 1).setZIndex(2);
                                     borrar_poligono_seleccionado();
 
                                 } catch (JSONException e) {
@@ -360,15 +366,13 @@ public class MainActivity extends AppCompatActivity
                                 }
 
 
-
-                            }else{
+                            } else {
                                 mitoast.generarToast("Poligono no valido");
                             }
 
 
-
                             Polygon_shape.remove();
-                            Polygon_shape=null;
+                            Polygon_shape = null;
 
 
                             //pol.remove();
@@ -379,13 +383,12 @@ public class MainActivity extends AppCompatActivity
                             //borrar_poligono_seleccionado();
 
 
-
-                            JoinPicker=true;
+                            JoinPicker = true;
 
 
                         }
 
-                        for(Polygon pol:polygon_union){
+                        for (Polygon pol : polygon_union) {
                             pol.remove();
                         }
 
@@ -393,16 +396,16 @@ public class MainActivity extends AppCompatActivity
 
                     }
 
-                    GeometriaUpdate=false;
+                    GeometriaUpdate = false;
 
-                }else if(tipo_edicion_guardar==2){
+                } else if (tipo_edicion_guardar == 2) {
                     cortar_geometria();
-                }else if(tipo_edicion_guardar==3){
+                } else if (tipo_edicion_guardar == 3) {
                     unir_geometria();
                 }
 
                 estado_mapa_sin_edicion();
-                control_dibujo=1;
+                control_dibujo = 1;
 
             }
         });
@@ -410,6 +413,10 @@ public class MainActivity extends AppCompatActivity
 
         FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
         hide_discard_save_edicion();
+        FloatingActionButton discard_save_editor_track = (FloatingActionButton) findViewById(R.id.discard_save_editor_track);
+        hide_discard_save_edicion_track();
+        FloatingActionButton save_editor_track = (FloatingActionButton) findViewById(R.id.save_edicion_track);
+        hide_save_edicion_track();
 
         discard_save_editor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -427,51 +434,50 @@ public class MainActivity extends AppCompatActivity
                 hide_msg_distancia();
                 drop_markers_edicion();
 
-                if(tipo_edicion==1){
-                    if(Point_shape!=null){
+                if (tipo_edicion == 1) {
+                    if (Point_shape != null) {
                         Point_shape.remove();
-                        Point_shape=null;
+                        Point_shape = null;
                     }
 
                 }
 
-                if(tipo_edicion==2){
-                    if(Polyline_shape!=null){
+                if (tipo_edicion == 2) {
+                    if (Polyline_shape != null) {
                         Polyline_shape.remove();
-                        Polyline_shape=null;
+                        Polyline_shape = null;
                     }
 
                 }
-                if(tipo_edicion==3){
-                    if(Polygon_shape!=null){
+                if (tipo_edicion == 3) {
+                    if (Polygon_shape != null) {
                         Polygon_shape.remove();
-                        Polygon_shape=null;
+                        Polygon_shape = null;
                     }
                 }
 
-                if(tipo_edicion_guardar==3){
+                if (tipo_edicion_guardar == 3) {
                     cod_poligonos_union.clear();
-                    cod_poligonos_union=new ArrayList<>();
+                    cod_poligonos_union = new ArrayList<>();
 
-                    for(Polygon pol:polygon_union){
+                    for (Polygon pol : polygon_union) {
                         pol.remove();
                     }
 
                     polygon_union.clear();
 
                     borrar_poligono_seleccionado();
-                    JoinPicker=true;
+                    JoinPicker = true;
                 }
 
                 mitoast.generarToast("Edición terminada");
                 estado_mapa_sin_edicion();
-                medicion=false;
-                control_dibujo=1;
+                medicion = false;
+                control_dibujo = 1;
 
 
             }
         });
-
 
 
         final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
@@ -482,7 +488,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-                DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+                DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
                 dialogo.confirmacionBorrado();
 
             }
@@ -494,67 +500,66 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-                if(tipo_edicion==2){
+                if (tipo_edicion == 2) {
 
-                    if((markers.size()-1)>1 && !medicion){
-                       show_save_edicion();
-                    }else{
+                    if ((markers.size() - 1) > 1 && !medicion) {
+                        show_save_edicion();
+                    } else {
                         hide_save_edicion();
                     }
 
-                    if((markers.size()-1)>0){
-                        markers.get(markers.size()-1).remove();
-                        markers.remove(markers.size()-1);
+                    if ((markers.size() - 1) > 0) {
+                        markers.get(markers.size() - 1).remove();
+                        markers.remove(markers.size() - 1);
 
-                        List<LatLng> puntos=Polyline_shape.getPoints();
-                        puntos.remove(puntos.size()-1);
+                        List<LatLng> puntos = Polyline_shape.getPoints();
+                        puntos.remove(puntos.size() - 1);
                         Polyline_shape.setPoints(puntos);
                         distancia(Polyline_shape.getPoints());
-                    }else{
-                        markers.get(markers.size()-1).remove();
-                        markers.remove(markers.size()-1);
+                    } else {
+                        markers.get(markers.size() - 1).remove();
+                        markers.remove(markers.size() - 1);
                         Polyline_shape.remove();
-                        Polyline_shape=null;
+                        Polyline_shape = null;
                         hide_undo_geom();
-                        control_dibujo=1;
+                        control_dibujo = 1;
                     }
-
 
 
                 }
-                if(tipo_edicion==3){
+                if (tipo_edicion == 3) {
 
-                    if((markers.size()-1)>2 && !medicion){
+                    if ((markers.size() - 1) > 2 && !medicion) {
                         show_save_edicion();
-                    }else{
+                    } else {
                         hide_save_edicion();
                     }
 
 
-                    if((markers.size()-1)>0){
-                    markers.get(markers.size()-1).remove();
-                    markers.remove(markers.size()-1);
+                    if ((markers.size() - 1) > 0) {
+                        markers.get(markers.size() - 1).remove();
+                        markers.remove(markers.size() - 1);
 
-                    List<LatLng> puntos=Polygon_shape.getPoints();
+                        List<LatLng> puntos = Polygon_shape.getPoints();
 
-                    puntos.remove(puntos.size()-2);
-                    PolygonOptions opts=new PolygonOptions();
-                    for(int i=0;i<puntos.size();i++){
-                        opts.add(puntos.get(i));
-                    }
-                    Polygon_shape.remove();
-                    Polygon_shape=null;
-                    Polygon_shape=mMap.addPolygon(opts);
-                    Polygon_shape.setFillColor(getResources().getColor(R.color.poligono_edicion));
-                    area(Polygon_shape);
-                    }else{
+                        puntos.remove(puntos.size() - 2);
+                        PolygonOptions opts = new PolygonOptions();
+                        for (int i = 0; i < puntos.size(); i++) {
+                            opts.add(puntos.get(i));
+                        }
+                        Polygon_shape.remove();
+                        Polygon_shape = null;
+                        Polygon_shape = mMap.addPolygon(opts);
+                        Polygon_shape.setFillColor(getResources().getColor(R.color.poligono_edicion));
+                        area(Polygon_shape);
+                    } else {
                         hide_undo_geom();
-                        markers.get(markers.size()-1).remove();
-                        markers.remove(markers.size()-1);
+                        markers.get(markers.size() - 1).remove();
+                        markers.remove(markers.size() - 1);
 
                         Polygon_shape.remove();
-                        Polygon_shape=null;
-                        control_dibujo=1;
+                        Polygon_shape = null;
+                        control_dibujo = 1;
                     }
 
 
@@ -564,16 +569,14 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
-
-       com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
+        com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
 
 
         edit_atributos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                DialogoEdicion dialog =new DialogoEdicion(MainActivity.this,MainActivity.this,tipo_edicion,true,atributos,codId);
+                DialogoEdicion dialog = new DialogoEdicion(MainActivity.this, MainActivity.this, tipo_edicion, true, atributos, codId);
 
                 dialog.mostrarDialogoEdicion();
                 hide_menu_grupo_edicion();
@@ -584,20 +587,13 @@ public class MainActivity extends AppCompatActivity
         final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
 
 
-
-
         final com.getbase.floatingactionbutton.FloatingActionButton quit_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.quit_code_ena);
-
-
 
 
         final com.getbase.floatingactionbutton.FloatingActionButton add_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.add_code_ena);
 
 
-
         final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
-
-
 
 
         hide_add_punto();
@@ -624,7 +620,6 @@ public class MainActivity extends AppCompatActivity
         controlToolsGoogle();
 
 
-
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         NavigationView navigationView1 = (NavigationView) findViewById(R.id.nav_view);
@@ -637,13 +632,13 @@ public class MainActivity extends AppCompatActivity
 
         TextView version_app = (TextView) navigationView.getHeaderView(0).findViewById(R.id.version_app);
 
-        version_app.setText("Versión "+versionName);
+        version_app.setText("Versión " + versionName);
 
 
-        String nombre=session.getnombre();
+        String nombre = session.getnombre();
         nav_camara.setTitle(nombre);
-        nav_mgn.setTitle("MGN: "+session.getGeom());
-        int rol =session.getrol();
+        nav_mgn.setTitle("MGN: " + session.getGeom());
+        int rol = session.getrol();
 
         /*
         if(rol==1){
@@ -675,6 +670,7 @@ public class MainActivity extends AppCompatActivity
 
         Switch switch2 = (Switch) menu.findItem(R.id.habilitar_giroscopio).getActionView().findViewById(R.id.switchGiroscopio);
         Switch switchTracking = (Switch) menu.findItem(R.id.habilitar_tracking).getActionView().findViewById(R.id.switchTracking);
+        Switch switchGPS = (Switch) menu.findItem(R.id.habilitar_dibujo_gps).getActionView().findViewById(R.id.switchTracking);
 
         switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -699,24 +695,79 @@ public class MainActivity extends AppCompatActivity
         switchTracking.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    LinearLayout ver_tracking_window= (LinearLayout) findViewById(R.id.ver_tracking_window);
+                if (isChecked) {
+                    LinearLayout ver_tracking_window = (LinearLayout) findViewById(R.id.ver_tracking_window);
                     ver_tracking_window.setVisibility(View.VISIBLE);
-                }else{
-                    LinearLayout ver_tracking_window= (LinearLayout) findViewById(R.id.ver_tracking_window);
+                } else {
+                    LinearLayout ver_tracking_window = (LinearLayout) findViewById(R.id.ver_tracking_window);
                     ver_tracking_window.setVisibility(View.GONE);
                 }
             }
         });
 
-        LinearLayout ver_tracking_window= (LinearLayout) findViewById(R.id.ver_tracking_window);
+        switchGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                LinearLayout captura_gps_button = (LinearLayout) findViewById(R.id.captura_gps);
+
+                if (isChecked) {
+                    captura_gps_button.setVisibility(View.VISIBLE);
+                } else {
+                    captura_gps_button.setVisibility(View.GONE);
+                }
+
+                captura_gps_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        captureLocation();
+                    }
+                });
+
+                FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor_track);
+
+                discard_save_editor.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        remove_tracking();
+                        hide_captura_gps();
+                        hide_discard_save_edicion();
+                        hide_discard_save_edicion_track();
+                        mitoast.generarToast("Edición terminada");
+                        estado_mapa_sin_edicion();
+                        hide_save_edicion();
+                        hide_save_edicion_track();
+                    }
+                });
+
+                FloatingActionButton save_editor = (FloatingActionButton) findViewById(R.id.save_edicion_track);
+
+                save_editor.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+//                        save_line_gps();
+                        remove_tracking();
+                        hide_captura_gps();
+                        hide_discard_save_edicion();
+                        hide_discard_save_edicion_track();
+                        mitoast.generarToast("Edición terminada");
+                        estado_mapa_sin_edicion();
+                        hide_save_edicion();
+                        hide_save_edicion_track();
+                        DialogoEdicion dialogEditor = new DialogoEdicion(MainActivity.this,MainActivity.this,4);
+                        dialogEditor.mostrarDialogoEdicionPL(true);
+                    }
+                });
+            }
+        });
+
+        LinearLayout ver_tracking_window = (LinearLayout) findViewById(R.id.ver_tracking_window);
         ver_tracking_window.setVisibility(View.GONE);
 
-        final Button track =(Button) findViewById(R.id.start);
+        final Button track = (Button) findViewById(R.id.start);
 
-        final Button stop =(Button) findViewById(R.id.stop);
+        final Button stop = (Button) findViewById(R.id.stop);
 
-        final TextView texto_tracking=(TextView) findViewById(R.id.texto_tracking);
+        final TextView texto_tracking = (TextView) findViewById(R.id.texto_tracking);
         texto_tracking.setVisibility(View.GONE);
 
         final Animation anim = new AlphaAnimation(0.0f, 1.0f);
@@ -735,20 +786,20 @@ public class MainActivity extends AppCompatActivity
 
 
                 //estamos en modo pausa del tracking
-                if(tracking==1){
-                    seguir_tracking=false;
+                if (tracking == 1) {
+                    seguir_tracking = false;
                     texto_tracking.getAnimation().cancel();
                     texto_tracking.setText("Pausa.");
-                    track.setBackground(ContextCompat.getDrawable(MainActivity.this,R.drawable.borde_coordenadas));
-                    track.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_play, 0, 0, 0);
+                    track.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.borde_coordenadas));
+                    track.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play, 0, 0, 0);
                     handler.removeCallbacks(runnable);
-                    Log.d("hola","pausa_tracking");
+                    Log.d("hola", "pausa_tracking");
 
                 }
                 // Estamos en modo tracking
-                if(tracking==0){
+                if (tracking == 0) {
 
-                    seguir_tracking=true;
+                    seguir_tracking = true;
 
                     runnable = new Runnable() {
                         @Override
@@ -760,16 +811,16 @@ public class MainActivity extends AppCompatActivity
 
                     texto_tracking.startAnimation(anim);
                     texto_tracking.setText("Rec.");
-                    track.setBackground(ContextCompat.getDrawable(MainActivity.this,R.drawable.borde_boton_dane));
-                    track.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_pause, 0, 0, 0);
+                    track.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.borde_boton_dane));
+                    track.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pause, 0, 0, 0);
                     handler.postDelayed(runnable, 1000);
 
                 }
 
-                if(tracking==0){
-                    tracking=1;
-                }else{
-                    tracking=0;
+                if (tracking == 0) {
+                    tracking = 1;
+                } else {
+                    tracking = 0;
                 }
 
 
@@ -782,13 +833,13 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 texto_tracking.setVisibility(View.GONE);
                 stop.setVisibility(View.GONE);
-                track.setBackground(ContextCompat.getDrawable(MainActivity.this,R.drawable.borde_coordenadas));
-                track.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_play, 0, 0, 0);
+                track.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.borde_coordenadas));
+                track.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play, 0, 0, 0);
 
                 handler.removeCallbacks(runnable);
-                seguir_tracking=false;
-                tracking=0;
-                tipo_edicion=2;
+                seguir_tracking = false;
+                tracking = 0;
+                tipo_edicion = 2;
                 drawL(2);
 
 
@@ -821,13 +872,12 @@ public class MainActivity extends AppCompatActivity
         */
 
 
-
-
     }
+
     @Override
     public void onStart() {
         super.onStart();
-        Log.d("estamos en:","start");
+        Log.d("estamos en:", "start");
     }
 
 
@@ -835,7 +885,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        Log.d("estamos en:","resume");
+        Log.d("estamos en:", "resume");
 /*
         if(seguir_tracking){
             runnable = new Runnable() {
@@ -850,35 +900,36 @@ public class MainActivity extends AppCompatActivity
         }
 */
     }
+
     @Override
     protected void onStop() {
         super.onStop();
 
-        Log.d("estamos en:","stop");
+        Log.d("estamos en:", "stop");
 
-    if(seguir_tracking){
-        handler.removeCallbacks(runnable);
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                tracking();
-                handler.postDelayed(this, 1000);
-            }
-        };
+        if (seguir_tracking) {
+            handler.removeCallbacks(runnable);
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    tracking();
+                    handler.postDelayed(this, 1000);
+                }
+            };
 
-        handler.postDelayed(runnable, 1000);
+            handler.postDelayed(runnable, 1000);
+        }
+
+
     }
 
-
-
-    }
     @Override
     protected void onPause() {
         super.onPause();
 
         mSensorManager.unregisterListener(this);
 
-        Log.d("estamos en:","paua");
+        Log.d("estamos en:", "paua");
 
     }
 
@@ -887,7 +938,7 @@ public class MainActivity extends AppCompatActivity
 
         float degree = Math.round(event.values[0]);
 
-         updateCamera(degree);
+        updateCamera(degree);
 
     }
 
@@ -897,6 +948,7 @@ public class MainActivity extends AppCompatActivity
         CameraPosition pos = CameraPosition.builder(oldPos).bearing(bearing).tilt(60).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
     }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
@@ -920,7 +972,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -928,20 +979,20 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.action_layers) {
 
-            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.MostrarMapasBase();
 
         }
         if (id == R.id.action_novedad) {
 
-            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.MostrarDialogoNovedad();
 
         }
 
         if (id == R.id.tomar_foto) {
 
-            if(userLocation(MainActivity.this)){
+            if (userLocation(MainActivity.this)) {
 
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 // Ensure that there's a camera activity to handle the intent
@@ -952,7 +1003,7 @@ public class MainActivity extends AppCompatActivity
                         photoFile = createImageFile();
                     } catch (IOException ex) {
                         // Error occurred while creating the File
-                        Log.d("nop",ex.getMessage());
+                        Log.d("nop", ex.getMessage());
                     }
                     // Continue only if the File was successfully created
                     if (photoFile != null) {
@@ -960,18 +1011,53 @@ public class MainActivity extends AppCompatActivity
                         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                         startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                     }
-                }else{
+                } else {
 
                 }
-            }else{
-                Log.d("no","sirve");
+            } else {
+                Log.d("no", "sirve");
             }
-
 
 
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void captureLocation() {
+        Location loc = getLastKnownLocation();
+        LatLng userLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
+        Punto punto;
+        punto = new Punto(userLocation);
+        List<LatLng> points = new ArrayList<>();
+        PolylineOptions opts = new PolylineOptions();
+
+        if (Polyline_shape != null) {
+            points = Polyline_shape.getPoints();
+            Log.d("total:", String.valueOf(points.size()));
+
+            if (points.size() > 1) {
+                show_save_edicion_track();
+                show_discard_save_edicion_track();
+            }
+
+            for (LatLng location : points) {
+                opts.add(location);
+            }
+            points.add(punto.getPunto());
+            opts.add(punto.getPunto());
+        } else {
+            opts.add(punto.getPunto());
+        }
+
+        if (Polyline_shape != null) {
+            Polyline_shape.remove();
+        }
+
+        Polyline_shape = mMap.addPolyline(opts.width(5));
+        Polyline_shape.setTag("edit_polygono");
+        Polyline_shape.setClickable(true);
+        Polyline_shape.setColor(getResources().getColor(R.color.rojo));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -981,21 +1067,18 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
 
-        if(id == R.id.nav_backup){
+        if (id == R.id.nav_backup) {
 
             backup_db();
 
-        }
+        } else if (id == R.id.mapas_offline) {
 
-        else if(id==R.id.mapas_offline){
-
-            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.MostrarMapasOffline();
 
-        }
-        else if(id==R.id.buscar_ceed){
+        } else if (id == R.id.buscar_ceed) {
 
-            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.MostrarDialogoBusquedaCeed();
 
         }
@@ -1034,8 +1117,8 @@ public class MainActivity extends AppCompatActivity
 
         }
         */
-        else if(id==R.id.zoom_ena){
-            int i=0;
+        else if (id == R.id.zoom_ena) {
+            int i = 0;
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             for (Polygon marker : polygon) {
 
@@ -1043,34 +1126,33 @@ public class MainActivity extends AppCompatActivity
 
 
                 try {
-                    if(atributos.get("tipo").toString().startsWith("ENA")){
+                    if (atributos.get("tipo").toString().startsWith("ENA")) {
                         builder.include(marker.getPoints().get(0));
-                        i=1;
+                        i = 1;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
             }
-            if(i==1){
+            if (i == 1) {
                 LatLngBounds bounds = builder.build();
                 int padding = 0; // offset from edges of the map in pixels
                 CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
                 mMap.animateCamera(cu);
-            }else{
+            } else {
                 mitoast.generarToast("No hay Conglomerados, intenta sincronizar");
             }
 
 
-        }
-        else if (id == R.id.medir_distancia) {
+        } else if (id == R.id.medir_distancia) {
             medicion = true;
             hide_save_edicion();
             estado_mapa_edicion();
 
             limpiarMediciones();
 
-            dibujo_linea();
+            dibujo_linea(2);
             show_add_punto();
             show_discard_save_edicion();
 
@@ -1085,7 +1167,7 @@ public class MainActivity extends AppCompatActivity
             hide_menu_grupo_edicion();
 
 
-        }else if (id == R.id.medir_area) {
+        } else if (id == R.id.medir_area) {
             medicion = true;
             control_dibujo = 1;
             hide_save_edicion();
@@ -1106,20 +1188,19 @@ public class MainActivity extends AppCompatActivity
             hide_menu_grupo_edicion();
 
 
-        }else if(id== R.id.sincronizar){
+        } else if (id == R.id.sincronizar) {
 
-            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.MostrarDialogoSincronizar();
 
-        }
-        else if (id == R.id.captura) {
+        } else if (id == R.id.captura) {
 
-            snapShot captura=new snapShot(MainActivity.this);
+            snapShot captura = new snapShot(MainActivity.this);
             captura.capturaPantalla();
 
         } else if (id == R.id.nav_buscar_coordenadas) {
 
-            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.MostrarDialogoCoordenadas();
 
         } else if (id == R.id.nav_mgn_puntero) {
@@ -1127,12 +1208,9 @@ public class MainActivity extends AppCompatActivity
             LatLng center = mMap.getCameraPosition().target;
             ManzanasMGN(center);
 
-        }
+        } else if (id == R.id.nav_acerca) {
 
-
-        else if (id == R.id.nav_acerca) {
-
-            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.MostrarDialogoAcerca();
 
         } else if (id == R.id.nav_ayuda) {
@@ -1140,12 +1218,12 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, Ayuda.class);
             startActivity(intent);
 
-        }else if(id == R.id.nav_salir){
+        } else if (id == R.id.nav_salir) {
 
-            DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
+            DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.salirApp();
 
-        }else if(id==R.id.get_bar_code){
+        } else if (id == R.id.get_bar_code) {
 
             DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
             dialogo.scanQR();
@@ -1183,31 +1261,29 @@ public class MainActivity extends AppCompatActivity
 
         //Mapa base del aplciativo
         listado_mapas_offline = new ArrayList<>();
-        String ruta_mbtiles=null;
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            ruta_mbtiles=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"mbtiles";
-        }else{
-            ruta_mbtiles= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"mbtiles";
+        String ruta_mbtiles = null;
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "mbtiles";
+        } else {
+            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "mbtiles";
         }
         File dir = new File(ruta_mbtiles);
-        if(dir.exists()){
+        if (dir.exists()) {
             String[] files = dir.list(
-                    new FilenameFilter()
-                    {
-                        public boolean accept(File dir, String name)
-                        {
+                    new FilenameFilter() {
+                        public boolean accept(File dir, String name) {
                             return name.endsWith(".mbtiles");
                         }
                     });
-            for (String s: files) {
-                String nombre_capa=s.split("\\.")[0];
-                listado_mapas_offline.add(new MapaOffline(nombre_capa,false,ruta_mbtiles+"/"+s,10));
+            for (String s : files) {
+                String nombre_capa = s.split("\\.")[0];
+                listado_mapas_offline.add(new MapaOffline(nombre_capa, false, ruta_mbtiles + "/" + s, 10));
             }
         }
 
         estado_mapa_sin_edicion();
 
-        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
+        dataBase db = new dataBase(MainActivity.this, MainActivity.this);
         db.getGeomFromDatabase();
 
         db.getNovedades();
@@ -1223,62 +1299,59 @@ public class MainActivity extends AppCompatActivity
 
         Location location = getLastKnownLocation();
 
-            if(location!= null){
-                LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+        if (location != null) {
+            LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18));
+
+            if (location != null) {
+                //LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                mMap.setMyLocationEnabled(true);
+
+                Log.d("lat:Lon", String.valueOf(userLocation));
+
+                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18));
 
-                if(location!= null){
-                    //LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
-                    mMap.setMyLocationEnabled(true);
 
-                    Log.d("lat:Lon", String.valueOf(userLocation));
+                //LatLng posi=new LatLng(5.700435,-76.6377383);
 
-                    //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,18));
+                ManzanasMGN(userLocation);
 
-
-                    //LatLng posi=new LatLng(5.700435,-76.6377383);
-
-                    ManzanasMGN(userLocation);
-
-                }else{
-
-                }
+            } else {
 
             }
 
-
+        }
 
 
         //Location location = getLastKnownLocation();
 
 
-
     }
 
-    public void ManzanasMGN(LatLng userLocation){
+    public void ManzanasMGN(LatLng userLocation) {
 
-        Map<String,PolygonOptions> pol_get=spm.getManzanas(userLocation);
+        Map<String, PolygonOptions> pol_get = spm.getManzanas(userLocation);
 
         for (Map.Entry<String, PolygonOptions> entry : pol_get.entrySet()) {
 
             manzanas.add(mMap.addPolygon(entry.getValue()));
-            manzanas.get(manzanas.size()-1).setClickable(true);
-            manzanas.get(manzanas.size()-1).setZIndex(0);
-            manzanas.get(manzanas.size()-1).setStrokeWidth(5);
+            manzanas.get(manzanas.size() - 1).setClickable(true);
+            manzanas.get(manzanas.size() - 1).setZIndex(0);
+            manzanas.get(manzanas.size() - 1).setStrokeWidth(5);
 
-            JSONObject atributos=new JSONObject();
+            JSONObject atributos = new JSONObject();
             try {
 
-                atributos.put("id",entry.getKey());
-                atributos.put("tipo","MANZANAS");
+                atributos.put("id", entry.getKey());
+                atributos.put("tipo", "MANZANAS");
 
-                atributos.put("descripcion",entry.getKey());
+                atributos.put("descripcion", entry.getKey());
 
 
-                manzanas.get(manzanas.size()-1).setTag(atributos);
-                Log.d("hola:","hola");
+                manzanas.get(manzanas.size() - 1).setTag(atributos);
+                Log.d("hola:", "hola");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1288,12 +1361,8 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-
-
-
     public Location getLastKnownLocation() {
-        mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         List<String> providers = mLocationManager.getProviders(true);
         Location bestLocation = null;
         for (String provider : providers) {
@@ -1310,8 +1379,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-    public void estado_mapa_edicion(){
+    public void estado_mapa_edicion() {
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -1348,7 +1416,8 @@ public class MainActivity extends AppCompatActivity
         });
 
     }
-    public void estado_mapa_sin_edicion(){
+
+    public void estado_mapa_sin_edicion() {
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -1379,39 +1448,37 @@ public class MainActivity extends AppCompatActivity
                 show_menu_grupo_edicion();
 
 
-
                 borrar_poligono_seleccionado();
 
-                PolygonOptions opts=new PolygonOptions();
+                PolygonOptions opts = new PolygonOptions();
                 opts.addAll(polygon.getPoints());
 
-                polygon_sel= mMap.addPolygon(opts);
+                polygon_sel = mMap.addPolygon(opts);
                 polygon_sel.setZIndex(50);
                 polygon_sel.setStrokeColor(getResources().getColor(R.color.poligono_touch_boundary));
 
 
-                tipo_edicion=3;
+                tipo_edicion = 3;
 
-                codId=polygon.getId();
+                codId = polygon.getId();
 
                 area(polygon);
 
 
-
-                if(JoinPicker){
+                if (JoinPicker) {
                     update_atributos(polygon.getTag().toString());
 
 
                     try {
-                        Log.d("Atributos:",atributos.get("tipo").toString());
+                        Log.d("Atributos:", atributos.get("tipo").toString());
 
-                        if(!atributos.get("tipo").toString().equals("MANZANAS") ){
+                        if (!atributos.get("tipo").toString().equals("MANZANAS")) {
                             //para edicion normal//
                             edicion(polygon.getPoints());
                             show_delete_geom();
                             show_edit_atributos();
                             hide_atributos_manzana();
-                        }else{
+                        } else {
                             show_atributos_manzana();
                             datos_manzana(atributos.get("descripcion").toString());
                         }
@@ -1423,9 +1490,9 @@ public class MainActivity extends AppCompatActivity
                 drag_punto_edicion(3);
 
                 //estamos en modo de toque multiple de poligonos
-                if(!JoinPicker){
+                if (!JoinPicker) {
 
-                    Polygon p=mMap.addPolygon(opts);
+                    Polygon p = mMap.addPolygon(opts);
                     p.setZIndex(100);
                     p.setStrokeColor(getResources().getColor(R.color.poligono_touch_boundary));
                     cod_poligonos_union.add(polygon.getId());
@@ -1433,39 +1500,39 @@ public class MainActivity extends AppCompatActivity
                     hide_menu_grupo_edicion();
 
                     try {
-                        Log.d("hola","aquii...");
+                        Log.d("hola", "aquii...");
 
-                        if(atributos.get("tipo").equals("3")){// se implementa para la unión
+                        if (atributos.get("tipo").equals("3")) {// se implementa para la unión
 
-                            if(polygon_union.size()==1){
+                            if (polygon_union.size() == 1) {
                                 mitoast.generarToast("Seleccione un poligono vecino");
-                            }else{
-                                tipo_edicion=4;//para unir manzanas
+                            } else {
+                                tipo_edicion = 4;//para unir manzanas
                                 show_save_edicion();
                             }
 
-                        }else{// se implementa para un solo toque por manzana
+                        } else {// se implementa para un solo toque por manzana
 
                             atributos.remove("descripcion");
 
                             try {
 
-                                JSONObject data=new JSONObject(polygon.getTag().toString());
-                                atributos.put("descripcion",data.get("descripcion").toString());
+                                JSONObject data = new JSONObject(polygon.getTag().toString());
+                                atributos.put("descripcion", data.get("descripcion").toString());
 
                             } catch (Throwable t) {
 
                             }
 
-                            if(polygon_union.size()==1){
+                            if (polygon_union.size() == 1) {
 
-                                tipo_edicion=4;//
+                                tipo_edicion = 4;//
                                 show_save_edicion();
-                            }else{
+                            } else {
                                 polygon_union.get(0).remove();
                                 polygon_union.remove(0);
 
-                                tipo_edicion=4;//
+                                tipo_edicion = 4;//
                                 show_save_edicion();
                             }
 
@@ -1477,18 +1544,13 @@ public class MainActivity extends AppCompatActivity
                     }
 
 
-
                 }
-
-
-
-
 
 
             }
         });
 
-        mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener(){
+        mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
 
             @Override
             public void onPolylineClick(Polyline polyline) {
@@ -1497,9 +1559,9 @@ public class MainActivity extends AppCompatActivity
                 hide_cut_geom();
                 hide_edit_join();
                 show_menu_grupo_edicion();
-                tipo_edicion=2;
+                tipo_edicion = 2;
                 edicion(polyline.getPoints());
-                codId=polyline.getId();
+                codId = polyline.getId();
                 show_delete_geom();
                 distancia(polyline.getPoints());
                 show_edit_atributos();
@@ -1519,52 +1581,50 @@ public class MainActivity extends AppCompatActivity
                 hide_atributos_manzana();
 
                 if (marker.getTag() != null) {
-                    if (marker.getTag().toString().contains("drag:") ||marker.getTag().equals("edicion") || String.valueOf(marker.getTag()).endsWith("label")) { //if a marker has desired tag
+                    if (marker.getTag().toString().contains("drag:") || marker.getTag().equals("edicion") || String.valueOf(marker.getTag()).endsWith("label")) { //if a marker has desired tag
 
 
+                    } else if (String.valueOf(marker.getTag()).contains("foto:")) {
 
-                    } else if(String.valueOf(marker.getTag()).contains("foto:")){
+                        String url_foto = String.valueOf(marker.getTag());
 
-                        String url_foto= String.valueOf(marker.getTag());
-
-                        url_foto=url_foto.substring(url_foto.lastIndexOf(":") + 1).trim();
-                        Log.d("soy:",url_foto);
-
+                        url_foto = url_foto.substring(url_foto.lastIndexOf(":") + 1).trim();
+                        Log.d("soy:", url_foto);
 
 
-                        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-                        AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
-                        final View mView =inflater.inflate(R.layout.dialog_show_foto,null);
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+                        final View mView = inflater.inflate(R.layout.dialog_show_foto, null);
                         mBuilder.setView(mView);
 
 
-                        final AlertDialog dialog =mBuilder.create();
+                        final AlertDialog dialog = mBuilder.create();
                         dialog.show();
 
-                        ImageView imagen_qr= (ImageView) mView.findViewById(R.id.imagen_qr);
+                        ImageView imagen_qr = (ImageView) mView.findViewById(R.id.imagen_qr);
 
                         imagen_qr.setImageBitmap(BitmapFactory.decodeFile(url_foto));
 
-                    }else{
+                    } else {
 
 
                         update_atributos(marker.getTag().toString());
 
 
                         try {
-                            if(atributos.get("tipo").toString().equals("obra")){
+                            if (atributos.get("tipo").toString().equals("obra")) {
 
-                                DialogoOtros dialogo=new DialogoOtros(MainActivity.this,MainActivity.this);
-                                String noformular=atributos.get("noformular").toString();
-                                String  nombreobra=atributos.get("nombreobra").toString();
-                                String  direccion=atributos.get("direccion").toString();
-                                String  barrio=atributos.get("barrio").toString();
+                                DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
+                                String noformular = atributos.get("noformular").toString();
+                                String nombreobra = atributos.get("nombreobra").toString();
+                                String direccion = atributos.get("direccion").toString();
+                                String barrio = atributos.get("barrio").toString();
 
-                                dialogo.MostrarDialogoObras(noformular,nombreobra,direccion,barrio);
+                                dialogo.MostrarDialogoObras(noformular, nombreobra, direccion, barrio);
 
 
-                            }else{
+                            } else {
 
                                 borrar_poligono_seleccionado();
                                 hide_cut_geom();
@@ -1572,9 +1632,9 @@ public class MainActivity extends AppCompatActivity
                                 show_menu_grupo_edicion();
                                 hide_msg_area();
                                 hide_msg_distancia();
-                                tipo_edicion=1;
+                                tipo_edicion = 1;
                                 edicion_puntos(marker.getPosition());
-                                codId=marker.getId();
+                                codId = marker.getId();
                                 show_delete_geom();
                                 drop_markers_intermediate();
                                 show_edit_atributos();
@@ -1596,34 +1656,32 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
     }
 
-    public void borrar_poligono_seleccionado(){
+    public void borrar_poligono_seleccionado() {
 
-        Log.d("borrar:","borrrar");
+        Log.d("borrar:", "borrrar");
 
-        if(polygon_sel!=null){
+        if (polygon_sel != null) {
             polygon_sel.remove();
         }
-        polygon_sel=null;
+        polygon_sel = null;
 
     }
 
-    public void update_atributos(String datos){
+    public void update_atributos(String datos) {
 
         try {
 
-            atributos=new JSONObject(datos);
-            Log.d("info:",datos);
+            atributos = new JSONObject(datos);
+            Log.d("info:", datos);
 
         } catch (Throwable t) {
 
         }
     }
 
-    public void drag_punto_edicion(final int tipo_edicion){
-
+    public void drag_punto_edicion(final int tipo_edicion) {
 
 
         mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
@@ -1636,7 +1694,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onMarkerDragEnd(Marker arg0) {
 
-                dragMarker(arg0,tipo_edicion);
+                dragMarker(arg0, tipo_edicion);
                 estado_mapa_edicion();
             }
 
@@ -1648,28 +1706,28 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-    public void dibujo_punto(){
+    public void dibujo_punto() {
 
         estado_mapa_edicion();
         show_discard_save_edicion();
         FloatingActionButton add_punto = (FloatingActionButton) findViewById(R.id.add_punto);
 
         add_punto.setOnClickListener(new View.OnClickListener() {
-            int secuencia=1;
+            int secuencia = 1;
+
             @Override
             public void onClick(View view) {
-                tipo_edicion=1;
+                tipo_edicion = 1;
 
-                if(!medicion){
+                if (!medicion) {
                     show_save_edicion();
                 }
 
 
                 LatLng center = mMap.getCameraPosition().target;
-                Punto mipunto=new Punto(center);
+                Punto mipunto = new Punto(center);
                 Marker marker = mMap.addMarker(new MarkerOptions().position(mipunto.getPunto()));
-                Point_shape=marker;
+                Point_shape = marker;
                 hide_add_punto();
 
             }
@@ -1678,10 +1736,15 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void dibujo_linea(){
+    public void dibujo_linea(int tipo) {
 
         estado_mapa_edicion();
-        show_discard_save_edicion();
+        if(tipo == 6){
+            show_discard_save_edicion_track();
+        } else {
+            show_discard_save_edicion();
+        }
+
 
         FloatingActionButton add_punto = (FloatingActionButton) findViewById(R.id.add_punto);
 
@@ -1690,38 +1753,38 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                tipo_edicion=2;
+                tipo_edicion = 2;
 
-                if(control_dibujo>1){
+                if (control_dibujo > 1) {
                     show_undo_geom();
                     show_delete_geom();
-                    if(!medicion){
+                    if (!medicion) {
                         show_save_edicion();
                     }
                 }
 
-                control_dibujo=control_dibujo+1;
+                control_dibujo = control_dibujo + 1;
 
                 Punto mipunto = null;
 
                 LatLng center = mMap.getCameraPosition().target;
-                mipunto=new Punto(center);
-                Marker marker=createMarker(mipunto.getLat(), mipunto.getLng(), "pto", "");
+                mipunto = new Punto(center);
+                Marker marker = createMarker(mipunto.getLat(), mipunto.getLng(), "pto", "");
                 marker.setTag("edicion");
                 markers.add(marker);
 
                 List<LatLng> points = new ArrayList<>();
 
-                PolylineOptions opts=new PolylineOptions();
+                PolylineOptions opts = new PolylineOptions();
 
                 if (Polyline_shape != null) {
-                    points=Polyline_shape.getPoints();
+                    points = Polyline_shape.getPoints();
                     for (LatLng location : points) {
                         opts.add(location);
                     }
                     points.add(mipunto.getPunto());
                     opts.add(mipunto.getPunto());
-                }else{
+                } else {
                     opts.add(mipunto.getPunto());
                 }
 
@@ -1730,7 +1793,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
 
-                Polyline_shape=mMap.addPolyline(opts.width(8));
+                Polyline_shape = mMap.addPolyline(opts.width(8));
                 Polyline_shape.setTag("edit_polygono");
                 Polyline_shape.setClickable(true);
 
@@ -1741,29 +1804,29 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void tracking(){
+    public void tracking() {
 
-        Log.d("recolectando:","ando");
+        Log.d("recolectando:", "ando");
 
         Punto mipunto = null;
 
         Location locacion = getLastKnownLocation();
-        LatLng userLocation = new LatLng(locacion.getLatitude(),locacion.getLongitude());
-        mipunto=new Punto(userLocation);
+        LatLng userLocation = new LatLng(locacion.getLatitude(), locacion.getLongitude());
+        mipunto = new Punto(userLocation);
 
         List<LatLng> points = new ArrayList<>();
 
-        PolylineOptions opts=new PolylineOptions();
+        PolylineOptions opts = new PolylineOptions();
 
         if (Polyline_tracking != null) {
-            points=Polyline_tracking.getPoints();
+            points = Polyline_tracking.getPoints();
             Log.d("total:", String.valueOf(points.size()));
             for (LatLng location : points) {
                 opts.add(location);
             }
             points.add(mipunto.getPunto());
             opts.add(mipunto.getPunto());
-        }else{
+        } else {
             opts.add(mipunto.getPunto());
         }
 
@@ -1771,17 +1834,15 @@ public class MainActivity extends AppCompatActivity
             Polyline_tracking.remove();
         }
 
-        Polyline_tracking=mMap.addPolyline(opts.width(10));
+        Polyline_tracking = mMap.addPolyline(opts.width(10));
         Polyline_tracking.setTag("edit_polygono");
         Polyline_tracking.setClickable(true);
-        Polyline_tracking.setColor( getResources().getColor(R.color.rojo));
+        Polyline_tracking.setColor(getResources().getColor(R.color.rojo));
 
     }
 
 
-
-
-    public void dibujo_poligono(){
+    public void dibujo_poligono() {
 
         estado_mapa_edicion();
         show_discard_save_edicion();
@@ -1790,71 +1851,70 @@ public class MainActivity extends AppCompatActivity
 
         add_punto.setOnClickListener(new View.OnClickListener() {
 
-            int secuencia=1;
+            int secuencia = 1;
+
             @Override
             public void onClick(View view) {
 
-                tipo_edicion=3;
+                tipo_edicion = 3;
 
-                if(control_dibujo==1){
-                    secuencia=1;
+                if (control_dibujo == 1) {
+                    secuencia = 1;
                 }
 
-                if(secuencia>1){
+                if (secuencia > 1) {
                     show_undo_geom();
                     show_delete_geom();
                 }
 
-                if(secuencia>2){
-                    if(!medicion){
+                if (secuencia > 2) {
+                    if (!medicion) {
                         show_save_edicion();
                     }
                 }
 
-                secuencia=secuencia+1;
+                secuencia = secuencia + 1;
 
                 LatLng center = mMap.getCameraPosition().target;
 
-                Punto mipunto=new Punto(center);
+                Punto mipunto = new Punto(center);
 
-                    Marker marker=createMarker(mipunto.getLat(), mipunto.getLng(), "pto", "");
+                Marker marker = createMarker(mipunto.getLat(), mipunto.getLng(), "pto", "");
 
-                    List<LatLng> points = new ArrayList<>();
+                List<LatLng> points = new ArrayList<>();
 
-                    PolygonOptions opts=new PolygonOptions();
+                PolygonOptions opts = new PolygonOptions();
 
-                    if (Polygon_shape != null) {
-                        points=Polygon_shape.getPoints();
-                        if(control_dibujo>2){
-                            points.remove( points.size() - 1 );
-                        }
-                        for(int i=0;i<points.size();i++){
-                            opts.add(points.get(i));
-                        }
-                        opts.add(mipunto.getPunto());
-                    }else{
-                        opts.add(mipunto.getPunto());
+                if (Polygon_shape != null) {
+                    points = Polygon_shape.getPoints();
+                    if (control_dibujo > 2) {
+                        points.remove(points.size() - 1);
                     }
-
-
-                    if (Polygon_shape != null) {
-                        Polygon_shape.remove();
+                    for (int i = 0; i < points.size(); i++) {
+                        opts.add(points.get(i));
                     }
-
-                    Polygon_shape=mMap.addPolygon(opts);
-                    Polygon_shape.setClickable(true);
-
-                    Polygon_shape.setFillColor(getResources().getColor(R.color.poligono_edicion));
-                    area(Polygon_shape);
+                    opts.add(mipunto.getPunto());
+                } else {
+                    opts.add(mipunto.getPunto());
+                }
 
 
+                if (Polygon_shape != null) {
+                    Polygon_shape.remove();
+                }
+
+                Polygon_shape = mMap.addPolygon(opts);
+                Polygon_shape.setClickable(true);
+
+                Polygon_shape.setFillColor(getResources().getColor(R.color.poligono_edicion));
+                area(Polygon_shape);
 
 
                 marker.setTag("edicion");
 
                 markers.add(marker);
 
-                control_dibujo=control_dibujo+1;
+                control_dibujo = control_dibujo + 1;
 
             }
         });
@@ -1878,7 +1938,7 @@ public class MainActivity extends AppCompatActivity
                 // Permission was denied. Display an error message.
             }
         }
-}
+    }
 
 
     @Override
@@ -1900,68 +1960,67 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onCameraMove() {
 
-        TextView latitud = (TextView)findViewById(R.id.latitud);
-        TextView longitud = (TextView)findViewById(R.id.longitud);
+        TextView latitud = (TextView) findViewById(R.id.latitud);
+        TextView longitud = (TextView) findViewById(R.id.longitud);
 
         double mylat = mMap.getCameraPosition().target.latitude;
         double mylon = mMap.getCameraPosition().target.longitude;
 
-        latitud.setText("Lat: "+String.format("%.4f", mylat));
-        longitud.setText("Lon: "+String.format("%.4f", mylon));
+        latitud.setText("Lat: " + String.format("%.4f", mylat));
+        longitud.setText("Lon: " + String.format("%.4f", mylon));
 
         //Zoom del mapa
-        float zoom=mMap.getCameraPosition().zoom;
+        float zoom = mMap.getCameraPosition().zoom;
 
-        if(zoom>17){
+        if (zoom > 17) {
 
-            if(control_zoom_in){
+            if (control_zoom_in) {
 
                 for (Marker marker : label) {
                     marker.setVisible(true);
                 }
-                control_zoom_in=false;
+                control_zoom_in = false;
             }
-            control_zoom_out=true;
+            control_zoom_out = true;
 
-        }else{
-            if(control_zoom_out){
+        } else {
+            if (control_zoom_out) {
 
                 for (Marker marker : label) {
                     marker.setVisible(false);
                 }
-                control_zoom_out=false;
+                control_zoom_out = false;
             }
-            control_zoom_in=true;
+            control_zoom_in = true;
         }
 
 
-        if(zoom>14){
+        if (zoom > 14) {
 
-            if(control_zoom_in_puntos){
+            if (control_zoom_in_puntos) {
 
                 for (Marker ptos : puntos) {
                     ptos.setVisible(true);
                 }
-                control_zoom_in_puntos=false;
+                control_zoom_in_puntos = false;
             }
-            control_zoom_out_puntos=true;
+            control_zoom_out_puntos = true;
 
-        }else{
-            if(control_zoom_out_puntos){
+        } else {
+            if (control_zoom_out_puntos) {
 
                 for (Marker ptos : puntos) {
                     ptos.setVisible(false);
                 }
-                control_zoom_out_puntos=false;
+                control_zoom_out_puntos = false;
             }
-            control_zoom_in_puntos=true;
+            control_zoom_in_puntos = true;
         }
-
 
 
     }
 
-    public void edicion_puntos(LatLng ptos){
+    public void edicion_puntos(LatLng ptos) {
         for (Marker marker : markers) {
             if (marker.getTag().equals("edicion")) { //if a marker has desired tag
                 marker.remove();
@@ -1970,18 +2029,14 @@ public class MainActivity extends AppCompatActivity
         markers.clear();
 
 
-
-        Marker mimarker=createMarker( ptos.latitude,ptos.longitude,"Punto","edicion");
-
-
-
+        Marker mimarker = createMarker(ptos.latitude, ptos.longitude, "Punto", "edicion");
 
 
         markers.add(mimarker);
     }
 
     @SuppressLint("RestrictedApi")
-    public void edicion(List<LatLng> ptos){
+    public void edicion(List<LatLng> ptos) {
 
 
         drop_markers_edicion();
@@ -1989,7 +2044,7 @@ public class MainActivity extends AppCompatActivity
         drop_markers_intermediate();
 
         for (LatLng punto : ptos) {
-            Marker mimarker=createMarker( punto.latitude,punto.longitude,"Punto","edicion");
+            Marker mimarker = createMarker(punto.latitude, punto.longitude, "Punto", "edicion");
 
             markers.add(mimarker);
         }
@@ -1999,22 +2054,22 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void add_markers_intermediate(List<LatLng> ptos){
+    public void add_markers_intermediate(List<LatLng> ptos) {
         List<LatLng> puntos_intermedios = new ArrayList<>();
-        if(ptos.size()>1){
-            for(int i=0;i<ptos.size()-1;i++){
-                Double Xcoord=(ptos.get(i+1).latitude+ptos.get(i).latitude)/2;
-                Double Ycoord=(ptos.get(i+1).longitude+ptos.get(i).longitude)/2;
-                LatLng coord_middle=new LatLng(Xcoord,Ycoord);
+        if (ptos.size() > 1) {
+            for (int i = 0; i < ptos.size() - 1; i++) {
+                Double Xcoord = (ptos.get(i + 1).latitude + ptos.get(i).latitude) / 2;
+                Double Ycoord = (ptos.get(i + 1).longitude + ptos.get(i).longitude) / 2;
+                LatLng coord_middle = new LatLng(Xcoord, Ycoord);
                 puntos_intermedios.add(coord_middle);
-                Marker mimarker=createMarker1( Xcoord,Ycoord,"Punto","edicion");
-                mimarker.setTag("drag:"+String.valueOf(i+1));
+                Marker mimarker = createMarker1(Xcoord, Ycoord, "Punto", "edicion");
+                mimarker.setTag("drag:" + String.valueOf(i + 1));
                 markers_intermedios.add(mimarker);
             }
         }
     }
 
-    public void drop_markers_intermediate(){
+    public void drop_markers_intermediate() {
         for (Marker marker : markers_intermedios) {
             if (String.valueOf(marker.getTag()).contains("drag:")) { //if a marker has desired tag
                 marker.remove();
@@ -2022,7 +2077,8 @@ public class MainActivity extends AppCompatActivity
         }
         markers_intermedios.clear();
     }
-    public void drop_markers_edicion(){
+
+    public void drop_markers_edicion() {
         for (Marker marker : markers) {
             if (marker.getTag().equals("edicion")) { //if a marker has desired tag
                 marker.remove();
@@ -2031,13 +2087,13 @@ public class MainActivity extends AppCompatActivity
         markers.clear();
     }
 
-    public void dragMarker(Marker arg0, int tipo_edicion){
+    public void dragMarker(Marker arg0, int tipo_edicion) {
 
         //para mover la vista al marcador
         //mMap.animateCamera(CameraUpdateFactory.newLatLng(arg0.getPosition()));
 
         //se toman los marcadores que participan de la edición para actualizar su posición.
-        ArrayList<LatLng> edit= new ArrayList<LatLng>();
+        ArrayList<LatLng> edit = new ArrayList<LatLng>();
 
         for (Marker marker : markers) {
             if (marker.getTag().equals("edicion")) { //if a marker has desired tag
@@ -2046,9 +2102,9 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
-        if(String.valueOf(arg0.getTag()).contains("drag:")){
-            int indice= Integer.parseInt(String.valueOf(arg0.getTag()).substring(5));
-            edit.add(indice,arg0.getPosition());
+        if (String.valueOf(arg0.getTag()).contains("drag:")) {
+            int indice = Integer.parseInt(String.valueOf(arg0.getTag()).substring(5));
+            edit.add(indice, arg0.getPosition());
             edicion(edit);
         }
 
@@ -2057,28 +2113,28 @@ public class MainActivity extends AppCompatActivity
 
 
         //si la edición es de poligonos
-        if(tipo_edicion==3){
+        if (tipo_edicion == 3) {
             edit_polygono(edit);
 
         }
         //si la edición es de polilineas
-        if(tipo_edicion==2){
+        if (tipo_edicion == 2) {
             edit_polyline(edit);
 
         }
-        if(tipo_edicion==1){
+        if (tipo_edicion == 1) {
             edit_point(edit.get(0));
         }
-        tipo_edicion_guardar=1;
+        tipo_edicion_guardar = 1;
         show_save_edicion();
         show_discard_save_edicion();
         hide_menu_grupo_edicion();
-        GeometriaUpdate=true;
+        GeometriaUpdate = true;
     }
 
-    public void edit_point(LatLng edit){
+    public void edit_point(LatLng edit) {
 
-        MarkerOptions opts=new MarkerOptions();
+        MarkerOptions opts = new MarkerOptions();
 
         opts.position(edit);
 
@@ -2086,12 +2142,12 @@ public class MainActivity extends AppCompatActivity
             Point_shape.remove();
         }
 
-        Point_shape=mMap.addMarker(opts);
+        Point_shape = mMap.addMarker(opts);
 
     }
 
-    public void edit_polyline(ArrayList<LatLng> edit){
-        PolylineOptions opts=new PolylineOptions();
+    public void edit_polyline(ArrayList<LatLng> edit) {
+        PolylineOptions opts = new PolylineOptions();
         for (LatLng location : edit) {
             opts.add(location);
         }
@@ -2100,17 +2156,17 @@ public class MainActivity extends AppCompatActivity
             Polyline_shape.remove();
         }
 
-        Polyline_shape=mMap.addPolyline(opts.width(5));
+        Polyline_shape = mMap.addPolyline(opts.width(5));
         Polyline_shape.setTag("edit_polygono");
         Polyline_shape.setClickable(false);
         distancia(Polyline_shape.getPoints());
     }
 
 
-    public void edit_polygono(ArrayList<LatLng> edit){
+    public void edit_polygono(ArrayList<LatLng> edit) {
 
         //creación del nuevo poligono
-        PolygonOptions opts=new PolygonOptions();
+        PolygonOptions opts = new PolygonOptions();
         for (LatLng location : edit) {
             opts.add(location);
         }
@@ -2130,36 +2186,34 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-
-    public void area(Polygon pol){
-        TextView area_campo = (TextView)findViewById(R.id.area);
+    public void area(Polygon pol) {
+        TextView area_campo = (TextView) findViewById(R.id.area);
 
         double area = SphericalUtil.computeArea(pol.getPoints());
-        area=area*0.0001;
+        area = area * 0.0001;
 
-        area_campo.setText("Área: "+String.format("%.2f",area)+" Ha");
+        area_campo.setText("Área: " + String.format("%.2f", area) + " Ha");
         area_campo.setTextColor(Color.parseColor("#2F75C9"));
         show_msg_area();
         distancia(pol.getPoints());
     }
 
-    public void distancia(List<LatLng> puntos){
-        TextView distancia_campo = (TextView)findViewById(R.id.distancia);
-        double distancia=SphericalUtil.computeLength(puntos);
+    public void distancia(List<LatLng> puntos) {
+        TextView distancia_campo = (TextView) findViewById(R.id.distancia);
+        double distancia = SphericalUtil.computeLength(puntos);
 
-        distancia_campo.setText("Longitud: "+String.format("%.2f",distancia)+" m");
+        distancia_campo.setText("Longitud: " + String.format("%.2f", distancia) + " m");
         distancia_campo.setTextColor(Color.parseColor("#DF0000"));
         show_msg_distancia();
     }
 
-    public void datos_manzana(String codigo){
-        TextView manzana = (TextView)findViewById(R.id.manzana);
-        manzana.setText("Manzana: "+codigo.substring(codigo.length() - 2,codigo.length()));
-        TextView seccion = (TextView)findViewById(R.id.seccion);
-        seccion.setText("Sección: "+codigo.substring(codigo.length() - 4,codigo.length()-2));
-        TextView sector = (TextView)findViewById(R.id.sector);
-        sector.setText("Sector: "+codigo.substring(codigo.length() - 8,codigo.length()-4));
+    public void datos_manzana(String codigo) {
+        TextView manzana = (TextView) findViewById(R.id.manzana);
+        manzana.setText("Manzana: " + codigo.substring(codigo.length() - 2, codigo.length()));
+        TextView seccion = (TextView) findViewById(R.id.seccion);
+        seccion.setText("Sección: " + codigo.substring(codigo.length() - 4, codigo.length() - 2));
+        TextView sector = (TextView) findViewById(R.id.sector);
+        sector.setText("Sector: " + codigo.substring(codigo.length() - 8, codigo.length() - 4));
     }
 
 
@@ -2167,7 +2221,7 @@ public class MainActivity extends AppCompatActivity
 
         Marker mPerth;
 
-        mPerth= mMap.addMarker(new MarkerOptions()
+        mPerth = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .title(title)
                 .snippet(snippet)
@@ -2186,7 +2240,7 @@ public class MainActivity extends AppCompatActivity
 
         Marker mPerth;
 
-        mPerth= mMap.addMarker(new MarkerOptions()
+        mPerth = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .title(title)
                 .snippet(snippet)
@@ -2200,13 +2254,13 @@ public class MainActivity extends AppCompatActivity
         return mPerth;
     }
 
-    public void borrar_novedad(int id,int tipo_geometria){
-        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,null,tipo_geometria,null,null,null);
-        Boolean paso=novedad.eliminarNovedad();
+    public void borrar_novedad(int id, int tipo_geometria) {
+        Novedades novedad = new Novedades(MainActivity.this, MainActivity.this, id, null, tipo_geometria, null, null, null);
+        Boolean paso = novedad.eliminarNovedad();
         mitoast.generarToast("Elemento borrado");
     }
 
-    public void borrar_geometria(){
+    public void borrar_geometria() {
 
         hide_delete_geom();
         hide_undo_geom();
@@ -2215,14 +2269,14 @@ public class MainActivity extends AppCompatActivity
         drop_markers_intermediate();
         drop_markers_edicion();
 
-        if(tipo_edicion==1){
-            for(int i=0;i<puntos.size();i++){
+        if (tipo_edicion == 1) {
+            for (int i = 0; i < puntos.size(); i++) {
 
-                if(puntos.get(i).getId().equals(codId)){
+                if (puntos.get(i).getId().equals(codId)) {
                     try {
-                        int id= Integer.parseInt(atributos.get("id").toString());
+                        int id = Integer.parseInt(atributos.get("id").toString());
 
-                        borrar_novedad(id,1);
+                        borrar_novedad(id, 1);
 
                         puntos.get(i).remove();
 
@@ -2234,15 +2288,15 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        if(tipo_edicion==2){
-            for(int i=0;i<line.size();i++){
+        if (tipo_edicion == 2) {
+            for (int i = 0; i < line.size(); i++) {
 
-                if(line.get(i).getId().equals(codId)){
+                if (line.get(i).getId().equals(codId)) {
 
                     try {
-                        int id= Integer.parseInt(atributos.get("id").toString());
+                        int id = Integer.parseInt(atributos.get("id").toString());
 
-                        borrar_novedad(id,2);
+                        borrar_novedad(id, 2);
 
                         line.get(i).remove();
 
@@ -2253,20 +2307,20 @@ public class MainActivity extends AppCompatActivity
 
                 }
             }
-            if(Polyline_shape!=null){
+            if (Polyline_shape != null) {
                 Polyline_shape.remove();
             }
-            Polyline_shape=null;
+            Polyline_shape = null;
         }
-        if(tipo_edicion==3){
-            for(int i=0;i<polygon.size();i++){
+        if (tipo_edicion == 3) {
+            for (int i = 0; i < polygon.size(); i++) {
 
-                if(polygon.get(i).getId().equals(codId)){
+                if (polygon.get(i).getId().equals(codId)) {
 
                     try {
-                        int id= Integer.parseInt(atributos.get("id").toString());
+                        int id = Integer.parseInt(atributos.get("id").toString());
 
-                        borrar_novedad(id,3);
+                        borrar_novedad(id, 3);
 
                         polygon.get(i).remove();
 
@@ -2279,34 +2333,33 @@ public class MainActivity extends AppCompatActivity
 
             borrar_poligono_seleccionado();
 
-            if(Polygon_shape!=null){
+            if (Polygon_shape != null) {
                 Polygon_shape.remove();
             }
 
-            Polygon_shape=null;
+            Polygon_shape = null;
         }
     }
 
-public void cortar_geometria(){
+    public void cortar_geometria() {
 
 
-        String poligono=analisis.PoligonoWKT(polygon_sel);
+        String poligono = analisis.PoligonoWKT(polygon_sel);
 
-        String linea=analisis.LineaWKT(Polyline_shape);
+        String linea = analisis.LineaWKT(Polyline_shape);
 
-        Boolean lineaSimple=analisis.PolylineItsSimple(linea);
+        Boolean lineaSimple = analisis.PolylineItsSimple(linea);
 
-        if(lineaSimple){
+        if (lineaSimple) {
 
-            String resultado=analisis.CutPolygonByLine(poligono,linea);
-            if(!resultado.equals("fallo")){
+            String resultado = analisis.CutPolygonByLine(poligono, linea);
+            if (!resultado.equals("fallo")) {
 
-                int id= 0;
+                int id = 0;
                 try {
 
                     id = Integer.parseInt(atributos.get("id").toString());
                     borrar_poligono(id);
-
 
 
                 } catch (JSONException e) {
@@ -2318,17 +2371,17 @@ public void cortar_geometria(){
 
 
                 try {
-                    String code=atributos.get("descripcion").toString();
+                    String code = atributos.get("descripcion").toString();
 
-                    for(int i=0;i<polygon.size();i++){
+                    for (int i = 0; i < polygon.size(); i++) {
 
-                        JSONObject atr=new JSONObject();
+                        JSONObject atr = new JSONObject();
 
-                        atr=new JSONObject(polygon.get(i).getTag().toString());
+                        atr = new JSONObject(polygon.get(i).getTag().toString());
 
-                        String des=atr.get("descripcion").toString();
+                        String des = atr.get("descripcion").toString();
 
-                        if(des.startsWith(code)){
+                        if (des.startsWith(code)) {
 
                             values.add(i);
 
@@ -2337,7 +2390,7 @@ public void cortar_geometria(){
 
                     }
 
-                    Log.d("id_ena:",code);
+                    Log.d("id_ena:", code);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -2345,65 +2398,60 @@ public void cortar_geometria(){
 
                 Log.d("valores", String.valueOf(values));
 
-                String adyacencia=analisis.CutPointPolygon(linea,values);
+                String adyacencia = analisis.CutPointPolygon(linea, values);
 
 
-                Boolean recorte=analisis.MultipolygonToPolygon(resultado);
+                Boolean recorte = analisis.MultipolygonToPolygon(resultado);
 
 
-
-            }else{
+            } else {
                 mitoast.generarToast("No se puede realizar el corte");
             }
 
-        }else{
+        } else {
             mitoast.generarToast("Polilinea no valida");
         }
-
-
 
 
         drop_markers_edicion();
         borrar_poligono_seleccionado();
         markers.clear();
         Polyline_shape.remove();
-        Polyline_shape=null;
+        Polyline_shape = null;
         hide_cut_geom();
         hide_undo_geom();
         hide_add_punto();
 
 
+    }
 
-}
-
-public void unir_geometria(){
+    public void unir_geometria() {
 
 
-        List<String> geometrias=new ArrayList<>();
+        List<String> geometrias = new ArrayList<>();
 
         for (Polygon pol : polygon_union) {
 
-            String poligono=analisis.PoligonoWKT(pol);
+            String poligono = analisis.PoligonoWKT(pol);
             geometrias.add(poligono);
 
         }
 
-        String descripcion="";
+        String descripcion = "";
 
-        for(String id: cod_poligonos_union){
+        for (String id : cod_poligonos_union) {
 
-            for(int i=0;i<polygon.size();i++){
+            for (int i = 0; i < polygon.size(); i++) {
 
 
-
-                if((polygon.get(i).getId()).equals(id)){
+                if ((polygon.get(i).getId()).equals(id)) {
 
 
                     update_atributos(polygon.get(i).getTag().toString());
 
-                    int id_p= 0;
+                    int id_p = 0;
                     try {
-                        codId=polygon.get(i).getId();
+                        codId = polygon.get(i).getId();
                         id_p = Integer.parseInt(atributos.get("id").toString());
                         descripcion = atributos.get("descripcion").toString();
                         borrar_poligono(id_p);
@@ -2412,16 +2460,15 @@ public void unir_geometria(){
                     }
 
 
-
                 }
             }
 
         }
 
         cod_poligonos_union.clear();
-        cod_poligonos_union=new ArrayList<>();
+        cod_poligonos_union = new ArrayList<>();
 
-        for(Polygon pol:polygon_union){
+        for (Polygon pol : polygon_union) {
             pol.remove();
         }
 
@@ -2429,28 +2476,27 @@ public void unir_geometria(){
 
         borrar_poligono_seleccionado();
 
-        analisis.unionPolygons(geometrias,descripcion);
+        analisis.unionPolygons(geometrias, descripcion);
 
-        JoinPicker=true;
-
-
-
-}
+        JoinPicker = true;
 
 
-public void borrar_poligono(int id){
+    }
 
-    for(int i=0;i<polygon.size();i++){
 
-        if(polygon.get(i).getId().equals(codId)){
+    public void borrar_poligono(int id) {
 
-                Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,null,3,null,null,null);
+        for (int i = 0; i < polygon.size(); i++) {
 
-                Boolean paso=novedad.eliminarNovedad();
-                Boolean cambio_estado=novedad.cambioEstadoGeometria();
+            if (polygon.get(i).getId().equals(codId)) {
 
-                String identificador=polygon.get(i).getId();
-                Util util=new Util(MainActivity.this,MainActivity.this);
+                Novedades novedad = new Novedades(MainActivity.this, MainActivity.this, id, null, 3, null, null, null);
+
+                Boolean paso = novedad.eliminarNovedad();
+                Boolean cambio_estado = novedad.cambioEstadoGeometria();
+
+                String identificador = polygon.get(i).getId();
+                Util util = new Util(MainActivity.this, MainActivity.this);
                 util.borrarLabel(identificador);
 
                 polygon.get(i).remove();
@@ -2459,495 +2505,506 @@ public void borrar_poligono(int id){
                 mitoast.generarToast("Elemento borrado");
                 break;
 
-        }
-    }
-
-}
-
-public void drawL(int opcion){
-
-    try {
-
-    List<LatLng> points = new ArrayList<>();
-    PolylineOptions opts=new PolylineOptions();
-
-
-
-    //dibujo de linea normal
-    if(opcion==1){
-        if (Polyline_shape != null) {
-            points=Polyline_shape.getPoints();
-            for (LatLng location : points) {
-                opts.add(location);
             }
         }
-    }
-    //dibujo de track
-    else if(opcion==2){
-        if (Polyline_tracking != null) {
-            points=Polyline_tracking.getPoints();
-            for (LatLng location : points) {
-                opts.add(location);
-            }
-        }
-        atributos.put("tipo","0207");
-        atributos.put("descripcion","Tracking");
-        atributos.put("color","#E63722");
+
     }
 
+    public void drawL(int opcion) {
+
+        try {
+
+            List<LatLng> points = new ArrayList<>();
+            PolylineOptions opts = new PolylineOptions();
 
 
-        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-
-        Integer id=db.getMaxIdNovedad()+1;
-        if (atributos.has("id")) {
-            id= Integer.valueOf(atributos.get("id").toString());
-        }
-        atributos.put("id",String.valueOf(id));
-        line.add(mMap.addPolyline(opts.width(8)));
-        line.get(line.size()-1).setClickable(true);
-
-        int tipo_geometria=2;
-
-        Date todayDate = Calendar.getInstance().getTime();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        String fecha = formatter.format(todayDate);
-
-
-        String wkt=analisis.LineaWKT(line.get(line.size()-1));
-        String tipo= atributos.get("tipo").toString();
-        String descripcion= atributos.get("descripcion").toString();
-        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion,fecha);
-        Boolean inserto=novedad.insertarNovedad();
-        mitoast.generarToast("Elemento guardado");
-
-
-        line.get(line.size()-1).setTag(atributos);
-        line.get(line.size()-1).setColor(Color.parseColor(atributos.get("color").toString()));
-        line.get(line.size()-1).setWidth(8);
-
-        Util util=new Util(MainActivity.this,MainActivity.this);
-
-        String ruta_db;
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
-        }else{
-            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
-        }
-
-        CeedDB ceeddb=new CeedDB(MainActivity.this,ruta_db);
-
-        String style=ceeddb.get_LineaStyle(tipo);
-
-        List<PatternItem> patron=util.LineStyle(style);
-        line.get(line.size()-1).setPattern(patron);
-
-
-
-    } catch (JSONException e) {
-        e.printStackTrace();
-    }
-
-
-
-
-    if(GeometriaUpdate){
-        for(int i=0;i<line.size();i++){
-
-            if(line.get(i).getId().equals(codId)){
-                line.get(line.size()-1).setTag(line.get(i).getTag());
-                line.get(i).remove();
-            }
-        }
-    }
-
-    if(opcion==1){
-        Polyline_shape.remove();
-        Polyline_shape=null;
-    }else if(opcion==2){
-           Polyline_tracking.remove();
-        Polyline_tracking=null;
-    }
-
-
-
-
-}
-
-public void drawP(){
-    MarkerOptions opts=new MarkerOptions();
-
-    if (Point_shape != null) {
-        opts.position(Point_shape.getPosition());
-    }
-
-
-
-    try {
-        dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-
-        Integer id=db.getMaxIdNovedad()+1;
-
-        if (atributos.has("id")) {
-            id= Integer.valueOf(atributos.get("id").toString());
-        }
-        atributos.put("id",String.valueOf(id));
-
-        puntos.add(mMap.addMarker(opts));
-
-        int tipo_geometria=1;
-        String wkt=analisis.puntoWKT(puntos.get(puntos.size()-1));
-        String tipo= atributos.get("tipo").toString();
-        String descripcion= atributos.get("descripcion").toString();
-        Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
-        Boolean inserto=novedad.insertarNovedad();
-
-
-
-        mitoast.generarToast("Elemento guardado");
-
-        puntos.get(puntos.size()-1).setTag(atributos);
-
-        String imagen=atributos.get("tipo").toString();
-
-        if(imagen.equals("ObraProyectada")){
-            puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.obra_futura));
-        }else{
-            AssetManager mg = getResources().getAssets();
-            InputStream is = null;
-            try {
-                is = mg.open("img/"+imagen+".png");
-                puntos.get(puntos.size()-1).setIcon(BitmapDescriptorFactory.fromAsset("img/"+imagen+".png"));
-            } catch (IOException ex) {
-                //file does not exist
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            //dibujo de linea normal
+            if (opcion == 1) {
+                if (Polyline_shape != null) {
+                    points = Polyline_shape.getPoints();
+                    for (LatLng location : points) {
+                        opts.add(location);
                     }
                 }
             }
-        }
-
-
-
-
-    } catch (JSONException e) {
-        e.printStackTrace();
-    }
-
-
-    if(GeometriaUpdate){
-        for(int i=0;i<puntos.size();i++){
-
-            if(puntos.get(i).getId().equals(codId)){
-                puntos.get(i).remove();
+            //dibujo de track
+            else if (opcion == 2) {
+                if (Polyline_tracking != null) {
+                    points = Polyline_tracking.getPoints();
+                    for (LatLng location : points) {
+                        opts.add(location);
+                    }
+                }
+                atributos.put("tipo", "0207");
+                atributos.put("descripcion", "Tracking");
+                atributos.put("color", "#E63722");
             }
-        }
-    }
 
 
-    Point_shape.remove();
-    Point_shape=null;
-}
+            dataBase db = new dataBase(MainActivity.this, MainActivity.this);
 
-public void drawPg(){
-    String wkt=analisis.PoligonoWKT(Polygon_shape);
-    Boolean valido=analisis.PolygonValid(wkt);
-
-    if(valido){
-
-        List<LatLng> points = new ArrayList<>();
-        PolygonOptions opts=new PolygonOptions();
-
-        if (Polygon_shape != null) {
-            points=Polygon_shape.getPoints();
-            for (LatLng location : points) {
-                opts.add(location);
-            }
-        }
-
-
-
-        try {
-            dataBase db=new dataBase(MainActivity.this,MainActivity.this);
-
-            Integer id=db.getMaxIdNovedad()+1;
+            Integer id = db.getMaxIdNovedad() + 1;
             if (atributos.has("id")) {
-                id= Integer.valueOf(atributos.get("id").toString());
+                id = Integer.valueOf(atributos.get("id").toString());
             }
-            atributos.put("id",String.valueOf(id));
-            polygon.add(mMap.addPolygon(opts));
-            polygon.get(polygon.size()-1).setClickable(true);
+            atributos.put("id", String.valueOf(id));
+            line.add(mMap.addPolyline(opts.width(8)));
+            line.get(line.size() - 1).setClickable(true);
 
-            int tipo_geometria=3;
+            int tipo_geometria = 2;
 
-            String tipo= atributos.get("tipo").toString();
-            String descripcion= atributos.get("descripcion").toString();
-            Novedades novedad=new Novedades(MainActivity.this,MainActivity.this,id,id_dispositivo,tipo_geometria,wkt,tipo,descripcion);
-            Boolean inserto=novedad.insertarNovedad();
+            Date todayDate = Calendar.getInstance().getTime();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String fecha = formatter.format(todayDate);
+
+
+            String wkt = analisis.LineaWKT(line.get(line.size() - 1));
+            String tipo = atributos.get("tipo").toString();
+            String descripcion = atributos.get("descripcion").toString();
+            Novedades novedad = new Novedades(MainActivity.this, MainActivity.this, id, id_dispositivo, tipo_geometria, wkt, tipo, descripcion, fecha);
+            Boolean inserto = novedad.insertarNovedad();
             mitoast.generarToast("Elemento guardado");
 
-            Log.d("color_poligono:",atributos.get("color").toString());
 
-            polygon.get(polygon.size()-1).setTag(atributos);
-            polygon.get(polygon.size()-1).setFillColor(Color.parseColor(atributos.get("color").toString()));
-            polygon.get(polygon.size()-1).setZIndex(2);
+            line.get(line.size() - 1).setTag(atributos);
+            line.get(line.size() - 1).setColor(Color.parseColor(atributos.get("color").toString()));
+            line.get(line.size() - 1).setWidth(8);
 
-            borrar_poligono_seleccionado();
+            Util util = new Util(MainActivity.this, MainActivity.this);
+
+            String ruta_db;
+            if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+                ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+            } else {
+                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+            }
+
+            CeedDB ceeddb = new CeedDB(MainActivity.this, ruta_db);
+
+            String style = ceeddb.get_LineaStyle(tipo);
+
+            List<PatternItem> patron = util.LineStyle(style);
+            line.get(line.size() - 1).setPattern(patron);
+
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
+        if (GeometriaUpdate) {
+            for (int i = 0; i < line.size(); i++) {
 
-        if(GeometriaUpdate){
-            for(int i=0;i<polygon.size();i++){
-
-                if(polygon.get(i).getId().equals(codId)){
-                    polygon.get(i).remove();
+                if (line.get(i).getId().equals(codId)) {
+                    line.get(line.size() - 1).setTag(line.get(i).getTag());
+                    line.get(i).remove();
                 }
             }
         }
 
-    }else{
-        mitoast.generarToast("Poligono no valido");
+        if (opcion == 1) {
+            Polyline_shape.remove();
+            Polyline_shape = null;
+        } else if (opcion == 2) {
+            Polyline_tracking.remove();
+            Polyline_tracking = null;
+        }
+
+
+    }
+
+    public void drawP() {
+        MarkerOptions opts = new MarkerOptions();
+
+        if (Point_shape != null) {
+            opts.position(Point_shape.getPosition());
+        }
+
+
+        try {
+            dataBase db = new dataBase(MainActivity.this, MainActivity.this);
+
+            Integer id = db.getMaxIdNovedad() + 1;
+
+            if (atributos.has("id")) {
+                id = Integer.valueOf(atributos.get("id").toString());
+            }
+            atributos.put("id", String.valueOf(id));
+
+            puntos.add(mMap.addMarker(opts));
+
+            int tipo_geometria = 1;
+            String wkt = analisis.puntoWKT(puntos.get(puntos.size() - 1));
+            String tipo = atributos.get("tipo").toString();
+            String descripcion = atributos.get("descripcion").toString();
+            Novedades novedad = new Novedades(MainActivity.this, MainActivity.this, id, id_dispositivo, tipo_geometria, wkt, tipo, descripcion);
+            Boolean inserto = novedad.insertarNovedad();
+
+
+            mitoast.generarToast("Elemento guardado");
+
+            puntos.get(puntos.size() - 1).setTag(atributos);
+
+            String imagen = atributos.get("tipo").toString();
+
+            if (imagen.equals("ObraProyectada")) {
+                puntos.get(puntos.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.obra_futura));
+            } else {
+                AssetManager mg = getResources().getAssets();
+                InputStream is = null;
+                try {
+                    is = mg.open("img/" + imagen + ".png");
+                    puntos.get(puntos.size() - 1).setIcon(BitmapDescriptorFactory.fromAsset("img/" + imagen + ".png"));
+                } catch (IOException ex) {
+                    //file does not exist
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        if (GeometriaUpdate) {
+            for (int i = 0; i < puntos.size(); i++) {
+
+                if (puntos.get(i).getId().equals(codId)) {
+                    puntos.get(i).remove();
+                }
+            }
+        }
+
+
+        Point_shape.remove();
+        Point_shape = null;
+    }
+
+    public void drawPg() {
+        String wkt = analisis.PoligonoWKT(Polygon_shape);
+        Boolean valido = analisis.PolygonValid(wkt);
+
+        if (valido) {
+
+            List<LatLng> points = new ArrayList<>();
+            PolygonOptions opts = new PolygonOptions();
+
+            if (Polygon_shape != null) {
+                points = Polygon_shape.getPoints();
+                for (LatLng location : points) {
+                    opts.add(location);
+                }
+            }
+
+
+            try {
+                dataBase db = new dataBase(MainActivity.this, MainActivity.this);
+
+                Integer id = db.getMaxIdNovedad() + 1;
+                if (atributos.has("id")) {
+                    id = Integer.valueOf(atributos.get("id").toString());
+                }
+                atributos.put("id", String.valueOf(id));
+                polygon.add(mMap.addPolygon(opts));
+                polygon.get(polygon.size() - 1).setClickable(true);
+
+                int tipo_geometria = 3;
+
+                String tipo = atributos.get("tipo").toString();
+                String descripcion = atributos.get("descripcion").toString();
+                Novedades novedad = new Novedades(MainActivity.this, MainActivity.this, id, id_dispositivo, tipo_geometria, wkt, tipo, descripcion);
+                Boolean inserto = novedad.insertarNovedad();
+                mitoast.generarToast("Elemento guardado");
+
+                Log.d("color_poligono:", atributos.get("color").toString());
+
+                polygon.get(polygon.size() - 1).setTag(atributos);
+                polygon.get(polygon.size() - 1).setFillColor(Color.parseColor(atributos.get("color").toString()));
+                polygon.get(polygon.size() - 1).setZIndex(2);
+
+                borrar_poligono_seleccionado();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            if (GeometriaUpdate) {
+                for (int i = 0; i < polygon.size(); i++) {
+
+                    if (polygon.get(i).getId().equals(codId)) {
+                        polygon.get(i).remove();
+                    }
+                }
+            }
+
+        } else {
+            mitoast.generarToast("Poligono no valido");
+        }
+
+
+        Polygon_shape.remove();
+        Polygon_shape = null;
+
     }
 
 
+    public void show_add_punto() {
 
-    Polygon_shape.remove();
-    Polygon_shape=null;
+        FloatingActionButton add_punto = (FloatingActionButton) findViewById(R.id.add_punto);
+        add_punto.setVisibility(View.VISIBLE);
 
-}
-
-
-public void show_add_punto(){
-
-    FloatingActionButton add_punto = (FloatingActionButton) findViewById(R.id.add_punto);
-    add_punto.setVisibility(View.VISIBLE);
-
-}
-public void hide_add_punto(){
-    FloatingActionButton add_punto = (FloatingActionButton) findViewById(R.id.add_punto);
-    add_punto.setVisibility(View.GONE);
     }
 
-public void hide_delete_geom(){
-    final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
-    delete_geom.setVisibility(View.GONE);
-    hide_menu_grupo_edicion();
-}
-
-public void show_delete_geom(){
-    final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
-    delete_geom.setVisibility(View.VISIBLE);
-}
-
-public void show_undo_geom(){
-    FloatingActionButton undo_edit = (FloatingActionButton) findViewById(R.id.undo_edit);
-    undo_edit.setVisibility(View.VISIBLE);
-}
-public void hide_undo_geom(){
-    FloatingActionButton undo_edit = (FloatingActionButton) findViewById(R.id.undo_edit);
-    undo_edit.setVisibility(View.GONE);
-}
-
-public void show_save_edicion(){
-    FloatingActionButton  save_edicion = (FloatingActionButton ) findViewById(R.id.save_edicion);
-    save_edicion.setVisibility(View.VISIBLE);
-}
-
-public void hide_save_edicion(){
-    FloatingActionButton  save_edicion = (FloatingActionButton ) findViewById(R.id.save_edicion);
-    save_edicion.setVisibility(View.GONE);
-}
-
-public void show_discard_save_edicion(){
-    FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
-    discard_save_editor.setVisibility(View.VISIBLE);
-}
-
-public void hide_discard_save_edicion(){
-    FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
-    discard_save_editor.setVisibility(View.GONE);
-}
-
-public void hide_cut_geom(){
-    final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
-    cut_geom.setVisibility(View.GONE);
-    hide_menu_grupo_edicion();
-}
-
-public void show_cut_geom(){
-    final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
-    cut_geom.setVisibility(View.GONE );
-}
-
-
-public void show_habilitar_code(){
-    final com.getbase.floatingactionbutton.FloatingActionButton quit_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.quit_code_ena);
-    quit_code_ena.setVisibility(View.VISIBLE);
-
-    final com.getbase.floatingactionbutton.FloatingActionButton add_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.add_code_ena);
-    add_code_ena.setVisibility(View.GONE);
-}
-
-public void hide_habilitar_code(){
-    final com.getbase.floatingactionbutton.FloatingActionButton quit_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.quit_code_ena);
-    quit_code_ena.setVisibility(View.GONE);
-
-    final com.getbase.floatingactionbutton.FloatingActionButton add_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.add_code_ena);
-    add_code_ena.setVisibility(View.VISIBLE);
-}
-
-public void inhabilitar_code(){
-    final com.getbase.floatingactionbutton.FloatingActionButton quit_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.quit_code_ena);
-    quit_code_ena.setVisibility(View.GONE);
-
-    final com.getbase.floatingactionbutton.FloatingActionButton add_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.add_code_ena);
-    add_code_ena.setVisibility(View.GONE);
-}
-
-
-
-public void show_msg_distancia(){
-    TextView distancia_campo = (TextView)findViewById(R.id.distancia);
-    distancia_campo.setVisibility(View.VISIBLE);
-
-}
-public void hide_msg_distancia(){
-    TextView distancia_campo = (TextView)findViewById(R.id.distancia);
-    distancia_campo.setVisibility(View.GONE);
-
-}
-
-public void show_msg_area(){
-    TextView area_campo = (TextView)findViewById(R.id.area);
-    area_campo.setVisibility(View.VISIBLE);
-}
-
-public void hide_msg_area(){
-    TextView area_campo = (TextView)findViewById(R.id.area);
-    area_campo.setVisibility(View.GONE);
-}
-
-public void show_edit_atributos(){
-    com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
-    edit_atributos.setVisibility(View.VISIBLE);
-}
-
-public void hide_edit_atributos(){
-    com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
-    edit_atributos.setVisibility(View.GONE);
-}
-
-public void show_edit_join(){
-    final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
-    edit_join.setVisibility(View.GONE);
-
-}
-public void hide_edit_join(){
-    final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
-    edit_join.setVisibility(View.GONE);
-    hide_menu_grupo_edicion();
-
-}
-
-public void show_menu_grupo_edicion(){
-    final com.getbase.floatingactionbutton.FloatingActionsMenu menu_editor = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.menu_editor);
-    menu_editor.setVisibility(View.VISIBLE);
-    menu_editor.expand();
-}
-
-public void hide_menu_grupo_edicion(){
-    final com.getbase.floatingactionbutton.FloatingActionsMenu menu_editor = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.menu_editor);
-    menu_editor.collapse();
-    menu_editor.setVisibility(View.GONE);
-}
-
-public void hide_atributos_manzana(){
-    LinearLayout atributos_manzana =(LinearLayout) findViewById(R.id.atributos_manzana);
-    atributos_manzana.setVisibility(View.GONE);
-}
-public void show_atributos_manzana(){
-    LinearLayout atributos_manzana =(LinearLayout) findViewById(R.id.atributos_manzana);
-    atributos_manzana.setVisibility(View.VISIBLE);
-}
-
-public void controlToolsGoogle(){
-
-
-    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-            .findFragmentById(R.id.map);
-    mapFragment.getMapAsync(this);
-
-    int ZoomControl_id = 0x1;
-    int position_control_id = 0x2;
-    int brujula_control_id = 0x5;
-
-
-    // Find ZoomControl view
-    View zoomControls = mapFragment.getView().findViewById(ZoomControl_id);
-
-    if (zoomControls != null && zoomControls.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-        // ZoomControl is inside of RelativeLayout
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) zoomControls.getLayoutParams();
-
-        // Align it to - parent top|left
-        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-
-        // Update margins, set to 10dp
-        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
-                getResources().getDisplayMetrics());
-        params.setMargins(margin, 400, margin, margin);
+    public void hide_add_punto() {
+        FloatingActionButton add_punto = (FloatingActionButton) findViewById(R.id.add_punto);
+        add_punto.setVisibility(View.GONE);
     }
 
-    View positioncontrol = mapFragment.getView().findViewById(position_control_id);
-
-    if (positioncontrol != null && positioncontrol.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-        // ZoomControl is inside of RelativeLayout
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) positioncontrol.getLayoutParams();
-
-        // Align it to - parent top|left
-        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-
-        // Update margins, set to 10dp
-        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
-                getResources().getDisplayMetrics());
-        params.setMargins(margin, 250, margin, margin);
+    public void hide_delete_geom() {
+        final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
+        delete_geom.setVisibility(View.GONE);
+        hide_menu_grupo_edicion();
     }
-    View brujulacontrol = mapFragment.getView().findViewById(brujula_control_id);
 
-    if (brujulacontrol != null && brujulacontrol.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-        // ZoomControl is inside of RelativeLayout
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) brujulacontrol.getLayoutParams();
+    public void show_delete_geom() {
+        final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
+        delete_geom.setVisibility(View.VISIBLE);
+    }
 
-        // Align it to - parent top|left
-        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+    public void show_undo_geom() {
+        FloatingActionButton undo_edit = (FloatingActionButton) findViewById(R.id.undo_edit);
+        undo_edit.setVisibility(View.VISIBLE);
+    }
 
-        // Update margins, set to 10dp
-        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
-                getResources().getDisplayMetrics());
-        params.setMargins(margin, 500, margin, margin);
+    public void hide_undo_geom() {
+        FloatingActionButton undo_edit = (FloatingActionButton) findViewById(R.id.undo_edit);
+        undo_edit.setVisibility(View.GONE);
+    }
+
+    public void show_save_edicion() {
+        FloatingActionButton save_edicion = (FloatingActionButton) findViewById(R.id.save_edicion);
+        save_edicion.setVisibility(View.VISIBLE);
+    }
+
+    public void hide_save_edicion() {
+        FloatingActionButton save_edicion = (FloatingActionButton) findViewById(R.id.save_edicion);
+        save_edicion.setVisibility(View.GONE);
+    }
+
+    public void hide_save_edicion_track() {
+        FloatingActionButton save_edicion = (FloatingActionButton) findViewById(R.id.save_edicion_track);
+        save_edicion.setVisibility(View.GONE);
+    }
+
+    public void show_save_edicion_track() {
+        FloatingActionButton save_edicion = (FloatingActionButton) findViewById(R.id.save_edicion_track);
+        save_edicion.setVisibility(View.VISIBLE);
+    }
+
+    public void show_discard_save_edicion() {
+        FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
+        discard_save_editor.setVisibility(View.VISIBLE);
+    }
+
+    public void show_discard_save_edicion_track() {
+        FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor_track);
+        discard_save_editor.setVisibility(View.VISIBLE);
+    }
+
+    public void hide_discard_save_edicion() {
+        FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor);
+        discard_save_editor.setVisibility(View.GONE);
+    }
+
+    public void hide_discard_save_edicion_track() {
+        FloatingActionButton discard_save_editor = (FloatingActionButton) findViewById(R.id.discard_save_editor_track);
+        discard_save_editor.setVisibility(View.GONE);
+    }
+
+    public void hide_cut_geom() {
+        final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
+        cut_geom.setVisibility(View.GONE);
+        hide_menu_grupo_edicion();
+    }
+
+    public void show_cut_geom() {
+        final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
+        cut_geom.setVisibility(View.GONE);
     }
 
 
-}
-    public void limpiarMediciones(){
+    public void show_habilitar_code() {
+        final com.getbase.floatingactionbutton.FloatingActionButton quit_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.quit_code_ena);
+        quit_code_ena.setVisibility(View.VISIBLE);
+
+        final com.getbase.floatingactionbutton.FloatingActionButton add_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.add_code_ena);
+        add_code_ena.setVisibility(View.GONE);
+    }
+
+    public void hide_habilitar_code() {
+        final com.getbase.floatingactionbutton.FloatingActionButton quit_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.quit_code_ena);
+        quit_code_ena.setVisibility(View.GONE);
+
+        final com.getbase.floatingactionbutton.FloatingActionButton add_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.add_code_ena);
+        add_code_ena.setVisibility(View.VISIBLE);
+    }
+
+    public void inhabilitar_code() {
+        final com.getbase.floatingactionbutton.FloatingActionButton quit_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.quit_code_ena);
+        quit_code_ena.setVisibility(View.GONE);
+
+        final com.getbase.floatingactionbutton.FloatingActionButton add_code_ena = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.add_code_ena);
+        add_code_ena.setVisibility(View.GONE);
+    }
+
+
+    public void show_msg_distancia() {
+        TextView distancia_campo = (TextView) findViewById(R.id.distancia);
+        distancia_campo.setVisibility(View.VISIBLE);
+
+    }
+
+    public void hide_msg_distancia() {
+        TextView distancia_campo = (TextView) findViewById(R.id.distancia);
+        distancia_campo.setVisibility(View.GONE);
+
+    }
+
+    public void show_msg_area() {
+        TextView area_campo = (TextView) findViewById(R.id.area);
+        area_campo.setVisibility(View.VISIBLE);
+    }
+
+    public void hide_msg_area() {
+        TextView area_campo = (TextView) findViewById(R.id.area);
+        area_campo.setVisibility(View.GONE);
+    }
+
+    public void show_edit_atributos() {
+        com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
+        edit_atributos.setVisibility(View.VISIBLE);
+    }
+
+    public void hide_edit_atributos() {
+        com.getbase.floatingactionbutton.FloatingActionButton edit_atributos = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_atributos);
+        edit_atributos.setVisibility(View.GONE);
+    }
+
+    public void show_edit_join() {
+        final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
+        edit_join.setVisibility(View.GONE);
+
+    }
+
+    public void hide_edit_join() {
+        final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
+        edit_join.setVisibility(View.GONE);
+        hide_menu_grupo_edicion();
+
+    }
+
+    public void show_menu_grupo_edicion() {
+        final com.getbase.floatingactionbutton.FloatingActionsMenu menu_editor = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.menu_editor);
+        menu_editor.setVisibility(View.VISIBLE);
+        menu_editor.expand();
+    }
+
+    public void hide_menu_grupo_edicion() {
+        final com.getbase.floatingactionbutton.FloatingActionsMenu menu_editor = (com.getbase.floatingactionbutton.FloatingActionsMenu) findViewById(R.id.menu_editor);
+        menu_editor.collapse();
+        menu_editor.setVisibility(View.GONE);
+    }
+
+    public void hide_atributos_manzana() {
+        LinearLayout atributos_manzana = (LinearLayout) findViewById(R.id.atributos_manzana);
+        atributos_manzana.setVisibility(View.GONE);
+    }
+
+    public void show_atributos_manzana() {
+        LinearLayout atributos_manzana = (LinearLayout) findViewById(R.id.atributos_manzana);
+        atributos_manzana.setVisibility(View.VISIBLE);
+    }
+
+    public void controlToolsGoogle() {
+
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        int ZoomControl_id = 0x1;
+        int position_control_id = 0x2;
+        int brujula_control_id = 0x5;
+
+
+        // Find ZoomControl view
+        View zoomControls = mapFragment.getView().findViewById(ZoomControl_id);
+
+        if (zoomControls != null && zoomControls.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+            // ZoomControl is inside of RelativeLayout
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) zoomControls.getLayoutParams();
+
+            // Align it to - parent top|left
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+            // Update margins, set to 10dp
+            final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                    getResources().getDisplayMetrics());
+            params.setMargins(margin, 400, margin, margin);
+        }
+
+        View positioncontrol = mapFragment.getView().findViewById(position_control_id);
+
+        if (positioncontrol != null && positioncontrol.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+            // ZoomControl is inside of RelativeLayout
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) positioncontrol.getLayoutParams();
+
+            // Align it to - parent top|left
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+            // Update margins, set to 10dp
+            final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                    getResources().getDisplayMetrics());
+            params.setMargins(margin, 250, margin, margin);
+        }
+        View brujulacontrol = mapFragment.getView().findViewById(brujula_control_id);
+
+        if (brujulacontrol != null && brujulacontrol.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+            // ZoomControl is inside of RelativeLayout
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) brujulacontrol.getLayoutParams();
+
+            // Align it to - parent top|left
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+            // Update margins, set to 10dp
+            final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10,
+                    getResources().getDisplayMetrics());
+            params.setMargins(margin, 500, margin, margin);
+        }
+
+
+    }
+
+    public void limpiarMediciones() {
         if (Polyline_shape != null) {
             Polyline_shape.remove();
             Polyline_shape = null;
         }
         if (Polygon_shape != null) {
             Polygon_shape.remove();
-            Polygon_shape =null;
+            Polygon_shape = null;
         }
         drop_markers_edicion();
         control_dibujo = 1;
@@ -2955,19 +3012,19 @@ public void controlToolsGoogle(){
         hide_undo_geom();
     }
 
-    public void backup_db(){
+    public void backup_db() {
 
 
         String path_backup = null;
 
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            path_backup= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"backup"+ File.separator;
-        }else{
-            path_backup= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"backup"+ File.separator;
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+        } else {
+            path_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
         }
 
 
-        try{
+        try {
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
             String currentDateandTime = sdf.format(new Date());
@@ -2977,9 +3034,9 @@ public void controlToolsGoogle(){
             File dbFile = new File(inFileName);
             FileInputStream fis = new FileInputStream(dbFile);
 
-            String salida=currentDateandTime+".db";
+            String salida = currentDateandTime + ".db";
 
-            String outFileName = path_backup+salida;
+            String outFileName = path_backup + salida;
 
             // Open the empty db as the output stream
             OutputStream output = new FileOutputStream(outFileName);
@@ -2987,7 +3044,7 @@ public void controlToolsGoogle(){
             // Transfer bytes from the inputfile to the outputfile
             byte[] buffer = new byte[1024];
             int length;
-            while ((length = fis.read(buffer))>0){
+            while ((length = fis.read(buffer)) > 0) {
                 output.write(buffer, 0, length);
             }
 
@@ -2999,17 +3056,17 @@ public void controlToolsGoogle(){
 
 
             ZipArchive zipArchive = new ZipArchive();
-            zipArchive.zip(outFileName,path_backup+currentDateandTime+".zip","bf81f34965eddf8f3c291848ae64015f");
+            zipArchive.zip(outFileName, path_backup + currentDateandTime + ".zip", "bf81f34965eddf8f3c291848ae64015f");
 
             File file = new File(outFileName);
             boolean deleted = file.delete();
 
-            Mensajes mensaje=new Mensajes(this);
+            Mensajes mensaje = new Mensajes(this);
             mensaje.generarToast("Backup Realizado");
 
         } catch (IOException e) {
-            Mensajes mensaje=new Mensajes(this);
-            mensaje.generarToast("Fallo al hacer Backup","error");
+            Mensajes mensaje = new Mensajes(this);
+            mensaje.generarToast("Fallo al hacer Backup", "error");
             e.printStackTrace();
         }
 
@@ -3026,10 +3083,10 @@ public void controlToolsGoogle(){
         String ruta_foto = null;
 
 
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            ruta_foto= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
-        }else{
-            ruta_foto= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        } else {
+            ruta_foto = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
         }
 
         File storageDir = new File(ruta_foto);
@@ -3045,7 +3102,8 @@ public void controlToolsGoogle(){
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
-    private void GetCoordenadasFoto(String Path){
+
+    private void GetCoordenadasFoto(String Path) {
 
         ExifInterface exif = null;
 
@@ -3058,23 +3116,20 @@ public void controlToolsGoogle(){
             String LONGITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
 
 
-            if((LATITUDE !=null)
-                    && (LATITUDE_REF !=null)
+            if ((LATITUDE != null)
+                    && (LATITUDE_REF != null)
                     && (LONGITUDE != null)
-                    && (LONGITUDE_REF !=null))
-            {
+                    && (LONGITUDE_REF != null)) {
 
-                if(LATITUDE_REF.equals("N")){
+                if (LATITUDE_REF.equals("N")) {
                     Latitude = convertToDegree(LATITUDE);
-                }
-                else{
+                } else {
                     Latitude = 0 - convertToDegree(LATITUDE);
                 }
 
-                if(LONGITUDE_REF.equals("E")){
+                if (LONGITUDE_REF.equals("E")) {
                     Longitude = convertToDegree(LONGITUDE);
-                }
-                else{
+                } else {
                     Longitude = 0 - convertToDegree(LONGITUDE);
                 }
 
@@ -3083,14 +3138,13 @@ public void controlToolsGoogle(){
             Log.d("Longitude:", String.valueOf(Longitude));
             Log.d("Latitude:", String.valueOf(Latitude));
 
-            if(Longitude!=null && Latitude!=null){
-                Marker foto=mMap.addMarker(new MarkerOptions()
+            if (Longitude != null && Latitude != null) {
+                Marker foto = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(Latitude, Longitude))
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.foto)));
 
-                foto.setTag("foto:"+Path);
+                foto.setTag("foto:" + Path);
             }
-
 
 
         } catch (IOException e) {
@@ -3100,14 +3154,14 @@ public void controlToolsGoogle(){
 
     }
 
-    public void dibujarFotos(){
+    public void dibujarFotos() {
 
         String ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
 
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            ruta_foto= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
-        }else{
-            ruta_foto= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        } else {
+            ruta_foto = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
         }
 
         File FotoPath = new File(ruta_foto);
@@ -3116,43 +3170,43 @@ public void controlToolsGoogle(){
             File[] files = FotoPath.listFiles();
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
-                GetCoordenadasFoto(String.valueOf(file)) ;
+                GetCoordenadasFoto(String.valueOf(file));
             }
         }
 
     }
 
 
-
-    private Float convertToDegree(String stringDMS){
+    private Float convertToDegree(String stringDMS) {
         Float result = null;
         String[] DMS = stringDMS.split(",", 3);
 
         String[] stringD = DMS[0].split("/", 2);
         Double D0 = new Double(stringD[0]);
         Double D1 = new Double(stringD[1]);
-        Double FloatD = D0/D1;
+        Double FloatD = D0 / D1;
 
         String[] stringM = DMS[1].split("/", 2);
         Double M0 = new Double(stringM[0]);
         Double M1 = new Double(stringM[1]);
-        Double FloatM = M0/M1;
+        Double FloatM = M0 / M1;
 
         String[] stringS = DMS[2].split("/", 2);
         Double S0 = new Double(stringS[0]);
         Double S1 = new Double(stringS[1]);
-        Double FloatS = S0/S1;
+        Double FloatS = S0 / S1;
 
-        result = new Float(FloatD + (FloatM/60) + (FloatS/3600));
+        result = new Float(FloatD + (FloatM / 60) + (FloatS / 3600));
 
         return result;
 
 
-    };
+    }
+
+    ;
 
 
-    public static Boolean userLocation(Context context)
-    {
+    public static Boolean userLocation(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 // This is new method provided in API 28
             LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -3161,7 +3215,7 @@ public void controlToolsGoogle(){
 // This is Deprecated in API 28
             int mode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE,
                     Settings.Secure.LOCATION_MODE_OFF);
-            return  (mode != Settings.Secure.LOCATION_MODE_OFF);
+            return (mode != Settings.Secure.LOCATION_MODE_OFF);
 
         }
     }
@@ -3177,25 +3231,24 @@ public void controlToolsGoogle(){
 
         }
 
-
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null) {
-            if(result.getContents() == null) {
+        if (result != null) {
+            if (result.getContents() == null) {
                 mitoast.generarToast("Operación cancelada");
             } else {
 
                 try {
-                    String datos=result.getContents();
+                    String datos = result.getContents();
                     String[] dat = datos.split(",");
 
-                    String latitud=dat[0].replace("G:","");
-                    String longitud=dat[1];
+                    String latitud = dat[0].replace("G:", "");
+                    String longitud = dat[1];
 
                     LatLng coordinate = new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud)); //Store these lat lng values somewhere. These should be constant.
                     CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
                             coordinate, 18);
                     mMap.animateCamera(location);
-                }catch (Exception e){
+                } catch (Exception e) {
                     mitoast.generarToast("QR NO Valido");
                 }
 
@@ -3207,11 +3260,12 @@ public void controlToolsGoogle(){
             super.onActivityResult(requestCode, resultCode, data);
         }
 
+
     }
 
-    private void importDatabase(){
+    private void importDatabase() {
         String path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
         } else {
             path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
@@ -3219,22 +3273,22 @@ public void controlToolsGoogle(){
         File directory = new File(path_backup);
         File[] files = directory.listFiles();
 //        Log.d("LengthFiles",String.valueOf(files.length));
-        if(files.length > 0){
-            LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService( MainActivity.this.LAYOUT_INFLATER_SERVICE );
-            AlertDialog.Builder mBuilder =new AlertDialog.Builder(MainActivity.this);
-            final View mView =inflater.inflate(R.layout.dialog_restore,null);
+        if (files.length > 0) {
+            LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(MainActivity.this.LAYOUT_INFLATER_SERVICE);
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+            final View mView = inflater.inflate(R.layout.dialog_restore, null);
             mBuilder.setView(mView);
             final AlertDialog dialog = mBuilder.create();
             LinearLayout restaurar = (LinearLayout) mView.findViewById(R.id.guardar_formulario);
             final Spinner tipoComplemento = (Spinner) mView.findViewById(R.id.file_restore);
             List<String> filesR = new ArrayList<>();
-            for(File f:files){
-                if(f.getName().contains("zip")){
+            for (File f : files) {
+                if (f.getName().contains("zip")) {
                     filesR.add(f.getName());
                 }
 
             }
-            final ArrayAdapter<String> filesSpinner = new ArrayAdapter(MainActivity.this,android.R.layout.simple_spinner_item,
+            final ArrayAdapter<String> filesSpinner = new ArrayAdapter(MainActivity.this, android.R.layout.simple_spinner_item,
                     filesR);
             tipoComplemento.setAdapter(filesSpinner);
             mBuilder.show();
@@ -3269,16 +3323,16 @@ public void controlToolsGoogle(){
 
             });
 
-        }else{
+        } else {
             Mensajes mensaje = new Mensajes(this);
             mensaje.generarToast("No hay backups disponibles para restaurar");
         }
 
     }
 
-    private void restaurarBD(String file, DialogInterface dialog){
+    private void restaurarBD(String file, DialogInterface dialog) {
         String path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
         } else {
             path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
@@ -3289,17 +3343,17 @@ public void controlToolsGoogle(){
         File fileR = null;
         String filename;
         String name;
-        for(File f:files){
-            if(f.getName().equals(file)){
+        for (File f : files) {
+            if (f.getName().equals(file)) {
                 fileR = f;
             }
         }
 
-        if(fileR != null){
+        if (fileR != null) {
             ZipArchive zipArchive = new ZipArchive();
-            zipArchive.unzip(fileR.getAbsolutePath(),path_backup,"bf81f34965eddf8f3c291848ae64015f");
+            zipArchive.unzip(fileR.getAbsolutePath(), path_backup, "bf81f34965eddf8f3c291848ae64015f");
 
-            name = fileR.getName().substring(0,fileR.getName().length() - 4);
+            name = fileR.getName().substring(0, fileR.getName().length() - 4);
 
             filename = path_backup + name + ".db";
             try {
@@ -3308,8 +3362,8 @@ public void controlToolsGoogle(){
                 OutputStream mOutput = new FileOutputStream(outFileName);
                 byte[] mBuffer = new byte[1024];
                 int mLength;
-                while((mLength = mInput.read(mBuffer)) > 0){
-                    mOutput.write(mBuffer,0,mLength);
+                while ((mLength = mInput.read(mBuffer)) > 0) {
+                    mOutput.write(mBuffer, 0, mLength);
                 }
                 mOutput.flush();
                 mOutput.close();
@@ -3330,9 +3384,107 @@ public void controlToolsGoogle(){
 
     }
 
+    public void hide_captura_gps() {
+        LinearLayout captura_gps = (LinearLayout) findViewById(R.id.captura_gps);
+        captura_gps.setVisibility(View.GONE);
+    }
+
+    public void remove_tracking() {
+        if (Polyline_tracking != null) {
+            Polyline_tracking.remove();
+            Polyline_tracking = null;
+        }
+    }
+
+    public void save_line_gps() {
+        try {
+
+            List<LatLng> points = new ArrayList<>();
+            PolylineOptions opts = new PolylineOptions();
+
+//            if(opcion==2){
+            if (Polyline_tracking != null) {
+                points = Polyline_tracking.getPoints();
+                for (LatLng location : points) {
+                    opts.add(location);
+                }
+            }
+            atributos.put("tipo", "Ruta CEED");
+            atributos.put("descripcion", "CONTROL CEED GPS");
+            atributos.put("color", "#56D5FF");
+//            }
+
+//            int id = Integer.parseInt(main.atributos.get("id").toString());
+
+            dataBase db = new dataBase(this, this);
+//
+            Integer idtr = db.getMaxIdNovedad() + 1;
+            if (atributos.has("id")) {
+                idtr = Integer.valueOf(atributos.get("id").toString());
+            }
+            atributos.put("id", String.valueOf(idtr));
+            line.add(mMap.addPolyline(opts.width(5)));
+            line.get(line.size() - 1).setClickable(false);
+//
+            int tipo_geometria = 2;
+//
+            Date todayDate = Calendar.getInstance().getTime();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String fecha = formatter.format(todayDate);
+//
+//
+            String wkt = analisis.LineaWKT(line.get(line.size() - 1));
+            String tipo = atributos.get("tipo").toString();
+            String descripcion = atributos.get("descripcion").toString();
+            Novedades novedad = new Novedades(this, this, idtr, id_dispositivo, tipo_geometria, wkt, tipo, descripcion, fecha);
+//            Novedades novedad=new Novedades(main,main,idtr,tipo,descripcion,wkt);
+            Boolean inserto = novedad.insertarNovedad();
+            mitoast.generarToast("Elemento guardado");
+//
+//
+            line.get(line.size() - 1).setTag(atributos);
+            line.get(line.size() - 1).setColor(Color.parseColor(atributos.get("color").toString()));
+            line.get(line.size() - 1).setWidth(10);
+
+            String punto_inicial = analisis.FirstPointPolyline(wkt);
+            Util util = new Util(this, this);
+            String identificador = line.get(line.size() - 1).getId();
+//            util.generarLabelLinea(punto_inicial, fecha, identificador);
+//
+//            Util util=new Util(MainActivity.this,MainActivity.this);
+//            CeedDB ceeddb=new CeedDB(MainActivity.this);
+//
+//            String style=ceeddb.get_LineaStyle(tipo);
+//
+//            List<PatternItem> patron=util.LineStyle(style);
+//            line.get(line.size()-1).setPattern(patron);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+//        if(GeometriaUpdate){
+//            for(int i=0;i<line.size();i++){
+//
+//                if(line.get(i).getId().equals(codId)){
+//                    line.get(line.size()-1).setTag(line.get(i).getTag());
+//                    line.get(i).remove();
+//                }
+//            }
+//        }
+
+//        if(opcion==2){
+        Polyline_tracking.remove();
+        Polyline_tracking = null;
+//        }
+    }
+
     private void refresh() {
         finish();
         startActivity(getIntent());
     }
+
 
 }

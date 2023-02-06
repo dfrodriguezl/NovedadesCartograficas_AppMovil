@@ -43,8 +43,10 @@ public class Controlador {
 
     String url_obras_get = "http://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/obras_get.php?sector=";
 
-    String subir_novedades = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
+//    String subir_novedades = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
+//    String subir_novedades = "http://192.168.20.21/edicion_mobile/sincronizar_get.php";
 //    String subir_novedades = "https://nowsoft.app/geoportal/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
+    String subir_novedades = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get_2.php";
 
     String folder_insumos = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_list.php";
 
@@ -340,11 +342,30 @@ public class Controlador {
 
                         String url = subir_novedades;
 
-                        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-                                new Response.Listener<String>() {
+
+
+                        JSONObject json = new JSONObject();
+                        json.put("id", id);
+                        json.put("tipo", tipo);
+                        json.put("descripcion", descripcion);
+                        json.put("novedad", novedad);
+                        json.put("geometria", geometria);
+                        json.put("usuario", usuario);
+                        json.put("id_dispositivo", id_dispositivo);
+                        json.put("investigacion", investigacion);
+                        json.put("lat_gps", lat_gps);
+                        json.put("lon_gps", lon_gps);
+
+                        JsonObjectRequest postRequest = new JsonObjectRequest(
+                                Request.Method.POST,
+                                url,
+                                json,
+                                new Response.Listener<JSONObject>() {
                                     @Override
-                                    public void onResponse(String response) {
-                                        Log.d("response", response);
+                                    public void onResponse(JSONObject response) {
+                                        Log.d("response", response.toString());
+                                        Mensajes mitoast = new Mensajes(context);
+                                        mitoast.generarToast("Datos Enviados");
                                     }
                                 },
                                 new Response.ErrorListener() {
@@ -352,32 +373,34 @@ public class Controlador {
                                     public void onErrorResponse(VolleyError error) {
                                         Log.d("des", descripcion);
                                         Log.d("error", String.valueOf(error));
+                                        Mensajes mitoast = new Mensajes(context);
+                                        mitoast.generarToast("Datos Enviados");
                                     }
                                 }
                         ) {
-                            @Override
-                            protected Map<String, String> getParams() {
-                                Map<String, String> params = new HashMap<>();
-
-                                params.put("id", id);
-                                params.put("tipo", tipo);
-                                params.put("descripcion", descripcion);
-                                params.put("novedad", novedad);
-                                params.put("geometria", geometria);
-                                params.put("usuario", usuario);
-                                params.put("id_dispositivo", id_dispositivo);
-                                params.put("investigacion", investigacion);
-                                params.put("lat_gps", lat_gps);
-                                params.put("lon_gps", lon_gps);
-                                return params;
-                            }
-
-                            @Override
-                            public Map<String, String> getHeaders() throws AuthFailureError {
-                                Map<String, String> params = new HashMap<String, String>();
-                                params.put("Content-Type", "application/x-www-form-urlencoded");
-                                return params;
-                            }
+//                            @Override
+//                            protected Map<String, String> getParams() {
+//                                Map<String, String> params = new HashMap<>();
+//
+//                                params.put("id", id);
+//                                params.put("tipo", tipo);
+//                                params.put("descripcion", descripcion);
+//                                params.put("novedad", novedad);
+//                                params.put("geometria", geometria);
+//                                params.put("usuario", usuario);
+//                                params.put("id_dispositivo", id_dispositivo);
+//                                params.put("investigacion", investigacion);
+//                                params.put("lat_gps", lat_gps);
+//                                params.put("lon_gps", lon_gps);
+//                                return params;
+//                            }
+//
+//                            @Override
+//                            public Map<String, String> getHeaders() throws AuthFailureError {
+//                                Map<String, String> params = new HashMap<String, String>();
+//                                params.put("Content-Type", "application/x-www-form-urlencoded");
+//                                return params;
+//                            }
                         };
 
                         postRequest.setShouldCache(false);
@@ -391,15 +414,14 @@ public class Controlador {
                     c.close();
                 }
 
-                Mensajes mitoast = new Mensajes(context);
-                mitoast.generarToast("Datos Enviados");
+
 
                 barProgressDialog.dismiss();
 
                 sp.close();
 
 
-            } catch (SQLiteConstraintException e) {
+            } catch (SQLiteConstraintException | JSONException e) {
 
                 Mensajes mitoast = new Mensajes(context);
                 mitoast.generarToast("Error al subir información");

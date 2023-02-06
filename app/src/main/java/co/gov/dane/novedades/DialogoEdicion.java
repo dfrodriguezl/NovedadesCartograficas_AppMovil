@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Environment;
+
 import androidx.appcompat.app.AlertDialog;
+
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -37,97 +39,103 @@ public class DialogoEdicion {
     public Activity activity;
     private int opcion;
     MainActivity main;
-    private Boolean edicion=false;
+    private Boolean edicion = false;
     private JSONObject json;
     String Color;
     String id_google;
-    String imagen="";
+    String imagen = "";
 
-    int seguir_spinner_linea=0;
-    int seguir_spinner_punto=0;
+    int seguir_spinner_linea = 0;
+    int seguir_spinner_punto = 0;
 
     CeedDB db;
     Util utilidad;
 
-    public DialogoEdicion(MainActivity main, Activity _activity,int opcion){
+    public DialogoEdicion(MainActivity main, Activity _activity, int opcion) {
 
         this.activity = _activity;
-        this.opcion=opcion;
-        this.main=main;
+        this.opcion = opcion;
+        this.main = main;
 
     }
 
-    public DialogoEdicion(MainActivity main, Activity _activity,int opcion,Boolean edicion,JSONObject json,String id_google){
+    public DialogoEdicion(MainActivity main, Activity _activity, int opcion, Boolean edicion, JSONObject json, String id_google) {
 
         this.activity = _activity;
-        this.opcion=opcion;
-        this.main=main;
-        this.edicion=edicion;
-        this.json=json;
-        this.id_google=id_google;
+        this.opcion = opcion;
+        this.main = main;
+        this.edicion = edicion;
+        this.json = json;
+        this.id_google = id_google;
 
     }
 
-    public void mostrarDialogoEdicionPL(Boolean WindowVisible){
+    public void mostrarDialogoEdicionPL(Boolean WindowVisible) {
         String ruta_db;
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
-        }else{
-            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+        } else {
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
         }
 
-        db =new CeedDB(main,ruta_db);
-        utilidad=new Util(main,main);
+        db = new CeedDB(main, ruta_db);
+        utilidad = new Util(main, main);
 
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(activity);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
 
-        final View mView =inflater.inflate(R.layout.dialog_atributos,null);
+        final View mView = inflater.inflate(R.layout.dialog_atributos, null);
 
         mBuilder.setView(mView);
-        final AlertDialog dialog =mBuilder.create();
+        final AlertDialog dialog = mBuilder.create();
         dialog.setCanceledOnTouchOutside(false);
         WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
 
         wmlp.gravity = Gravity.TOP | Gravity.CENTER;
         wmlp.y = 200;   //y position
 
-        wmlp.width=mView.getWidth();
+        wmlp.width = mView.getWidth();
         dialog.getWindow().setDimAmount(0);
 
 
-        Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
-        Button btn_dialog_cerrar_atributos= (Button) mView.findViewById(R.id.btn_dialog_cerrar_atributos);
+        Button btn_guardar_atributos = (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
+        Button btn_dialog_cerrar_atributos = (Button) mView.findViewById(R.id.btn_dialog_cerrar_atributos);
 
 
-        if(opcion==1){
+        if (opcion == 1) {
 
-            SpinnerNovedadPunto(mView,0,0,0);
+            SpinnerNovedadPunto(mView, 0, 0, 0);
 
         }
-        if(opcion==2){
-            LinearLayout panel_item  =(LinearLayout)  mView.findViewById(R.id.panel_item);
+        if (opcion == 2) {
+            LinearLayout panel_item = (LinearLayout) mView.findViewById(R.id.panel_item);
             panel_item.setVisibility(View.GONE);
-            SpinnerNovedadLinea(mView,0,0);
+            SpinnerNovedadLinea(mView, 0, 0);
 
         }
+        if (opcion == 4) {
+            LinearLayout panel_item = (LinearLayout) mView.findViewById(R.id.panel_item);
+            panel_item.setVisibility(View.GONE);
+            SpinnerNovedadLinea(mView, 0, 0);
+        }
 
-        if(!WindowVisible){
-            if(opcion==1){
+        if (!WindowVisible) {
+            if (opcion == 1) {
                 main.dibujo_punto();
                 main.show_add_punto();
             }
-            if(opcion==2){
-                main.dibujo_linea();
+            if (opcion == 2) {
+                main.dibujo_linea(2);
                 main.show_add_punto();
             }
-        }else{
+
+        } else {
             dialog.show();
         }
 
-        if(WindowVisible){
+        if (WindowVisible) {
 
             btn_dialog_cerrar_atributos.setVisibility(View.GONE);
             btn_guardar_atributos.setOnClickListener(new View.OnClickListener() {
@@ -135,43 +143,56 @@ public class DialogoEdicion {
                 @Override
                 public void onClick(View v) {
 
-                    EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
+                    EditText descripcion_novedad = (EditText) mView.findViewById(R.id.descripcion_novedad);
 
-                    String tipo="";
+                    String tipo = "";
 
-                    String descripcion=descripcion_novedad.getText().toString();
+                    String descripcion = descripcion_novedad.getText().toString();
 
-                    String color="";
+                    String color = "";
 
 
-                    if(opcion==1){
-                        tipo= imagen.replace(".png", "");
-                        color=imagen;
+                    if (opcion == 1) {
+                        tipo = imagen.replace(".png", "");
+                        color = imagen;
                     }
 
-                    if(opcion==2){
+                    if (opcion == 2) {
 
                         Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
-                        String grupo=spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                        String grupo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
 
                         Spinner spinner_novedad_subgrupo = (Spinner) mView.findViewById(R.id.spinner_novedad_subgrupo);
-                        String subgrupo=spinner_novedad_subgrupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
-                        tipo=grupo+subgrupo;
+                        String subgrupo = spinner_novedad_subgrupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                        tipo = grupo + subgrupo;
 
-                        color=db.get_LineaColor(tipo);
+                        color = db.get_LineaColor(tipo);
 
                     }
-                    if(opcion==3){
+                    if (opcion == 3) {
                         Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
-                        tipo=spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
-                        color=db.get_PoligonoColor(tipo);
+                        tipo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                        color = db.get_PoligonoColor(tipo);
+                    }
+
+                    if (opcion == 4) {
+
+                        Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
+                        String grupo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+
+                        Spinner spinner_novedad_subgrupo = (Spinner) mView.findViewById(R.id.spinner_novedad_subgrupo);
+                        String subgrupo = spinner_novedad_subgrupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                        tipo = grupo + subgrupo;
+
+                        color = db.get_LineaColor(tipo);
+
                     }
 
                     try {
-                        main.atributos =new JSONObject();
+                        main.atributos = new JSONObject();
                         main.atributos.put("tipo", tipo);
                         main.atributos.put("descripcion", descripcion);
-                        main.atributos.put("color",color);
+                        main.atributos.put("color", color);
 
                     } catch (JSONException e) {
 
@@ -179,10 +200,13 @@ public class DialogoEdicion {
 
                     dialog.dismiss();
 
-                    if(opcion==1){
+                    if (opcion == 1) {
                         main.drawP();
                     }
-                    if(opcion==2){
+                    if (opcion == 2) {
+                        main.drawL(1);
+                    }
+                    if (opcion == 4) {
                         main.drawL(1);
                     }
 
@@ -196,67 +220,72 @@ public class DialogoEdicion {
     }
 
 
-    public void mostrarDialogoEdicion(){
+    public void mostrarDialogoEdicion() {
 
         String ruta_db;
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
-        }else{
-            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+        } else {
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
         }
 
-        db =new CeedDB(main,ruta_db);
-        utilidad=new Util(main,main);
+        db = new CeedDB(main, ruta_db);
+        utilidad = new Util(main, main);
 
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(activity);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
 
-        final View mView =inflater.inflate(R.layout.dialog_atributos,null);
+        final View mView = inflater.inflate(R.layout.dialog_atributos, null);
 
         mBuilder.setView(mView);
-        final AlertDialog dialog =mBuilder.create();
+        final AlertDialog dialog = mBuilder.create();
         dialog.setCanceledOnTouchOutside(false);
         WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
 
         wmlp.gravity = Gravity.TOP | Gravity.CENTER;
         wmlp.y = 200;   //y position
 
-        wmlp.width=mView.getWidth();
+        wmlp.width = mView.getWidth();
         dialog.getWindow().setDimAmount(0);
 
-        if(opcion==1){
+        if (opcion == 1) {
 
-            SpinnerNovedadPunto(mView,0,0,0);
+            SpinnerNovedadPunto(mView, 0, 0, 0);
 
         }
-        if(opcion==2){
-            LinearLayout panel_item  =(LinearLayout)  mView.findViewById(R.id.panel_item);
+        if (opcion == 2) {
+            LinearLayout panel_item = (LinearLayout) mView.findViewById(R.id.panel_item);
             panel_item.setVisibility(View.GONE);
-            SpinnerNovedadLinea(mView,0,0);
+            SpinnerNovedadLinea(mView, 0, 0);
 
         }
 
-        if(opcion==3){
-            LinearLayout panel_subgrupo  =(LinearLayout)  mView.findViewById(R.id.panel_subgrupo);
+        if (opcion == 3) {
+            LinearLayout panel_subgrupo = (LinearLayout) mView.findViewById(R.id.panel_subgrupo);
             panel_subgrupo.setVisibility(View.GONE);
-            LinearLayout panel_item  =(LinearLayout)  mView.findViewById(R.id.panel_item);
+            LinearLayout panel_item = (LinearLayout) mView.findViewById(R.id.panel_item);
             panel_item.setVisibility(View.GONE);
-            SpinnerNovedadPoligono(mView,0);
-
+            SpinnerNovedadPoligono(mView, 0);
         }
+
+//        if (opcion == 4) {
+//            LinearLayout panel_item = (LinearLayout) mView.findViewById(R.id.panel_item);
+//            panel_item.setVisibility(View.GONE);
+//            SpinnerNovedadLinea(mView, 0, 0);
+//        }
 
         dialog.show();
 
 
-        Button btn_guardar_atributos= (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
-        Button btn_dialog_cerrar_atributos= (Button) mView.findViewById(R.id.btn_dialog_cerrar_atributos);
+        Button btn_guardar_atributos = (Button) mView.findViewById(R.id.btn_dialog_guardar_atributos);
+        Button btn_dialog_cerrar_atributos = (Button) mView.findViewById(R.id.btn_dialog_cerrar_atributos);
 
 
-        if(!edicion){
+        if (!edicion) {
 
-            Mensajes mitoast =new Mensajes(activity);
+            Mensajes mitoast = new Mensajes(activity);
 
 
             mitoast.generarToast("Ingrese los atributos de la nueva geometria");
@@ -267,26 +296,26 @@ public class DialogoEdicion {
                 @Override
                 public void onClick(View v) {
 
-                    EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
+                    EditText descripcion_novedad = (EditText) mView.findViewById(R.id.descripcion_novedad);
 
-                    String tipo="";
+                    String tipo = "";
 
-                    String descripcion=descripcion_novedad.getText().toString();
+                    String descripcion = descripcion_novedad.getText().toString();
 
-                    String color="";
+                    String color = "";
 
 
-                    if(opcion==3){
+                    if (opcion == 3) {
                         Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
-                        tipo=spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
-                        color=db.get_PoligonoColor(tipo);
+                        tipo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                        color = db.get_PoligonoColor(tipo);
                     }
 
                     try {
-                        main.atributos =new JSONObject();
+                        main.atributos = new JSONObject();
                         main.atributos.put("tipo", tipo);
                         main.atributos.put("descripcion", descripcion);
-                        main.atributos.put("color",color);
+                        main.atributos.put("color", color);
 
                     } catch (JSONException e) {
 
@@ -295,14 +324,14 @@ public class DialogoEdicion {
 
                     dialog.dismiss();
 
-                    if(opcion==3){
-                        if (tipo.equals("3") ){// se implementa la unión de manzanas
+                    if (opcion == 3) {
+                        if (tipo.equals("3")) {// se implementa la unión de manzanas
                             main.mitoast.generarToast("Seleccione más de una Manzana");
-                            main.JoinPicker=false;
-                        }else if(tipo.equals("2")|| tipo.equals("4")|| tipo.equals("5") || tipo.equals("6") ){// se implementa para AG NO EXISTE
+                            main.JoinPicker = false;
+                        } else if (tipo.equals("2") || tipo.equals("4") || tipo.equals("5") || tipo.equals("6")) {// se implementa para AG NO EXISTE
                             main.mitoast.generarToast("Seleccione una Manzana");
-                            main.JoinPicker=false;
-                        }else{// se implementa para las novedades tipo poligono que se deben dibujar
+                            main.JoinPicker = false;
+                        } else {// se implementa para las novedades tipo poligono que se deben dibujar
                             main.dibujo_poligono();
                             main.show_add_punto();
                         }
@@ -311,73 +340,80 @@ public class DialogoEdicion {
                     }
 
 
-
                 }
             });
 
 
-        }
-        else if(edicion){
+        } else if (edicion) {
             btn_dialog_cerrar_atributos.setVisibility(View.VISIBLE);
             try {
 
-                String tipo= json.get("tipo").toString();
-                String descripcion=json.get("descripcion").toString();
+                String tipo = json.get("tipo").toString();
+                String descripcion = json.get("descripcion").toString();
 
-                if(tipo!=null){
+                if (tipo != null) {
 
-                    Log.d("opcion_escogida:",String.valueOf(opcion));
+                    Log.d("opcion_escogida:", String.valueOf(opcion));
 
-                    if(opcion==1){
+                    if (opcion == 1) {
 
-                        final int grupo= Integer.parseInt(tipo.substring(0, 2))-1;
+                        final int grupo = Integer.parseInt(tipo.substring(0, 2)) - 1;
 
-                        int subgrupo=0;
-                        if(grupo==0){
-                            subgrupo= Integer.parseInt(tipo.substring(2, 4))-1;
-                        }else{
-                            subgrupo= Integer.parseInt(tipo.substring(2, 4))-1;
+                        int subgrupo = 0;
+                        if (grupo == 0) {
+                            subgrupo = Integer.parseInt(tipo.substring(2, 4)) - 1;
+                        } else {
+                            subgrupo = Integer.parseInt(tipo.substring(2, 4)) - 1;
                         }
 
 
-                        int item=0;
-                        if(grupo==0 && subgrupo==0){
-                            item= Integer.parseInt(tipo.substring(4, 6))-8;
-                        }else{
-                            item= Integer.parseInt(tipo.substring(4, 6))-1;
+                        int item = 0;
+                        if (grupo == 0 && subgrupo == 0) {
+                            item = Integer.parseInt(tipo.substring(4, 6)) - 8;
+                        } else {
+                            item = Integer.parseInt(tipo.substring(4, 6)) - 1;
                         }
 
                         Log.d("grupo:", String.valueOf(grupo));
                         Log.d("subgrupo:", String.valueOf(subgrupo));
                         Log.d("item:", String.valueOf(item));
 
-                        SpinnerNovedadPunto(mView,grupo,subgrupo,item);
+                        SpinnerNovedadPunto(mView, grupo, subgrupo, item);
 
                     }
-                    if(opcion==2){
+                    if (opcion == 2) {
 
-                        final int grupo= Integer.parseInt(tipo.substring(0, 2));
+                        final int grupo = Integer.parseInt(tipo.substring(0, 2));
 
-                        int subgrupo=0;
-                        subgrupo= Integer.parseInt(tipo.substring(2, 4));
+                        int subgrupo = 0;
+                        subgrupo = Integer.parseInt(tipo.substring(2, 4));
 
-                        SpinnerNovedadLinea(mView,grupo-1,subgrupo-1);
-
-                    }
-                    if(opcion==3){
-
-                        final int grupo= Integer.parseInt(tipo);
-
-                        SpinnerNovedadPoligono(mView,grupo-1);
+                        SpinnerNovedadLinea(mView, grupo - 1, subgrupo - 1);
 
                     }
+                    if (opcion == 3) {
+
+                        final int grupo = Integer.parseInt(tipo);
+
+                        SpinnerNovedadPoligono(mView, grupo - 1);
+
+                    }
+//                    if (opcion == 4) {
+//
+//                        final int grupo = Integer.parseInt(tipo.substring(0, 2));
+//
+//                        int subgrupo = 0;
+//                        subgrupo = Integer.parseInt(tipo.substring(2, 4));
+//
+//                        SpinnerNovedadLinea(mView, grupo - 1, subgrupo - 1);
+//
+//                    }
 
 
                 }
 
-                EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
+                EditText descripcion_novedad = (EditText) mView.findViewById(R.id.descripcion_novedad);
                 descripcion_novedad.setText(descripcion);
-
 
 
             } catch (Throwable t) {
@@ -408,116 +444,113 @@ public class DialogoEdicion {
                     try {
 
                         int id = Integer.parseInt(json.get("id").toString());
-                        EditText descripcion_novedad= (EditText) mView.findViewById(R.id.descripcion_novedad);
+                        EditText descripcion_novedad = (EditText) mView.findViewById(R.id.descripcion_novedad);
 
-                        String tipo="";
+                        String tipo = "";
 
-                        if(opcion==1 ){
+                        if (opcion == 1) {
 
-                            tipo= imagen.replace(".png", "");
+                            tipo = imagen.replace(".png", "");
 
-                        }else if(opcion==2){
+                        } else if (opcion == 2) {
 
                             Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
-                            String grupo=spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                            String grupo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
 
                             Spinner spinner_novedad_subgrupo = (Spinner) mView.findViewById(R.id.spinner_novedad_subgrupo);
-                            String subgrupo=spinner_novedad_subgrupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
-                            tipo=grupo+subgrupo;
+                            String subgrupo = spinner_novedad_subgrupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                            tipo = grupo + subgrupo;
 
-                        }
-                        else if(opcion==3){
+                        } else if (opcion == 3) {
                             Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
-                            tipo=spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                            tipo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
                         }
 
 
-                        String descripcion=descripcion_novedad.getText().toString();
+                        String descripcion = descripcion_novedad.getText().toString();
 
-                        Novedades novedad=new Novedades(activity,main,id,tipo,descripcion);
+                        Novedades novedad = new Novedades(activity, main, id, tipo, descripcion);
                         novedad.updateNovedadAtributos();
 
                         try {
-                            JSONObject obj =new JSONObject();
+                            JSONObject obj = new JSONObject();
                             obj.put("id", String.valueOf(id));
                             obj.put("tipo", tipo);
                             obj.put("descripcion", descripcion);
 
 
-                        if(opcion==3){
+                            if (opcion == 3) {
 
-                            Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
-                            tipo=spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
-                            String color=db.get_PoligonoColor(tipo);
-                            obj.put("color", color);
+                                Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
+                                tipo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                                String color = db.get_PoligonoColor(tipo);
+                                obj.put("color", color);
 
-                            for(int i=0;i<main.polygon.size();i++){
-                                if(main.polygon.get(i).getId().equals(id_google)){
+                                for (int i = 0; i < main.polygon.size(); i++) {
+                                    if (main.polygon.get(i).getId().equals(id_google)) {
                                         main.polygon.get(i).setTag(obj);
                                         main.polygon.get(i).setFillColor(android.graphics.Color.parseColor(color));
 
+                                    }
+
                                 }
 
                             }
 
-                        }
+                            if (opcion == 2) {
 
-                        if(opcion==2){
+                                Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
+                                String grupo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
 
-                            Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
-                            String grupo=spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                                Spinner spinner_novedad_subgrupo = (Spinner) mView.findViewById(R.id.spinner_novedad_subgrupo);
+                                String subgrupo = spinner_novedad_subgrupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                                tipo = grupo + subgrupo;
 
-                            Spinner spinner_novedad_subgrupo = (Spinner) mView.findViewById(R.id.spinner_novedad_subgrupo);
-                            String subgrupo=spinner_novedad_subgrupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
-                            tipo=grupo+subgrupo;
+                                String color = db.get_LineaColor(tipo);
+                                obj.put("color", color);
+                                String style = db.get_LineaStyle(tipo);
 
-                            String color=db.get_LineaColor(tipo);
-                            obj.put("color", color);
-                            String style=db.get_LineaStyle(tipo);
+                                List<PatternItem> PATTERN_POLYGON_ALPHA = utilidad.LineStyle(style);
 
-                            List<PatternItem> PATTERN_POLYGON_ALPHA =utilidad.LineStyle(style);
+                                for (int i = 0; i < main.line.size(); i++) {
+                                    if (main.line.get(i).getId().equals(id_google)) {
+                                        main.line.get(i).setTag(obj);
+                                        main.line.get(i).setColor(android.graphics.Color.parseColor(color));
+                                        main.line.get(i).setPattern(PATTERN_POLYGON_ALPHA);
+                                    }
 
-                            for(int i=0;i<main.line.size();i++){
-                                if(main.line.get(i).getId().equals(id_google)){
-                                    main.line.get(i).setTag(obj);
-                                    main.line.get(i).setColor(android.graphics.Color.parseColor(color));
-                                    main.line.get(i).setPattern(PATTERN_POLYGON_ALPHA);
                                 }
-
                             }
-                        }
-                        if(opcion==1){
+                            if (opcion == 1) {
 
-                            for(int i=0;i<main.puntos.size();i++){
-                                if(main.puntos.get(i).getId().equals(id_google)){
-                                    main.puntos.get(i).setTag(obj);
+                                for (int i = 0; i < main.puntos.size(); i++) {
+                                    if (main.puntos.get(i).getId().equals(id_google)) {
+                                        main.puntos.get(i).setTag(obj);
 
-                                    String imagen=tipo;
+                                        String imagen = tipo;
 
-                                    AssetManager mg = main.getResources().getAssets();
-                                    InputStream is = null;
-                                    try {
-                                        is = mg.open("img/"+imagen+".png");
-                                        main.puntos.get(i).setIcon(BitmapDescriptorFactory.fromAsset("img/"+imagen+".png"));
-                                    } catch (IOException ex) {
-                                        //file does not exist
-                                    } finally {
-                                        if (is != null) {
-                                            try {
-                                                is.close();
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
+                                        AssetManager mg = main.getResources().getAssets();
+                                        InputStream is = null;
+                                        try {
+                                            is = mg.open("img/" + imagen + ".png");
+                                            main.puntos.get(i).setIcon(BitmapDescriptorFactory.fromAsset("img/" + imagen + ".png"));
+                                        } catch (IOException ex) {
+                                            //file does not exist
+                                        } finally {
+                                            if (is != null) {
+                                                try {
+                                                    is.close();
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
                                         }
                                     }
+
                                 }
 
+
                             }
-
-
-
-                        }
-
 
 
                         } catch (JSONException e) {
@@ -527,7 +560,7 @@ public class DialogoEdicion {
 
 
                     } catch (JSONException e) {
-                       ;
+                        ;
                         Log.e("error:", e.toString());
                     }
 
@@ -550,16 +583,10 @@ public class DialogoEdicion {
         }
 
 
-
-
-
-
-
-
     }
 
 
-    public void SpinnerNovedadPunto(final View mView, final int posGrupo, final int posSubgrupo, final int posItem){
+    public void SpinnerNovedadPunto(final View mView, final int posGrupo, final int posSubgrupo, final int posItem) {
 
         Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
 
@@ -571,14 +598,14 @@ public class DialogoEdicion {
         spinner_novedad_grupo.setAdapter(adapter);
         spinner_novedad_grupo.setSelection(posGrupo);
 
-        seguir_spinner_punto=0;
+        seguir_spinner_punto = 0;
 
         spinner_novedad_grupo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
 
-                final String id_grupo=parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
+                final String id_grupo = parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
 
                 Spinner spinner_novedad_subgrupo = (Spinner) mView.findViewById(R.id.spinner_novedad_subgrupo);
                 List<String> listado = db.get_NovedadSubGrupo(id_grupo);
@@ -588,25 +615,23 @@ public class DialogoEdicion {
                 spinner_novedad_subgrupo.setAdapter(adapter);
 
 
-                if(seguir_spinner_punto==0){
+                if (seguir_spinner_punto == 0) {
                     spinner_novedad_subgrupo.setSelection(posSubgrupo);
-                }else{
+                } else {
                     spinner_novedad_subgrupo.setSelection(0);
                 }
-
 
 
                 spinner_novedad_subgrupo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                        final String id_subgrupo=parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
+                        final String id_subgrupo = parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
 
                         Spinner spinner_novedad_item = (Spinner) mView.findViewById(R.id.spinner_novedad_item);
 
 
-
-                        List<String> listado = db.get_NovedadItem(id_grupo,id_subgrupo);
+                        List<String> listado = db.get_NovedadItem(id_grupo, id_subgrupo);
 
                         Log.d("listado:", String.valueOf(listado));
 
@@ -615,19 +640,19 @@ public class DialogoEdicion {
                         spinner_novedad_item.setAdapter(adapter);
                         spinner_novedad_item.setSelection(posItem);
 
-                        if(seguir_spinner_punto==0){
+                        if (seguir_spinner_punto == 0) {
                             spinner_novedad_item.setSelection(posItem);
-                        }else{
+                        } else {
                             spinner_novedad_item.setSelection(0);
                         }
-                        seguir_spinner_punto=seguir_spinner_punto+1;
+                        seguir_spinner_punto = seguir_spinner_punto + 1;
 
                         spinner_novedad_item.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                final String id_item=parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
+                                final String id_item = parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
 
-                                imagen = db.get_NovedadImagen(id_grupo,id_subgrupo,id_item);
+                                imagen = db.get_NovedadImagen(id_grupo, id_subgrupo, id_item);
 
                             }
 
@@ -656,10 +681,9 @@ public class DialogoEdicion {
         });
 
 
-
     }
 
-    public void SpinnerNovedadLinea(final View mView, final int posGrupo, final int posSubgrupo){
+    public void SpinnerNovedadLinea(final View mView, final int posGrupo, final int posSubgrupo) {
 
         Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
 
@@ -670,13 +694,13 @@ public class DialogoEdicion {
         spinner_novedad_grupo.setAdapter(adapter);
         spinner_novedad_grupo.setSelection(posGrupo);
 
-        seguir_spinner_linea=0;
+        seguir_spinner_linea = 0;
 
         spinner_novedad_grupo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                final String id_grupo=parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
+                final String id_grupo = parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
 
                 Spinner spinner_novedad_subgrupo = (Spinner) mView.findViewById(R.id.spinner_novedad_subgrupo);
                 List<String> listado = db.get_NovedadSubGrupoLinea(id_grupo);
@@ -685,13 +709,13 @@ public class DialogoEdicion {
                 adapter.addAll(listado);
                 spinner_novedad_subgrupo.setAdapter(adapter);
 
-                if(seguir_spinner_linea==0){
+                if (seguir_spinner_linea == 0) {
                     spinner_novedad_subgrupo.setSelection(posSubgrupo);
-                }else{
+                } else {
                     spinner_novedad_subgrupo.setSelection(0);
                 }
 
-                seguir_spinner_linea=seguir_spinner_linea+1;
+                seguir_spinner_linea = seguir_spinner_linea + 1;
 
             }
 
@@ -702,11 +726,10 @@ public class DialogoEdicion {
         });
 
 
-
     }
 
 
-    public void SpinnerNovedadPoligono(final View mView, final int posGrupo){
+    public void SpinnerNovedadPoligono(final View mView, final int posGrupo) {
 
         Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
 
@@ -719,14 +742,6 @@ public class DialogoEdicion {
 
 
     }
-
-
-
-
-
-
-
-
 
 
 }
