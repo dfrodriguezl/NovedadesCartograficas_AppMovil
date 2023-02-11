@@ -209,6 +209,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private GoogleApiClient googleApiClient;
+    Switch switchGPS;
 
 
     @SuppressLint("RestrictedApi")
@@ -670,7 +671,7 @@ public class MainActivity extends AppCompatActivity
 
         Switch switch2 = (Switch) menu.findItem(R.id.habilitar_giroscopio).getActionView().findViewById(R.id.switchGiroscopio);
         Switch switchTracking = (Switch) menu.findItem(R.id.habilitar_tracking).getActionView().findViewById(R.id.switchTracking);
-        Switch switchGPS = (Switch) menu.findItem(R.id.habilitar_dibujo_gps).getActionView().findViewById(R.id.switchTracking);
+        switchGPS = (Switch) menu.findItem(R.id.habilitar_dibujo_gps).getActionView().findViewById(R.id.switchTracking);
 
         switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -728,7 +729,7 @@ public class MainActivity extends AppCompatActivity
                 discard_save_editor.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        remove_tracking();
+                        remove_tracking_gps();
                         hide_captura_gps();
                         hide_discard_save_edicion();
                         hide_discard_save_edicion_track();
@@ -753,8 +754,9 @@ public class MainActivity extends AppCompatActivity
                         estado_mapa_sin_edicion();
                         hide_save_edicion();
                         hide_save_edicion_track();
-                        DialogoEdicion dialogEditor = new DialogoEdicion(MainActivity.this,MainActivity.this,4);
-                        dialogEditor.mostrarDialogoEdicionPL(true);
+                        DialogoEdicion dialogEditor = new DialogoEdicion(MainActivity.this, MainActivity.this, 4);
+                        dialogEditor.mostrarDialogoSeleccionGeometria();
+//                        dialogEditor.mostrarDialogoEdicionPL(true);
                     }
                 });
             }
@@ -1739,7 +1741,7 @@ public class MainActivity extends AppCompatActivity
     public void dibujo_linea(int tipo) {
 
         estado_mapa_edicion();
-        if(tipo == 6){
+        if (tipo == 6) {
             show_discard_save_edicion_track();
         } else {
             show_discard_save_edicion();
@@ -3396,94 +3398,67 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void save_line_gps() {
-        try {
-
-            List<LatLng> points = new ArrayList<>();
-            PolylineOptions opts = new PolylineOptions();
-
-//            if(opcion==2){
-            if (Polyline_tracking != null) {
-                points = Polyline_tracking.getPoints();
-                for (LatLng location : points) {
-                    opts.add(location);
-                }
-            }
-            atributos.put("tipo", "Ruta CEED");
-            atributos.put("descripcion", "CONTROL CEED GPS");
-            atributos.put("color", "#56D5FF");
-//            }
-
-//            int id = Integer.parseInt(main.atributos.get("id").toString());
-
-            dataBase db = new dataBase(this, this);
-//
-            Integer idtr = db.getMaxIdNovedad() + 1;
-            if (atributos.has("id")) {
-                idtr = Integer.valueOf(atributos.get("id").toString());
-            }
-            atributos.put("id", String.valueOf(idtr));
-            line.add(mMap.addPolyline(opts.width(5)));
-            line.get(line.size() - 1).setClickable(false);
-//
-            int tipo_geometria = 2;
-//
-            Date todayDate = Calendar.getInstance().getTime();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            String fecha = formatter.format(todayDate);
-//
-//
-            String wkt = analisis.LineaWKT(line.get(line.size() - 1));
-            String tipo = atributos.get("tipo").toString();
-            String descripcion = atributos.get("descripcion").toString();
-            Novedades novedad = new Novedades(this, this, idtr, id_dispositivo, tipo_geometria, wkt, tipo, descripcion, fecha);
-//            Novedades novedad=new Novedades(main,main,idtr,tipo,descripcion,wkt);
-            Boolean inserto = novedad.insertarNovedad();
-            mitoast.generarToast("Elemento guardado");
-//
-//
-            line.get(line.size() - 1).setTag(atributos);
-            line.get(line.size() - 1).setColor(Color.parseColor(atributos.get("color").toString()));
-            line.get(line.size() - 1).setWidth(10);
-
-            String punto_inicial = analisis.FirstPointPolyline(wkt);
-            Util util = new Util(this, this);
-            String identificador = line.get(line.size() - 1).getId();
-//            util.generarLabelLinea(punto_inicial, fecha, identificador);
-//
-//            Util util=new Util(MainActivity.this,MainActivity.this);
-//            CeedDB ceeddb=new CeedDB(MainActivity.this);
-//
-//            String style=ceeddb.get_LineaStyle(tipo);
-//
-//            List<PatternItem> patron=util.LineStyle(style);
-//            line.get(line.size()-1).setPattern(patron);
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public void remove_tracking_gps() {
+        if (Polyline_shape != null) {
+            Polyline_shape.remove();
+            Polyline_shape = null;
         }
-
-
-//        if(GeometriaUpdate){
-//            for(int i=0;i<line.size();i++){
-//
-//                if(line.get(i).getId().equals(codId)){
-//                    line.get(line.size()-1).setTag(line.get(i).getTag());
-//                    line.get(i).remove();
-//                }
-//            }
-//        }
-
-//        if(opcion==2){
-        Polyline_tracking.remove();
-        Polyline_tracking = null;
-//        }
     }
 
     private void refresh() {
         finish();
         startActivity(getIntent());
+    }
+
+    public void setSwitchGPS(boolean check){
+        switchGPS.setChecked(check);
+    }
+
+    public void crearPoligonoDesdeLinea(){
+        if(Polyline_shape != null){
+            List<LatLng> puntos = Polyline_shape.getPoints();
+            puntos.add(puntos.get(0));
+            PolygonOptions opts = new PolygonOptions();
+            for (int i = 0; i < puntos.size(); i++) {
+                opts.add(puntos.get(i));
+            }
+            if(Polygon_shape != null){
+                Polygon_shape.remove();
+            }
+            Polyline_shape.remove();
+            Polygon_shape = null;
+            Polyline_shape = null;
+            Polygon_shape = mMap.addPolygon(opts);
+            String wkt = analisis.PoligonoWKT(Polygon_shape);
+            try {
+                dataBase db = new dataBase(MainActivity.this, MainActivity.this);
+
+                Integer id = db.getMaxIdNovedad() + 1;
+
+                atributos.put("id", String.valueOf(id));
+                polygon.add(mMap.addPolygon(opts));
+                polygon.get(polygon.size() - 1).setClickable(true);
+
+                int tipo_geometria = 3;
+
+                String tipo = atributos.get("tipo").toString();
+                String descripcion = atributos.get("descripcion").toString();
+                Novedades novedad = new Novedades(MainActivity.this, MainActivity.this, id, id_dispositivo, tipo_geometria, wkt, tipo, descripcion);
+                Boolean inserto = novedad.insertarNovedad();
+                mitoast.generarToast("Elemento guardado");
+
+                Log.d("color_poligono:", atributos.get("color").toString());
+
+                polygon.get(polygon.size() - 1).setTag(atributos);
+                polygon.get(polygon.size() - 1).setFillColor(Color.parseColor(atributos.get("color").toString()));
+                polygon.get(polygon.size() - 1).setZIndex(2);
+                borrar_poligono_seleccionado();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 

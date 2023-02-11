@@ -262,7 +262,7 @@ public class DialogoEdicion {
 
         }
 
-        if (opcion == 3) {
+        if (opcion == 3 || opcion == 5) {
             LinearLayout panel_subgrupo = (LinearLayout) mView.findViewById(R.id.panel_subgrupo);
             panel_subgrupo.setVisibility(View.GONE);
             LinearLayout panel_item = (LinearLayout) mView.findViewById(R.id.panel_item);
@@ -305,7 +305,7 @@ public class DialogoEdicion {
                     String color = "";
 
 
-                    if (opcion == 3) {
+                    if (opcion == 3 || opcion == 5) {
                         Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
                         tipo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
                         color = db.get_PoligonoColor(tipo);
@@ -324,7 +324,7 @@ public class DialogoEdicion {
 
                     dialog.dismiss();
 
-                    if (opcion == 3) {
+                    if (opcion == 3 || opcion == 5) {
                         if (tipo.equals("3")) {// se implementa la unión de manzanas
                             main.mitoast.generarToast("Seleccione más de una Manzana");
                             main.JoinPicker = false;
@@ -332,8 +332,13 @@ public class DialogoEdicion {
                             main.mitoast.generarToast("Seleccione una Manzana");
                             main.JoinPicker = false;
                         } else {// se implementa para las novedades tipo poligono que se deben dibujar
-                            main.dibujo_poligono();
-                            main.show_add_punto();
+                            if(opcion == 5){
+                                main.crearPoligonoDesdeLinea();
+                            } else {
+                                main.dibujo_poligono();
+                                main.show_add_punto();
+                            }
+
                         }
 
 
@@ -743,5 +748,76 @@ public class DialogoEdicion {
 
     }
 
+    // Mostrar dialogo para la selección de geometria cuando se hace un trazo GPS
+    public void mostrarDialogoSeleccionGeometria() {
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+        View mView = inflater.inflate(R.layout.dialog_asignacion, null);
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+        wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+        wmlp.y = 200;   //y position
+        wmlp.width = mView.getWidth();
+        dialog.getWindow().setDimAmount(0);
+
+        final Spinner spinner_tipo_geometria = mView.findViewById(R.id.spinner_tipo_geometria);
+        ArrayAdapter<String> array_tipo_geometria = new ArrayAdapter<String>(main,
+                android.R.layout.simple_spinner_item, main.getResources().getStringArray(R.array.tipo_geometria_gps));
+
+        spinner_tipo_geometria.setAdapter(array_tipo_geometria);
+
+        dialog.show();
+
+
+        Button btn_confirmar = (Button) mView.findViewById(R.id.btn_dialog_confirmar);
+        Button btn_cancelar = (Button) mView.findViewById(R.id.btn_dialog_cancelar);
+
+        btn_cancelar.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                terminarEdicionMapa();
+            }
+        });
+
+        btn_confirmar.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onClick(View v) {
+                String tipo_geometria = spinner_tipo_geometria.getSelectedItem().toString();
+
+                if (tipo_geometria.equals("Polígono")) {
+                    setOpcion(5);
+                    mostrarDialogoEdicion();
+                } else if (tipo_geometria.equals("Línea")) {
+                    setOpcion(2);
+                    mostrarDialogoEdicionPL(true);
+                }
+
+                dialog.dismiss();
+
+            }
+        });
+    }
+
+    private void terminarEdicionMapa() {
+        Mensajes mitoast = new Mensajes(activity);
+        main.remove_tracking_gps();
+        main.hide_captura_gps();
+        main.hide_discard_save_edicion();
+        main.hide_discard_save_edicion_track();
+        mitoast.generarToast("Edición terminada");
+        main.estado_mapa_sin_edicion();
+        main.hide_save_edicion();
+        main.hide_save_edicion_track();
+        main.setSwitchGPS(false);
+    }
+
+    public void setOpcion(int opcion) {
+        this.opcion = opcion;
+    }
 
 }

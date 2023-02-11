@@ -155,6 +155,8 @@
         <item>Censo Económico</item>
         <item>Actualización MGN</item>
     </string-array>
-
-
+    <string-array name="tipo_geometria_gps">
+        <item>Polígono</item>
+        <item>Línea</item>
+    </string-array>
 </resources>
