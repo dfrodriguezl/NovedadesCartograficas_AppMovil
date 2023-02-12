@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Patterns;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,7 +18,7 @@ import org.json.JSONObject;
 public class login extends AppCompatActivity {
 
     private Session session;
-    private EditText username,password;
+    private EditText username, password;
     private Spinner spinner_investigacion;
 
     Mensajes mitoast;
@@ -27,41 +28,50 @@ public class login extends AppCompatActivity {
         super.onCreate(icicle);
         setContentView(R.layout.login);
 
-        mitoast =new Mensajes(login.this);
+        mitoast = new Mensajes(login.this);
 
 
-        username=(EditText) findViewById(R.id.username);
-        password=(EditText) findViewById(R.id.password);
-        spinner_investigacion=(Spinner) findViewById(R.id.spinner_investigacion);
+        username = (EditText) findViewById(R.id.username);
+        password = (EditText) findViewById(R.id.password);
+        spinner_investigacion = (Spinner) findViewById(R.id.spinner_investigacion);
 
 
-
-
-        ArrayAdapter<String> array_investigaciones =  new ArrayAdapter<String>(this,
+        ArrayAdapter<String> array_investigaciones = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.investigacion));
 
         spinner_investigacion.setAdapter(array_investigaciones);
 
-        Button btn_login= (Button) findViewById(R.id.btn_login);
+        Button btn_login = (Button) findViewById(R.id.btn_login);
 
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
-
                 final String investigacion = spinner_investigacion.getSelectedItem().toString();
                 final String usuario = username.getText().toString();
                 final String clave = password.getText().toString();
 
-                Controlador con=new Controlador(login.this);
+                Controlador con = new Controlador(login.this);
 
-                //Temporal changes
-                session = new Session(login.this);
-                session.setusename(username.getText().toString(),"Usuario: "+usuario,"1",investigacion);
-                Intent mainIntent = new Intent(login.this,MainActivity.class);
-                login.this.startActivity(mainIntent);
-                login.this.finish();
+                //Validación correo electrónico
+                if (!usuario.equals("")) {
+                    Boolean verificar = Patterns.EMAIL_ADDRESS.matcher(usuario).matches();
+                    if(verificar){
+                        //Temporal changes
+                        session = new Session(login.this);
+                        session.setusename(usuario, "Usuario: " + usuario, "1", investigacion);
+                        Intent mainIntent = new Intent(login.this, MainActivity.class);
+                        login.this.startActivity(mainIntent);
+                        login.this.finish();
+                    } else {
+                        mitoast.generarToast("Correo electrónico inválido");
+                    }
+                } else {
+                    mitoast.generarToast("Ingrese usuario");
+                }
+
+
 
 //                con.getUsers(usuario,clave,new VolleyCallBack() {
 //                    @Override
@@ -99,8 +109,7 @@ public class login extends AppCompatActivity {
 
                 /*
 
-        */
-
+                 */
 
 
             }
