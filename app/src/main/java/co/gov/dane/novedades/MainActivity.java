@@ -49,6 +49,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -209,7 +210,9 @@ public class MainActivity extends AppCompatActivity
 
 
     private GoogleApiClient googleApiClient;
-    Switch switchGPS;
+    private Switch switchGPS;
+    private String urlGeovisorCartografiaColaborativa;
+
 
 
     @SuppressLint("RestrictedApi")
@@ -266,6 +269,7 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        urlGeovisorCartografiaColaborativa = "https://geoportal.dane.gov.co/geovisores/territorio/cartografia-colaborativa-mgn/?email=" + session.getusename();
 
 
         FloatingActionButton save_edicion = (FloatingActionButton) findViewById(R.id.save_edicion);
@@ -1232,6 +1236,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_restore_backup) {
             importDatabase();
+        } else if (id == R.id.nav_web_view) {
+            Intent intent = new Intent(MainActivity.this, WebViewGeovisor.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

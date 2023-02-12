@@ -114,6 +114,12 @@
                 android:icon="@drawable/ic_baseline_settings_backup_restore_24"
                 android:iconTint="@color/dane"
                 android:title="Restaurar Backup" />
+
+            <item
+                android:id="@+id/nav_web_view"
+                android:icon="@drawable/ic_baseline_web"
+                android:iconTint="@color/dane"
+                android:title="Ver sincronización" />
         </menu>
     </item>
 
