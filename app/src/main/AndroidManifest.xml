@@ -25,7 +25,13 @@
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
             android:label=""
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="geo" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".login"
             android:exported="true"
