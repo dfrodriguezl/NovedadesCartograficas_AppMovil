@@ -147,9 +147,16 @@ public class DialogoEdicion {
 
                     String descripcion = descripcion_conteo.getText().toString();
 
+                    String mzn;
+                    if (manzana != null) {
+                        mzn = manzana;
+                    } else {
+                        mzn = "";
+                    }
+
                     try {
                         main.atributos = new JSONObject();
-                        main.atributos.put("manzana", manzana);
+                        main.atributos.put("manzana", mzn);
                         main.atributos.put("edificaciones", nume_edificaciones);
                         main.atributos.put("viviendas", nume_viviendas);
                         main.atributos.put("ue", nume_ueconomicas);

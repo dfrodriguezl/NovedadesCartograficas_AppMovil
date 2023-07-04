@@ -1616,6 +1616,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker) {
 
+                Log.d("yeiner mendivelso", "onClick: en clic map");
+
                 hide_atributos_manzana();
 
                 if (marker.getTag() != null) {
