@@ -115,45 +115,46 @@
         <item>Culminada</item>
     </string-array>
     <string-array name="investigacion">
-        <item>GEIH</item>
-        <item>ECV</item>
-        <item>ENIG</item>
-        <item>ENTI</item>
-        <item>EGIT</item>
-        <item>ENUT</item>
-        <item>ECC</item>
-        <item>ECSC</item>
-        <item>ELPS</item>
-        <item>FRTB</item>
-        <item>GEIH_MICRO</item>
-        <item>ECP</item>
-        <item>EGED</item>
+        <item>Actualización MGN</item>
         <item>CAM</item>
-        <item>PRUEBA</item>
-        <item>MTP_ETNIAS</item>
-        <item>GEIH_PAR</item>
-        <item>GEIHCB</item>
-        <item>GEIHND</item>
-        <item>ENPH</item>
-        <item>MOCOA</item>
-        <item>ENPH_PIL</item>
-        <item>ENLEC</item>
-        <item>MTP</item>
-        <item>ENLEC_PIL</item>
-        <item>MTP_PIL</item>
-        <item>RURAL</item>
-        <item>ELCO</item>
-        <item>ENCSPA</item>
-        <item>GEIH - PILOTO</item>
-        <item>ENTIC</item>
-        <item>OTROS</item>
-        <item>CONVENIO IGAC</item>
-        <item>CONTEO_CE</item>
         <item>CE</item>
-        <item>ENA</item>
         <item>CEED</item>
         <item>Censo Económico</item>
-        <item>Actualización MGN</item>
+        <item>CONTEO_CE</item>
+        <item>CONVENIO IGAC</item>
+        <item>ECC</item>
+        <item>ECP</item>
+        <item>ECSC</item>
+        <item>ECV</item>
+        <item>EGED</item>
+        <item>EGIT</item>
+        <item>ELCO</item>
+        <item>ELPS</item>
+        <item>ENA</item>
+        <item>ENCSPA</item>
+        <item>ENIG</item>
+        <item>ENLEC_PIL</item>
+        <item>ENLEC</item>
+        <item>ENPH_PIL</item>
+        <item>ENPH</item>
+        <item>ENTI</item>
+        <item>ENTIC</item>
+        <item>ENUT</item>
+        <item>FRTB</item>
+        <item>GEIH - PILOTO</item>
+        <item>GEIH_MICRO</item>
+        <item>GEIH_PAR</item>
+        <item>GEIH</item>
+        <item>GEIHCB</item>
+        <item>GEIHND</item>
+        <item>MOCOA</item>
+        <item>MTP_ETNIAS</item>
+        <item>MTP_PIL</item>
+        <item>MTP</item>
+        <item>OTROS</item>
+        <item>Prueba/capacitación</item>
+        <item>PRUEBA</item>
+        <item>RURAL</item>
     </string-array>
     <string-array name="tipo_geometria_gps">
         <item>Polígono</item>

@@ -3367,7 +3367,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
 
             String ImageFilepath = photoURI.getPath().replace("//", "/");
@@ -3388,10 +3387,13 @@ public class MainActivity extends AppCompatActivity
                     String latitud = dat[0].replace("G:", "");
                     String longitud = dat[1];
 
-                    LatLng coordinate = new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud)); //Store these lat lng values somewhere. These should be constant.
-                    CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
-                            coordinate, 18);
-                    mMap.animateCamera(location);
+//                    LatLng coordinate = new LatLng(Double.parseDouble(latitud), Double.parseDouble(longitud)); //Store these lat lng values somewhere. These should be constant.
+//                    CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
+//                            coordinate, 18);
+//                    mMap.animateCamera(location);
+                    String urlGeo = "geo:0,0?q=" + latitud + "," + longitud;
+                    Uri geoUri = Uri.parse(urlGeo);
+                    showMap(geoUri);
                 } catch (Exception e) {
                     mitoast.generarToast("QR NO Valido");
                 }
@@ -3601,6 +3603,14 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+    }
+
+    private void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
 

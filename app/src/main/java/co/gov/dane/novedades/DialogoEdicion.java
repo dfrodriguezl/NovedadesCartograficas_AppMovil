@@ -878,7 +878,7 @@ public class DialogoEdicion {
 
         final Spinner spinner_tipo_geometria = mView.findViewById(R.id.spinner_tipo_geometria);
         ArrayAdapter<String> array_tipo_geometria = new ArrayAdapter<String>(main,
-                android.R.layout.simple_spinner_item, main.getResources().getStringArray(R.array.tipo_geometria_gps));
+                android.R.layout.simple_spinner_dropdown_item, main.getResources().getStringArray(R.array.tipo_geometria_gps));
 
         spinner_tipo_geometria.setAdapter(array_tipo_geometria);
 
