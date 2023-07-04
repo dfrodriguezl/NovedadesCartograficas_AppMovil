@@ -48,6 +48,8 @@ public class Controlador {
 //    String subir_novedades = "https://nowsoft.app/geoportal/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
     String subir_novedades = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get_2.php";
 
+    String subir_novedades2 = "http://10.57.44.236:8080/edicion_mobile/sincronizar_get_3.php";
+
     String folder_insumos = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_list.php";
 
     int descargas = 0;
@@ -319,6 +321,16 @@ public class Controlador {
                         null
                 );
 
+                Cursor c2 = sp.query(
+                        Estructura.ConteoEntry.TABLE_NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                );
+
                 barProgressDialog.setMax(c.getCount());//In this part you can set the  MAX value of data
                 barProgressDialog.show();
 
@@ -414,11 +426,85 @@ public class Controlador {
                     c.close();
                 }
 
+                if (c2.moveToFirst()) {
+                    do {
+
+                        final String id = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.ID));
+                        final String tipo = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.TIPO_GEOMETRIA));
+                        final String manzana = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.MANZANA));
+                        final String edificaciones = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.EDIFICACIONES));
+                        final String viviendas = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.VIVIENDAS));
+                        final String ue = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.UE));
+                        final String tipo_nov = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.TIPO_NOV));
+                        final String descripcion = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.DESCRIPCION));
+                        final String geometria = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.WKT));
+                        final String id_dispositivo = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.ID_DISPOSITIVO));
+                        final String lat_gps = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.LAT_GPS));
+                        final String lon_gps = c2.getString(c2.getColumnIndex(Estructura.ConteoEntry.LON_GPS));
+
+
+                        String url = subir_novedades2;
+
+
+                        JSONObject json = new JSONObject();
+                        json.put("id", id);
+                        json.put("tipo", tipo);
+                        json.put("manzana", manzana);
+                        json.put("edificaciones", edificaciones);
+                        json.put("viviendas", viviendas);
+                        json.put("ue", ue);
+                        json.put("tipo_nov", tipo_nov);
+                        json.put("descripcion", descripcion);
+                        json.put("geometria", geometria);
+                        json.put("usuario", usuario);
+                        json.put("id_dispositivo", id_dispositivo);
+                        json.put("investigacion", investigacion);
+                        json.put("lat_gps", lat_gps);
+                        json.put("lon_gps", lon_gps);
+
+
+                        Log.d("yeiner mendivelso", String.valueOf(json));
+
+
+                        JsonObjectRequest postRequest2 = new JsonObjectRequest(
+                                Request.Method.POST,
+                                url,
+                                json,
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        Log.d("response", response.toString());
+                                        Mensajes mitoast = new Mensajes(context);
+                                        mitoast.generarToast("Datos Enviados conteo");
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Log.d("des", descripcion);
+                                        Log.d("error", String.valueOf(error));
+                                        Mensajes mitoast = new Mensajes(context);
+                                        mitoast.generarToast("Datos Enviados");
+                                    }
+                                }
+                        ){};
+
+
+                        postRequest2.setShouldCache(false);
+
+                        requestQueue.add(postRequest2);
+
+
+                    } while (c2.moveToNext());
+                }
+
 
 
                 barProgressDialog.dismiss();
 
                 sp.close();
+
+
 
 
             } catch (SQLiteConstraintException | JSONException e) {

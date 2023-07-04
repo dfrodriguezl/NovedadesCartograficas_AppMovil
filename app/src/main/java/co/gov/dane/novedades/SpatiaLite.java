@@ -25,7 +25,7 @@ public class SpatiaLite extends SQLiteOpenHelper {
             + Estructura.UsuarioEntry.ROL + " INTEGER"
             + ")";
 
-    public static final String CREAR_NOVEDAD="CREATE TABLE " + Estructura.NovedadEntry.TABLE_NAME + " ("
+public static final String CREAR_NOVEDAD="CREATE TABLE " + Estructura.NovedadEntry.TABLE_NAME + " ("
             + Estructura.NovedadEntry.ID +" INTEGER PRIMARY KEY,"
             + Estructura.NovedadEntry.ID_DISPOSITIVO +" TEXT,"
             + Estructura.NovedadEntry.TIPO_GEOMETRIA + " INTEGER NOT NULL,"
@@ -35,6 +35,22 @@ public class SpatiaLite extends SQLiteOpenHelper {
             + Estructura.NovedadEntry.FECHA + " TEXT ,"
             + Estructura.NovedadEntry.LAT_GPS + " TEXT, "
             + Estructura.NovedadEntry.LON_GPS + " TEXT "
+            + ")";
+
+    public static final String CREAR_CONTEO="CREATE TABLE " + Estructura.ConteoEntry.TABLE_NAME + " ("
+            + Estructura.ConteoEntry.ID +" INTEGER PRIMARY KEY,"
+            + Estructura.ConteoEntry.ID_DISPOSITIVO +" TEXT,"
+            + Estructura.ConteoEntry.TIPO_GEOMETRIA + " INTEGER NOT NULL,"
+            + Estructura.ConteoEntry.WKT + " TEXT NOT NULL,"
+            + Estructura.ConteoEntry.MANZANA + " TEXT,"
+            + Estructura.ConteoEntry.EDIFICACIONES + " TEXT,"
+            + Estructura.ConteoEntry.VIVIENDAS + " TEXT,"
+            + Estructura.ConteoEntry.UE + " TEXT,"
+            + Estructura.ConteoEntry.TIPO_NOV + " TEXT,"
+            + Estructura.ConteoEntry.DESCRIPCION + " TEXT, "
+            + Estructura.ConteoEntry.FECHA + " TEXT ,"
+            + Estructura.ConteoEntry.LAT_GPS + " TEXT, "
+            + Estructura.ConteoEntry.LON_GPS + " TEXT "
             + ")";
 
     public static final String CREAR_GEOMETRIA="CREATE TABLE " + Estructura.GeometriaEntry.TABLE_NAME + " ("
@@ -73,6 +89,8 @@ public class SpatiaLite extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(CREAR_NOVEDAD);
 
+        sqLiteDatabase.execSQL(CREAR_CONTEO);
+
         sqLiteDatabase.execSQL(CREAR_OBRAS);
 
     }
@@ -81,6 +99,7 @@ public class SpatiaLite extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Estructura.UsuarioEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Estructura.NovedadEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Estructura.ConteoEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Estructura.GeometriaEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Estructura.ObrasEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);

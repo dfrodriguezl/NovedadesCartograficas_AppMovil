@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.PatternItem;
@@ -68,6 +69,112 @@ public class DialogoEdicion {
         this.json = json;
         this.id_google = id_google;
 
+    }
+
+    public void DialogoEdicionConteo (Boolean WindowVisible, final String manzana) {
+
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+
+        final View mView = inflater.inflate(R.layout.dialog_conteo_unidades, null);
+
+        TextView mznText = (TextView) mView.findViewById(R.id.cod_mzn);
+
+        final Spinner spinner_tipo_nov_conteo = mView.findViewById(R.id.spinner_tipo_nov_conteo);
+        final ArrayAdapter<String> array_tipo_novedad_conteo = new ArrayAdapter<String>(main,
+                android.R.layout.simple_spinner_item, main.getResources().getStringArray(R.array.tipo_novedad_conteo));
+        spinner_tipo_nov_conteo.setAdapter(array_tipo_novedad_conteo);
+
+        if (manzana != null) {
+            Log.d("text mzn", String.valueOf(mznText.getText()));
+            Log.d("text mzn", manzana);
+            mznText.setText(mznText.getText() + ": " + manzana);
+            LinearLayout panel_mzn = (LinearLayout) mView.findViewById(R.id.panel_mzn);
+            panel_mzn.setVisibility(View.GONE);
+        } else {
+            mznText.setText("No hay elemento de referencia del MGN");
+            LinearLayout panel_mzn = (LinearLayout) mView.findViewById(R.id.panel_mzn);
+            panel_mzn.setVisibility(View.GONE);
+        }
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+
+
+        dialog.setCanceledOnTouchOutside(false);
+        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+        wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+        wmlp.y = 200;   //y position
+
+        wmlp.width = mView.getWidth();
+        dialog.getWindow().setDimAmount(0);
+
+        if (!WindowVisible) {
+            main.dibujo_punto_conteo();
+            main.show_add_punto();
+        } else {
+            dialog.show();
+        }
+
+        if (WindowVisible) {
+            Button btn_guardar_conteo= (Button) mView.findViewById(R.id.btn_dialog_guardar_conteo);
+            Button btn_dialog_cancelar_conteo = (Button) mView.findViewById(R.id.btn_dialog_cancelar_conteo);
+
+            btn_guardar_conteo.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("RestrictedApi")
+                @Override
+                public void onClick(View v) {
+
+                    Log.d("yeiner mendivelso", "onClick: en 3");
+
+                    EditText num_edificaciones = (EditText) mView.findViewById(R.id.num_edificaciones);
+
+                    String nume_edificaciones = num_edificaciones.getText().toString();
+
+                    EditText num_viviendas = (EditText) mView.findViewById(R.id.num_viviendas);
+
+                    String nume_viviendas = num_viviendas.getText().toString();
+
+                    EditText num_ueconomicas = (EditText) mView.findViewById(R.id.num_ueconomicas);
+
+                    String nume_ueconomicas = num_ueconomicas.getText().toString();
+
+                    String tipo_nov_conteo = spinner_tipo_nov_conteo.getSelectedItem().toString();
+
+                    EditText descripcion_conteo = (EditText) mView.findViewById(R.id.observaciones_conteo);
+
+                    String descripcion = descripcion_conteo.getText().toString();
+
+                    try {
+                        main.atributos = new JSONObject();
+                        main.atributos.put("manzana", manzana);
+                        main.atributos.put("edificaciones", nume_edificaciones);
+                        main.atributos.put("viviendas", nume_viviendas);
+                        main.atributos.put("ue", nume_ueconomicas);
+                        main.atributos.put("tipo_nov", tipo_nov_conteo);
+                        main.atributos.put("descripcion", descripcion);
+
+                    } catch (JSONException e) {
+
+                    }
+
+                    dialog.dismiss();
+
+                    main.drawPC();
+
+                }
+            });
+
+            btn_dialog_cancelar_conteo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                    main.cancelarConteo();
+                }
+            });
+        }
     }
 
     public void mostrarDialogoEdicionPL(Boolean WindowVisible) {
@@ -130,6 +237,9 @@ public class DialogoEdicion {
                 main.dibujo_linea(2);
                 main.show_add_punto();
             }
+            if (opcion == 5) {
+                main.show_add_punto();
+            }
 
         } else {
             dialog.show();
@@ -142,6 +252,8 @@ public class DialogoEdicion {
                 @SuppressLint("RestrictedApi")
                 @Override
                 public void onClick(View v) {
+
+                    Log.d("yeiner mendivelso", "onClick: en 2");
 
                     EditText descripcion_novedad = (EditText) mView.findViewById(R.id.descripcion_novedad);
 
@@ -295,6 +407,8 @@ public class DialogoEdicion {
                 @SuppressLint("RestrictedApi")
                 @Override
                 public void onClick(View v) {
+
+                    Log.d("yeiner mendivelso", "onClick: en 1");
 
                     EditText descripcion_novedad = (EditText) mView.findViewById(R.id.descripcion_novedad);
 

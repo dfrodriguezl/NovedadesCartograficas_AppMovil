@@ -40,6 +40,24 @@ public class Estructura {
         public static final String LAT_GPS = "lat_gps";
         public static final String LON_GPS = "lon_gps";
     }
+
+    public static abstract class ConteoEntry implements BaseColumns {
+        public static final String TABLE_NAME ="conteo";
+        public static final String ID_DISPOSITIVO ="id_dispositivo";
+        public static final String ID = "id";
+        public static final String TIPO_GEOMETRIA = "tipo_geometria";
+        public static final String WKT = "wkt";
+        public static final String MANZANA = "manzana";
+        public static final String EDIFICACIONES = "edificaciones";
+        public static final String VIVIENDAS = "viviendas";
+        public static final String UE = "ue";
+        public static final String TIPO_NOV = "tipo_nov";
+        public static final String DESCRIPCION = "descripcion";
+        public static final String FECHA = "fecha";
+        public static final String LAT_GPS = "lat_gps";
+        public static final String LON_GPS = "lon_gps";
+    }
+
     public static abstract class ObrasEntry implements BaseColumns {
         public static final String TABLE_NAME ="obras";
         public static final String SERIAL ="serial";

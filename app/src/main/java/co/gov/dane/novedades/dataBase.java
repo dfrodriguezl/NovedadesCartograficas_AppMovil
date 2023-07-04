@@ -201,6 +201,36 @@ public int getMaxIdNovedad(){
 
 }
 
+    public int getMaxIdConteo(){
+
+        SpatiaLite db=new SpatiaLite(context);
+
+        org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+        Cursor c = sp.query(Estructura.ConteoEntry.TABLE_NAME, new String[]{"MAX("+Estructura.ConteoEntry.ID+")"}, null, null, null, null, null);
+
+
+        if(c.getCount()>0){
+            c.moveToFirst();
+            String max_id=c.getString(0);
+            if(max_id == null || max_id.equals("")){
+                sp.close();
+                return 0;
+            }else{
+                sp.close();
+                return Integer.parseInt(max_id);
+            }
+
+        }else{
+            sp.close();
+            return 0;
+        }
+
+
+
+    }
+
+
 public String getsiguienterecorte(String descripcion){
 
     SpatiaLite db=new SpatiaLite(context);
@@ -623,6 +653,107 @@ public void getObrasCeed(){
 
     }
 
+    public void getConteos(){
+
+        String ruta_db;
+        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }else{
+            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+"ceed.db";
+        }
+        CeedDB ceeddb =new CeedDB(main,ruta_db);
+        Util utilidad=new Util(main,main);
+
+        try {
+            SpatiaLite db=new SpatiaLite(context);
+
+            org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+            String selection = Estructura.ConteoEntry.TIPO_GEOMETRIA + " = ?"; // WHERE id LIKE ?
+            String selectionArgs[] = new String[]{"1"};
+
+            Cursor c = sp.query(
+                    Estructura.ConteoEntry.TABLE_NAME,
+                    null,
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    null
+            );
+
+
+
+            while (c.moveToNext()) {
+
+                String geometria_ini = c.getString(c.getColumnIndex(Estructura.ConteoEntry.WKT));
+
+                WKTReader wkt=new WKTReader();
+
+                try {
+                    if(wkt.read(geometria_ini).isValid()){
+
+                        Coordinate[] coord=wkt.read(geometria_ini).getCoordinates();
+
+                        MarkerOptions opts=new MarkerOptions();
+                        LatLng punto;
+                        for(int j=0;j<coord.length;j++){
+                            Double lat=coord[j].y;
+                            Double lon=coord[j].x;
+                            punto=new LatLng(lat,lon);
+                            opts.position(punto);
+                        }
+
+
+                        JSONObject atributos=new JSONObject();
+                        try {
+                            atributos.put("id",c.getString(c.getColumnIndex(Estructura.ConteoEntry.ID)));
+                            atributos.put("manzana",c.getString(c.getColumnIndex(Estructura.ConteoEntry.MANZANA)));
+                            atributos.put("edificaciones",c.getString(c.getColumnIndex(Estructura.ConteoEntry.EDIFICACIONES)));
+                            atributos.put("viviendas",c.getString(c.getColumnIndex(Estructura.ConteoEntry.VIVIENDAS)));
+                            atributos.put("ue",c.getString(c.getColumnIndex(Estructura.ConteoEntry.UE)));
+                            atributos.put("tipo_nov",c.getString(c.getColumnIndex(Estructura.ConteoEntry.TIPO_NOV)));
+                            atributos.put("descripcion", c.getString(c.getColumnIndex(Estructura.ConteoEntry.DESCRIPCION)));
+
+
+                            main.puntos.add(main.mMap.addMarker(opts));
+                            main.puntos.get(main.puntos.size()-1).setTag(atributos);
+
+
+                            main.puntos.get(main.puntos.size()-1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.obra_futura));
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
+            sp.close();
+        } catch (SQLiteConstraintException e) {
+
+            Log.e("error:", String.valueOf(e));
+
+        }
+
+
+
+
+
+
+
+
+
+    }
 
     public List<String> getUsuarios() {
         List<String> usuario = new ArrayList<String>();
