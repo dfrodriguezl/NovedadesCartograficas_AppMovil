@@ -73,9 +73,9 @@ public class DialogoEdicion {
     public void mostrarDialogoEdicionPL(Boolean WindowVisible) {
         String ruta_db;
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
         } else {
-            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
         }
 
         db = new CeedDB(main, ruta_db);
@@ -224,9 +224,9 @@ public class DialogoEdicion {
 
         String ruta_db;
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
         } else {
-            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
         }
 
         db = new CeedDB(main, ruta_db);

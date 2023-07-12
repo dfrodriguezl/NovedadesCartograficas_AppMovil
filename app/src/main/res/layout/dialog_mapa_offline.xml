@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:text="Los mapas fuera de linea. (mapas .mbtiles) deben alojarse en la carpeta /Editor Dane/mbtiles."
+        android:text="Los mapas fuera de linea. (mapas .mbtiles) deben alojarse en la carpeta /Editor Nc/mbtiles."
         android:textSize="15sp"
         android:paddingBottom="3dp"
         android:layout_marginTop="20dp"

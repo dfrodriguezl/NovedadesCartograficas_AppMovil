@@ -35,9 +35,9 @@ public class snapShot {
                         android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
                         String ruta_capturas=null;
                         if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-                            ruta_capturas =Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"Capturas/";
+                            ruta_capturas =Environment.getExternalStorageDirectory() + File.separator + "Editor Nc"+ File.separator+"Capturas/";
                         }else{
-                            ruta_capturas = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"Capturas/";
+                            ruta_capturas = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc"+ File.separator+"Capturas/";
                         }
 
                         File file = new File(ruta_capturas, now+".png");

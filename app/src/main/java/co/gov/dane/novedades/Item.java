@@ -28,9 +28,9 @@ public class Item {
         String archivo = null;
 
         if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            archivo= Environment.getExternalStorageDirectory()+ File.separator + "Editor Dane" + File.separator +"db"+ File.separator +getItemName();
+            archivo= Environment.getExternalStorageDirectory()+ File.separator + "Editor Nc" + File.separator +"db"+ File.separator +getItemName();
         }else{
-            archivo= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator +"db"+ File.separator +getItemName();
+            archivo= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator +"db"+ File.separator +getItemName();
         }
 
         File fichero = new File(archivo);

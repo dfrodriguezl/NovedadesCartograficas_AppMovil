@@ -207,9 +207,9 @@ public class Shapefile {
                 // shape_dir.getName().lastIndexOf("."));
                 shape_db = new File(s_shape_path + File.separator + s_shape_name + ".db");
 //                if(Build.VERSION_CODES.R > Build.VERSION.SDK_INT){
-//                    shape_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+//                    shape_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Nc"+ File.separator+"db"+File.separator;
 //                }else{
-//                    shape_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+//                    shape_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc"+ File.separator+"db"+File.separator;
 //                }
 
                 // GPLog.androidLog(-1,"SpatialiteUtilities create_shape_db[" +

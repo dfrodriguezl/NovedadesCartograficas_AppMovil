@@ -239,17 +239,17 @@ public class MainActivity extends AppCompatActivity
         String archivo = null;
 
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            archivo = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + session.getGeom();
+            archivo = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + session.getGeom();
         } else {
-            archivo = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + session.getGeom();
+            archivo = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + session.getGeom();
         }
 
         File fichero = new File(archivo);
         String ruta_db = null;
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator;
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
         } else {
-            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator;
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
         }
 
         if (fichero.exists()) {
@@ -1272,9 +1272,9 @@ public class MainActivity extends AppCompatActivity
         listado_mapas_offline = new ArrayList<>();
         String ruta_mbtiles = null;
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "mbtiles";
+            ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
         } else {
-            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "mbtiles";
+            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "mbtiles";
         }
         File dir = new File(ruta_mbtiles);
         if (dir.exists()) {
@@ -2583,9 +2583,9 @@ public class MainActivity extends AppCompatActivity
 
             String ruta_db;
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-                ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+                ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
             }
 
             CeedDB ceeddb = new CeedDB(MainActivity.this, ruta_db);
@@ -3027,9 +3027,9 @@ public class MainActivity extends AppCompatActivity
         String path_backup = null;
 
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+            path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         } else {
-            path_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+            path_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         }
 
 
@@ -3093,9 +3093,9 @@ public class MainActivity extends AppCompatActivity
 
 
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+            ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
         } else {
-            ruta_foto = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
+            ruta_foto = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Fotos";
         }
 
         File storageDir = new File(ruta_foto);
@@ -3165,12 +3165,12 @@ public class MainActivity extends AppCompatActivity
 
     public void dibujarFotos() {
 
-        String ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        String ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
 
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+            ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
         } else {
-            ruta_foto = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
+            ruta_foto = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Fotos";
         }
 
         File FotoPath = new File(ruta_foto);
@@ -3275,11 +3275,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void importDatabase() {
-        String path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+        String path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+            path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         } else {
-            path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+            path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         }
         File directory = new File(path_backup);
         File[] files = directory.listFiles();
@@ -3342,11 +3342,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void restaurarBD(String file, DialogInterface dialog) {
-        String path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+        String path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+            path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         } else {
-            path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Dane" + File.separator + "backup" + File.separator;
+            path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         }
         Mensajes mensaje = new Mensajes(this);
         File directory = new File(path_backup);

@@ -87,9 +87,9 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
                 File file = null;
 
                 if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-                    file = new File(Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + fileName);
+                    file = new File(Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
                 } else {
-                    file = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + fileName);
+                    file = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
                 }
 
 //                descarga(url,lenghtOfFile,fileName);
@@ -142,12 +142,12 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
         }
         if (errMsg.equals("0")) {
 
-            String url_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+            String url_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
 
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-                url_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+                url_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
             } else {
-                url_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + "ceed.db";
+                url_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
             }
 
             File file = new File(url_db);
@@ -184,9 +184,9 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
             OutputStream output = null;
 
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-                output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + fileName);
+                output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
             } else {
-                output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db" + File.separator + fileName);
+                output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
             }
 
             byte data[] = new byte[1024];

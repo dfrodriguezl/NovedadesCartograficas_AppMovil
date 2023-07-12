@@ -34,12 +34,12 @@ public class DescargaInsumos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_descarga_insumos);
 
-        String ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db";
+        String ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
 
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db";
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
         } else {
-            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db";
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db";
         }
 
         final File directory = new File(ruta_db);

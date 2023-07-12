@@ -119,24 +119,24 @@ public class splash extends Activity {
 
     public void logica() {
         //creación de los Folder para el aplicativo
-        String ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "mbtiles";
-        String ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Capturas";
-        String ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db";
-        String ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup";
-        String ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+        String ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
+        String ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Capturas";
+        String ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
+        String ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup";
+        String ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
 
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "mbtiles";
-            ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Capturas";
-            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "db";
-            ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "backup";
-            ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Dane" + File.separator + "Fotos";
+            ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
+            ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Capturas";
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
+            ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup";
+            ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
         } else {
-            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "mbtiles";
-            ruta_capturas = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Capturas";
-            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "db";
-            ruta_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "backup";
-            ruta_fotos = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane" + File.separator + "Fotos";
+            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "mbtiles";
+            ruta_capturas = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Capturas";
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db";
+            ruta_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "backup";
+            ruta_fotos = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Fotos";
         }
 
         File folder_mbtile = new File(ruta_mbtiles);
@@ -186,11 +186,10 @@ public class splash extends Activity {
             }
 
 
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
 
 
     }

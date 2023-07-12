@@ -19,7 +19,7 @@ public class CeedDB  extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "ceed.db";
 
-    public static String  ruta_db=Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator+DATABASE_NAME;
+    public static String  ruta_db=Environment.getExternalStorageDirectory() + File.separator + "Editor Nc"+ File.separator+"db"+File.separator+DATABASE_NAME;
 
 
 
