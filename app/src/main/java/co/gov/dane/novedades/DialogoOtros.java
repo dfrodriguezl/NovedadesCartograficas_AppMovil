@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Environment;
 import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -516,6 +517,15 @@ public class DialogoOtros {
 
     }
 
+    public void MostrarDialogoConteo (String manzana){
+
+        DialogoEdicion dialogEditor =new DialogoEdicion(main,main,1);
+        dialogEditor.DialogoEdicionConteo(false, manzana);
+
+
+
+
+    }
 
     public void MostrarDialogoNovedad(){
 

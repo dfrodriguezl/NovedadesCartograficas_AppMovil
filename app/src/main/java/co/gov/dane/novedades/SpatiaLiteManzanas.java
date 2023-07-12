@@ -194,5 +194,58 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
         return retorno;
     }
 
+    public String[] getManzanasIntersect (LatLng userLocation){
+
+        String[] manzanaList = new String[1];
+
+        try{
+            String ruta_db = null;
+            if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
+                ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+            }else{
+                ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Dane"+ File.separator+"db"+File.separator;
+            }
+            SpatiaLiteManzanas db1=new SpatiaLiteManzanas(context,databaseName,ruta_db);
+            org.spatialite.database.SQLiteDatabase sp1=db1.getWritableDatabase();
+
+            Coordinate c_punto=new Coordinate(userLocation.longitude,userLocation.latitude);
+
+            GeometryFactory gf = new GeometryFactory();
+
+            Point p= gf.createPoint(c_punto);
+            String tabla=databaseName.replace(".db","");
+            Cursor c = sp1.rawQuery(
+                    "select cod_dane,AsWKT(CastToPolygon(geometry)),Intersects(ST_Transform(ST_Transform(SetSRID(GeomFromText('"+p+"'),4326),3116),4326),geometry)as geom from "+tabla+" where geom=1",null);
+
+            Log.d("cantidad interseccion:", String.valueOf(c.getCount()));
+
+            while(c.moveToNext()){
+
+                String cod_manzana=c.getString(0);
+                String geometria_ini = c.getString(1);
+
+                WKTReader wkt=new WKTReader();
+                try {
+                    if(wkt.read(geometria_ini).isValid()){
+                        if (c.getCount() > 0) {
+                            manzanaList[0] = cod_manzana;
+                        }
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            sp1.close();
+
+        } catch (Exception e) {
+            Log.d("mensaje:", String.valueOf(e));
+        }
+
+        return manzanaList;
+
+    }
+
 
 }

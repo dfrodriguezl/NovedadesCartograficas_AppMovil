@@ -160,4 +160,11 @@
         <item>Polígono</item>
         <item>Línea</item>
     </string-array>
+    <string-array name="tipo_novedad_conteo">
+        <item>División de manzana</item>
+        <item>Unión de manzana</item>
+        <item>Manzana nueva</item>
+        <item>Conteo manzana existente MGN</item>
+        <item>Otros (cambio de forma)</item>
+    </string-array>
 </resources>

@@ -475,6 +475,8 @@ public class MainActivity extends AppCompatActivity
                     JoinPicker = true;
                 }
 
+                Log.d("yeiner mendivelso", "onClick: en deleteee");
+
                 mitoast.generarToast("Edición terminada");
                 estado_mapa_sin_edicion();
                 medicion = false;
@@ -483,6 +485,9 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+
+
 
 
         final com.getbase.floatingactionbutton.FloatingActionButton delete_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.delete_geom);
@@ -995,6 +1000,29 @@ public class MainActivity extends AppCompatActivity
             dialogo.MostrarDialogoNovedad();
 
         }
+        if (id == R.id.conteo_unidades) {
+
+            DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
+
+            //DialogoEdicion dialogEditorConteo =new DialogoEdicionConteo();
+            // mitoast.generarToast("Seleccione manzana de referencia yei");
+            ////LatLng center = mMap.getCameraPosition().target;
+            // Map<String, PolygonOptions> pol_get_yei = spm.getManzanas(center);
+            ////String [] prueba = spm.getManzanasIntersect(center);
+            // Log.d("pol_get_yei", "onClick: en 1");
+            // Log.d("pol_get_yei", String.valueOf(pol_get_yei));
+            ////Log.d("pol_get_yei", String.valueOf(prueba.length));
+
+            ////if (prueba[0] != null) {
+            ////mitoast.generarToast("Punto se encuentra dentro de una manzana MGN");
+            ////} else {
+            ////mitoast.generarToast("Punto se encuentra fuera de una manzana MGN");
+            ////}
+
+            //dialogo.DialogoEdicionConteo();
+            dialogo.MostrarDialogoConteo(null);
+
+        }
 
         if (id == R.id.tomar_foto) {
 
@@ -1296,6 +1324,7 @@ public class MainActivity extends AppCompatActivity
         db.getGeomFromDatabase();
 
         db.getNovedades();
+        db.getConteos();
         db.getObrasCeed();
         dibujarFotos();
 
@@ -1587,6 +1616,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker) {
 
+                Log.d("yeiner mendivelso", "onClick: en clic map");
+
                 hide_atributos_manzana();
 
                 if (marker.getTag() != null) {
@@ -1714,6 +1745,55 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+    public void dibujo_punto_conteo () {
+
+        estado_mapa_edicion();
+        FloatingActionButton add_punto = (FloatingActionButton) findViewById(R.id.add_punto);
+
+        add_punto.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View view) {
+
+
+                LatLng center = mMap.getCameraPosition().target;
+
+                // Map<String, PolygonOptions> pol_get_yei = spm.getManzanas(center);
+                String [] prueba = spm.getManzanasIntersect(center);
+                // Log.d("pol_get_yei", "onClick: en 1");
+                // Log.d("pol_get_yei", String.valueOf(pol_get_yei));
+                Log.d("pol_get_yei", String.valueOf(prueba.length));
+
+                if (prueba[0] != null) {
+                    mitoast.generarToast("Punto se encuentra dentro de una manzana MGN");
+                } else {
+                    mitoast.generarToast("Punto se encuentra fuera de una manzana MGN");
+                }
+
+                Punto mipunto = new Punto(center);
+                Marker marker = mMap.addMarker(new MarkerOptions().position(mipunto.getPunto()));
+                Point_shape = marker;
+                hide_add_punto();
+
+                DialogoEdicion dialogEditor = new DialogoEdicion(MainActivity.this, MainActivity.this, 1);
+                dialogEditor.DialogoEdicionConteo(true, prueba[0]);
+
+            }
+        });
+
+
+    }
+
+    public void cancelarConteo(){
+        Point_shape.remove();
+        Point_shape = null;
+        mitoast.generarToast("Edición terminada");
+        medicion = false;
+        control_dibujo = 1;
+        Log.d("yeiner mendivelso", "onClick: muy intelectuallll");
+    };
 
     public void dibujo_punto() {
 
@@ -2620,6 +2700,63 @@ public class MainActivity extends AppCompatActivity
         }
 
 
+    }
+
+    public void drawPC() {
+        MarkerOptions opts = new MarkerOptions();
+
+        if (Point_shape != null) {
+            opts.position(Point_shape.getPosition());
+        }
+
+
+        try {
+            dataBase db = new dataBase(MainActivity.this, MainActivity.this);
+
+            Integer id = db.getMaxIdConteo() + 1;
+
+            if (atributos.has("id")) {
+                id = Integer.valueOf(atributos.get("id").toString());
+            }
+            atributos.put("id", String.valueOf(id));
+
+            puntos.add(mMap.addMarker(opts));
+
+            int tipo_geometria = 1;
+            String wkt = analisis.puntoWKT(puntos.get(puntos.size() - 1));
+            String manzana = atributos.get("manzana").toString();
+            String edificaciones = atributos.get("edificaciones").toString();
+            String viviendas = atributos.get("viviendas").toString();
+            String ue = atributos.get("ue").toString();
+            String tipo_nov = atributos.get("tipo_nov").toString();
+            String descripcion = atributos.get("descripcion").toString();
+            Conteo conteo = new Conteo(MainActivity.this, MainActivity.this, id, id_dispositivo, tipo_geometria, wkt, manzana, edificaciones, viviendas, ue, tipo_nov, descripcion);
+            Boolean inserto = conteo.insertarConteo();
+
+            mitoast.generarToast("Elemento guardado");
+
+            puntos.get(puntos.size() - 1).setTag(atributos);
+
+            puntos.get(puntos.size() - 1).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.obra_futura));
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        if (GeometriaUpdate) {
+            for (int i = 0; i < puntos.size(); i++) {
+
+                if (puntos.get(i).getId().equals(codId)) {
+                    puntos.get(i).remove();
+                }
+            }
+        }
+
+
+        Point_shape.remove();
+        Point_shape = null;
     }
 
     public void drawP() {

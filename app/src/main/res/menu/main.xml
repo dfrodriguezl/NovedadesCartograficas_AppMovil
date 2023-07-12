@@ -12,10 +12,14 @@
         -->
     <item
         android:id="@+id/tomar_foto"
-        android:title="Tomar Foto"
         android:icon="@drawable/ic_menu_captura"
-        app:showAsAction="always"
-        />
+        android:title="Tomar Foto"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/conteo_unidades"
+        android:icon="@drawable/ic_menu_edificio"
+        android:title="Conteo Unidades"
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_novedad"
         android:title="Novedad"
