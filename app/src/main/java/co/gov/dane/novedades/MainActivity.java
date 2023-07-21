@@ -588,7 +588,11 @@ public class MainActivity extends AppCompatActivity
 
                 DialogoEdicion dialog = new DialogoEdicion(MainActivity.this, MainActivity.this, tipo_edicion, true, atributos, codId);
 
-                dialog.mostrarDialogoEdicion();
+                if (atributos.has("tipo_nov") && atributos.has("ue")) {
+                    dialog.mostrarDialogoEdicionConteo();
+                } else {
+                    dialog.mostrarDialogoEdicion();
+                }
                 hide_menu_grupo_edicion();
 
             }
@@ -1653,7 +1657,7 @@ public class MainActivity extends AppCompatActivity
 
 
                         try {
-                            if (atributos.get("tipo").toString().equals("obra")) {
+                            if (atributos.has("tipo") && atributos.get("tipo").toString().equals("obra")) {
 
                                 DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
                                 String noformular = atributos.get("noformular").toString();
