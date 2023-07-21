@@ -48,8 +48,8 @@ public class Controlador {
 //    String subir_novedades = "https://nowsoft.app/geoportal/laboratorio/serviciosjson/edicion_mobile/sincronizar_get.php";
     String subir_novedades = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get_2.php";
 
-    String subir_novedades2 = "http://10.57.44.236:8080/edicion_mobile/sincronizar_get_3.php";
-    //String subir_novedades2 = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get_3.php";
+    //String subir_novedades2 = "http://10.57.44.236:8080/edicion_mobile/sincronizar_get_3.php";
+    String subir_novedades2 = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/sincronizar_get_3.php";
 
 
     String folder_insumos = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_list.php";
