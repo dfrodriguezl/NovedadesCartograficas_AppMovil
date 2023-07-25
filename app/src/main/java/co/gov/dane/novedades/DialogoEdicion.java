@@ -172,6 +172,8 @@ public class DialogoEdicion {
 
                     main.drawPC();
 
+                    main.estado_mapa_sin_edicion();
+
                 }
             });
 
@@ -180,6 +182,7 @@ public class DialogoEdicion {
                 public void onClick(View v) {
                     dialog.dismiss();
                     main.cancelarConteo();
+                    main.estado_mapa_sin_edicion();
                 }
             });
         }

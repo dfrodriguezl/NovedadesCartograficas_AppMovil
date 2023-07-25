@@ -2350,7 +2350,17 @@ public class MainActivity extends AppCompatActivity
     public void borrar_novedad(int id, int tipo_geometria) {
         Novedades novedad = new Novedades(MainActivity.this, MainActivity.this, id, null, tipo_geometria, null, null, null);
         Boolean paso = novedad.eliminarNovedad();
-        mitoast.generarToast("Elemento borrado");
+        if (paso) {
+            mitoast.generarToast("Elemento borrado");
+        }
+    }
+
+    public void borrar_conteo(int id, int tipo_geometria) {
+        Conteo conteo = new Conteo(MainActivity.this, MainActivity.this, id, null, tipo_geometria, null, null, null, null, null, null, null);
+        Boolean paso = conteo.eliminarConteo();
+        if (paso) {
+            mitoast.generarToast("Elemento borrado");
+        }
     }
 
     public void borrar_geometria() {
@@ -2369,7 +2379,11 @@ public class MainActivity extends AppCompatActivity
                     try {
                         int id = Integer.parseInt(atributos.get("id").toString());
 
-                        borrar_novedad(id, 1);
+                        if (atributos.has("tipo_nov") && atributos.has("ue")) {
+                            borrar_conteo(id, 1);
+                        } else {
+                            borrar_novedad(id, 1);
+                        }
 
                         puntos.get(i).remove();
 

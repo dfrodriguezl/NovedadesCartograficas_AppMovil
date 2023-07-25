@@ -125,5 +125,26 @@ public class Conteo {
         return true;
     }
 
+    public Boolean eliminarConteo(){
+
+        try {
+            SpatiaLite db=new SpatiaLite(context);
+
+            org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+            String table = Estructura.ConteoEntry.TABLE_NAME;
+            String whereClause = Estructura.ConteoEntry.ID+"=?";
+            String[] whereArgs = new String[] { String.valueOf(id) };
+            sp.delete(table, whereClause, whereArgs);
+
+            sp.close();
+        } catch (SQLiteConstraintException e) {
+            return false;
+        }
+
+        return true;
+
+    }
+
 
 }
