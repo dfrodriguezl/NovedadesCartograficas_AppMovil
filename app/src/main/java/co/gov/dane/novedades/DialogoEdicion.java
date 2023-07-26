@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.os.Environment.DIRECTORY_DOCUMENTS;
@@ -171,6 +172,8 @@ public class DialogoEdicion {
 
                     main.drawPC();
 
+                    main.estado_mapa_sin_edicion();
+
                 }
             });
 
@@ -179,9 +182,171 @@ public class DialogoEdicion {
                 public void onClick(View v) {
                     dialog.dismiss();
                     main.cancelarConteo();
+                    main.estado_mapa_sin_edicion();
                 }
             });
         }
+    }
+
+    public void mostrarDialogoEdicionConteo() {
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+
+        final View mView = inflater.inflate(R.layout.dialog_conteo_unidades, null);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+        wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+        wmlp.y = 200;   //y position
+
+        wmlp.width = mView.getWidth();
+        dialog.getWindow().setDimAmount(0);
+
+        LinearLayout panel_mzn = (LinearLayout) mView.findViewById(R.id.panel_mzn);
+        panel_mzn.setVisibility(View.GONE);
+
+        final Spinner spinner_tipo_nov_conteo = mView.findViewById(R.id.spinner_tipo_nov_conteo);
+        String[] tipo_nov_array = main.getResources().getStringArray(R.array.tipo_novedad_conteo);
+        final ArrayAdapter<String> array_tipo_novedad_conteo = new ArrayAdapter<String>(main,
+                android.R.layout.simple_spinner_item, tipo_nov_array);
+        spinner_tipo_nov_conteo.setAdapter(array_tipo_novedad_conteo);
+
+        List<String> tipo_nov_list = Arrays.asList(tipo_nov_array);
+
+        dialog.show();
+
+        Button btn_guardar_conteo= (Button) mView.findViewById(R.id.btn_dialog_guardar_conteo);
+        Button btn_dialog_cancelar_conteo = (Button) mView.findViewById(R.id.btn_dialog_cancelar_conteo);
+
+        if (edicion) {
+            try {
+
+                String manzana = json.get("manzana").toString();
+                String edificaciones = json.get("edificaciones").toString();
+                String viviendas = json.get("viviendas").toString();
+                String ue = json.get("ue").toString();
+                String tipo_nov = json.get("tipo_nov").toString();
+                String descripcion = json.get("descripcion").toString();
+
+                int tipo_nov_sel = tipo_nov_list.indexOf(tipo_nov);
+
+                TextView mznText = (TextView) mView.findViewById(R.id.cod_mzn);
+                mznText.setText(manzana);
+
+                EditText num_edificaciones = (EditText) mView.findViewById(R.id.num_edificaciones);
+                num_edificaciones.setText(edificaciones);
+
+                EditText num_viviendas = (EditText) mView.findViewById(R.id.num_viviendas);
+                num_viviendas.setText(viviendas);
+
+                EditText num_ueconomicas = (EditText) mView.findViewById(R.id.num_ueconomicas);
+                num_ueconomicas.setText(ue);
+
+                spinner_tipo_nov_conteo.setSelection(tipo_nov_sel);
+
+                EditText observaciones_conteo = (EditText) mView.findViewById(R.id.observaciones_conteo);
+                observaciones_conteo.setText(descripcion);
+
+            } catch (Throwable t) {
+
+            }
+
+            btn_dialog_cancelar_conteo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    main.drop_markers_edicion();
+                    main.hide_cut_geom();
+                    main.hide_delete_geom();
+                    main.hide_msg_distancia();
+                    main.hide_msg_area();
+                    main.hide_edit_atributos();
+                    main.hide_edit_join();
+                    main.hide_menu_grupo_edicion();
+                    dialog.dismiss();
+                }
+            });
+
+            btn_guardar_conteo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    try {
+
+                        int id = Integer.parseInt(json.get("id").toString());
+
+                        String manzana = json.get("manzana").toString();
+
+                        EditText num_edificaciones = (EditText) mView.findViewById(R.id.num_edificaciones);
+                        String edificaciones = num_edificaciones.getText().toString();
+
+                        EditText num_viviendas = (EditText) mView.findViewById(R.id.num_viviendas);
+                        String viviendas = num_viviendas.getText().toString();
+
+                        EditText num_ueconomicas = (EditText) mView.findViewById(R.id.num_ueconomicas);
+                        String ue = num_ueconomicas.getText().toString();
+
+                        String tipo_nov = spinner_tipo_nov_conteo.getSelectedItem().toString();
+
+                        EditText observaciones_conteo = (EditText) mView.findViewById(R.id.observaciones_conteo);
+                        String descripcion = observaciones_conteo.getText().toString();
+
+                        Conteo conteo = new Conteo(activity, main, id, manzana, edificaciones, viviendas, ue, tipo_nov, descripcion);
+                        conteo.updateConteoAtributos();
+
+                        try {
+                            JSONObject obj = new JSONObject();
+                            obj.put("id", String.valueOf(id));
+                            obj.put("manzana", manzana);
+                            obj.put("edificaciones", edificaciones);
+                            obj.put("viviendas", viviendas);
+                            obj.put("ue", ue);
+                            obj.put("tipo_nov", tipo_nov);
+                            obj.put("descripcion", descripcion);
+
+
+                            if (opcion == 1) {
+
+                                for (int i = 0; i < main.puntos.size(); i++) {
+                                    if (main.puntos.get(i).getId().equals(id_google)) {
+                                        main.puntos.get(i).setTag(obj);
+
+                                    }
+
+                                }
+
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            Log.e("error:", e.toString());
+
+                        }
+
+
+                    } catch (JSONException e) {
+                        ;
+                        Log.e("error:", e.toString());
+                    }
+
+                    main.drop_markers_edicion();
+                    main.hide_cut_geom();
+                    main.hide_delete_geom();
+                    main.hide_msg_distancia();
+                    main.hide_msg_area();
+                    main.hide_edit_atributos();
+                    main.hide_edit_join();
+                    main.hide_menu_grupo_edicion();
+
+                    dialog.dismiss();
+                }
+            });
+        }
+
     }
 
     public void mostrarDialogoEdicionPL(Boolean WindowVisible) {

@@ -42,6 +42,18 @@ public class Conteo {
         this.fecha=fecha;
     }
 
+    Conteo(Context context, MainActivity main, int id, String manzana, String edificaciones, String viviendas, String ue, String tipo_nov, String descripcion) {
+        this.context=context;
+        this.main=main;
+        this.id=id;
+        this.manzana=manzana;
+        this.edificaciones=edificaciones;
+        this.viviendas=viviendas;
+        this.ue=ue;
+        this.tipo_nov=tipo_nov;
+        this.descripcion=descripcion;
+    }
+
     public Boolean insertarConteo(){
 
         try {
@@ -78,4 +90,61 @@ public class Conteo {
 
         return true;
     }
+
+    public Boolean updateConteoAtributos(){
+
+        try {
+            SpatiaLite db=new SpatiaLite(context);
+
+            org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put(Estructura.ConteoEntry.MANZANA, manzana);
+            values.put(Estructura.ConteoEntry.EDIFICACIONES, edificaciones);
+            values.put(Estructura.ConteoEntry.VIVIENDAS, viviendas);
+            values.put(Estructura.ConteoEntry.UE, ue);
+            values.put(Estructura.ConteoEntry.TIPO_NOV, tipo_nov);
+            values.put(Estructura.ConteoEntry.DESCRIPCION, descripcion);
+            long rowInserted=sp.update(Estructura.ConteoEntry.TABLE_NAME, values, " id = ?", new String[]{String.valueOf(id)});
+            sp.close();
+
+            Mensajes mitoast =new Mensajes(main);
+
+            if(rowInserted != -1){
+                mitoast.generarToast("Datos actualizados");
+
+            }else{
+                mitoast.generarToast("Error al actualizar los datos");
+            }
+
+        } catch (SQLiteConstraintException e) {
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public Boolean eliminarConteo(){
+
+        try {
+            SpatiaLite db=new SpatiaLite(context);
+
+            org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+            String table = Estructura.ConteoEntry.TABLE_NAME;
+            String whereClause = Estructura.ConteoEntry.ID+"=?";
+            String[] whereArgs = new String[] { String.valueOf(id) };
+            sp.delete(table, whereClause, whereArgs);
+
+            sp.close();
+        } catch (SQLiteConstraintException e) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+
 }
