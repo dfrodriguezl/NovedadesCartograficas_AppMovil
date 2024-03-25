@@ -19,7 +19,7 @@
             <item
                 android:id="@+id/buscar_ceed"
                 android:icon="@drawable/ic_main_search"
-                android:title="Busqueda Sectores" />
+                android:title="Búsqueda MGN" />
             <!--
             <item
                 android:id="@+id/zoom_obras"

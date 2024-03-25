@@ -45,10 +45,14 @@ android {
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    namespace "eu.geopaparazzi.spatialite"
     productFlavors {
     }
-    lintOptions {
+    lint {
         abortOnError false
+    }
+    buildFeatures {
+        aidl true
     }
 }
 

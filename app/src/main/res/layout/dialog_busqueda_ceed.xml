@@ -20,7 +20,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="0dp"
             android:gravity="center"
-            android:text="Busqueda de Sectores"
+            android:text="Busqueda MGN"
             android:textColor="@color/dane"
             android:textSize="20sp" />
 

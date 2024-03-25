@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 
 public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.MyViewHolder> {
@@ -59,10 +60,13 @@ public class CustomListAdapter extends RecyclerView.Adapter<CustomListAdapter.My
                 DownloadFileFromURL mTask = new DownloadFileFromURL(context,null);
 
 
-
-                    mTask.execute("https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name="+archivo);
-
-
+                try {
+                    mTask.execute("https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name="+archivo).get();
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
 
             }
