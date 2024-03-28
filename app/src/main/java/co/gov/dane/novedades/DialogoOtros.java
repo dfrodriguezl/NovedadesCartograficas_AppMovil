@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 
 import android.text.InputType;
 import android.util.Log;
@@ -21,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -399,6 +402,10 @@ public class DialogoOtros {
 
     public void MostrarMapasBase() {
 
+        Boolean[] visibilidadCapasConjunto = main.session.getVisibilidadCapas();
+        Boolean visibilidadManzanas = visibilidadCapasConjunto[0];
+        Boolean visibilidadSecciones = visibilidadCapasConjunto[1];
+
 
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(main);
         final View mView = main.getLayoutInflater().inflate(R.layout.dialog_mapa_base, null);
@@ -457,6 +464,70 @@ public class DialogoOtros {
             public void onClick(View v) {
                 main.mMap.setMapType(mMapTypes[4]);
                 dialog.dismiss();
+            }
+        });
+
+        LinearLayout capa_manzanas = (LinearLayout) mView.findViewById(R.id.capa_manzana);
+        TextView capa_manzanas_texto = (TextView) mView.findViewById(R.id.capa_manzana_texto);
+
+        if(visibilidadManzanas){
+            capa_manzanas.setBackground(ContextCompat.getDrawable(main, R.drawable.borde_boton_dane));
+            capa_manzanas_texto.setTypeface(null, Typeface.BOLD);
+            capa_manzanas_texto.setTextColor(ContextCompat.getColor(main, R.color.dane));
+        } else {
+            capa_manzanas.setBackgroundResource(0);
+            capa_manzanas_texto.setTypeface(null, Typeface.NORMAL);
+            capa_manzanas_texto.setTextColor(ContextCompat.getColor(main, R.color.gris_oscuro));
+        }
+
+        capa_manzanas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.handleLayerVisibility("MANZANAS");
+
+                Boolean visibilidadManzanasNueva = main.session.getVisibilidadCapas()[0];
+
+                if(visibilidadManzanasNueva){
+                    capa_manzanas.setBackground(ContextCompat.getDrawable(main, R.drawable.borde_boton_dane));
+                    capa_manzanas_texto.setTypeface(null, Typeface.BOLD);
+                    capa_manzanas_texto.setTextColor(ContextCompat.getColor(main, R.color.dane));
+                } else {
+                    capa_manzanas.setBackgroundResource(0);
+                    capa_manzanas_texto.setTypeface(null, Typeface.NORMAL);
+                    capa_manzanas_texto.setTextColor(ContextCompat.getColor(main, R.color.gris_oscuro));
+                }
+            }
+        });
+
+        LinearLayout capa_seccion_rural = (LinearLayout) mView.findViewById(R.id.capa_seccion_rural);
+        TextView capa_seccion_texto = (TextView) mView.findViewById(R.id.capa_seccion_texto);
+
+        if(visibilidadSecciones){
+            capa_seccion_rural.setBackground(ContextCompat.getDrawable(main, R.drawable.borde_boton_dane));
+            capa_seccion_texto.setTypeface(null, Typeface.BOLD);
+            capa_seccion_texto.setTextColor(ContextCompat.getColor(main, R.color.dane));
+        } else {
+            capa_seccion_rural.setBackgroundResource(0);
+            capa_seccion_texto.setTypeface(null, Typeface.NORMAL);
+            capa_seccion_texto.setTextColor(ContextCompat.getColor(main, R.color.gris_oscuro));
+        }
+
+        capa_seccion_rural.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.handleLayerVisibility("SECCIONES RURALES");
+
+                Boolean visibilidadSeccionesNueva = main.session.getVisibilidadCapas()[1];
+
+                if(visibilidadSeccionesNueva){
+                    capa_seccion_rural.setBackground(ContextCompat.getDrawable(main, R.drawable.borde_boton_dane));
+                    capa_seccion_texto.setTypeface(null, Typeface.BOLD);
+                    capa_seccion_texto.setTextColor(ContextCompat.getColor(main, R.color.dane));
+                } else {
+                    capa_seccion_rural.setBackgroundResource(0);
+                    capa_seccion_texto.setTypeface(null, Typeface.NORMAL);
+                    capa_seccion_texto.setTextColor(ContextCompat.getColor(main, R.color.gris_oscuro));
+                }
             }
         });
 

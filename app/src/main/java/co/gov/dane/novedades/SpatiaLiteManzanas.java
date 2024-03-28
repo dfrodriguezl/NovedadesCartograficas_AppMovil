@@ -56,10 +56,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
 
     public Map<String, PolygonOptions> getManzanas(LatLng userLocation) {
 
-
         Map<String, PolygonOptions> poligonos = new HashMap<>();
-        Map<String, PolygonOptions> poligonosRural = new HashMap<>();
-
 
         try {
             String ruta_db = null;
@@ -111,8 +108,8 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             Log.d("mensaje:", String.valueOf(e));
         }
 
-        poligonosRural = getSeccionesRurales(userLocation);
-        poligonos.putAll(poligonosRural);
+//        Map<String, PolygonOptions> poligonosRural = getSeccionesRurales(userLocation);
+//        poligonos.putAll(poligonosRural);
 
 
         return poligonos;
@@ -159,7 +156,6 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
                             Double lon = coord[j].x;
                             LatLng punto = new LatLng(lat, lon);
                             opts.add(punto);
-
                         }
                         poligonos.put(cod_manzana, opts);
                     }
@@ -523,7 +519,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             String tabla = databaseName.replace(".db", "").toLowerCase();
             String rawQuery = "select distinct setu_ccdgo from " + tabla + " where cod_mpio = '" + mpio + "' and cod_clase = '" + clase + "' order by setu_ccdgo";
 
-            if(clase.equals("2")){
+            if (clase.equals("2")) {
                 rawQuery = "select distinct setu_ccdgo from " + tabla + " where cod_mpio = '" + mpio + "' and cod_clase = '" + clase + "' and zu_ccdgo = '" + centroPoblado + "' order by setu_ccdgo";
             }
 
@@ -562,7 +558,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             String tabla = databaseName.replace(".db", "").toLowerCase();
             String[] campos = new String[]{"setr_ccdgo", "cod_mpio", "cod_clase"};
 
-            if(clase.equals("3")){
+            if (clase.equals("3")) {
                 tabla = "rural";
                 campos = new String[]{"setr_ccdgo", "mpio_cdpmp", "clas_ccdgo"};
             }
@@ -605,7 +601,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
 
             String rawQuery = "select distinct secu_ccdgo from " + tabla + " where cod_mpio = '" + mpio + "' and cod_clase = '" + clase + "' and setu_ccdgo = '" + sectorUrbano + "' order by secu_ccdgo";
 
-            if(clase.equals("2")){
+            if (clase.equals("2")) {
                 rawQuery = "select distinct secu_ccdgo from " + tabla + " where cod_mpio = '" + mpio + "' and cod_clase = '" + clase + "' and setu_ccdgo = '" + sectorUrbano + "' and zu_ccdgo = '" + centroPoblado + "' order by secu_ccdgo";
             }
 
@@ -644,7 +640,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             String tabla = databaseName.replace(".db", "").toLowerCase();
             String[] campos = new String[]{"secr_ccdgo", "setr_ccdgo", "cod_mpio", "cod_clase"};
 
-            if(clase.equals("3")){
+            if (clase.equals("3")) {
                 tabla = "rural";
                 campos = new String[]{"secr_ccdgo", "setr_ccdgo", "mpio_cdpmp", "clas_ccdgo"};
             }
@@ -719,7 +715,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             String tabla = databaseName.replace(".db", "").toLowerCase();
             String rawQuery = "select distinct manz_ccdgo from " + tabla + " where cod_mpio = '" + mpio + "' and cod_clase = '" + clase + "' and setu_ccdgo = '" + sectorUrbano + "' and secu_ccdgo = '" + seccionUrbana + "' order by secu_ccdgo";
 
-            if(clase.equals("2")){
+            if (clase.equals("2")) {
                 rawQuery = "select distinct manz_ccdgo from " + tabla + " where cod_mpio = '" + mpio + "' and cod_clase = '" + clase + "' and setu_ccdgo = '" + sectorUrbano + "' and secu_ccdgo = '" + seccionUrbana + "' and zu_ccdgo = '" + centroPoblado + "' order by secu_ccdgo";
             }
 
@@ -758,7 +754,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             String tabla = databaseName.replace(".db", "").toLowerCase();
             String rawQuery = "select AsWKT(CastToPolygon(geometry)) from " + tabla + " where cod_mpio = '" + mpio + "' and cod_clase = '" + clase + "' and setu_ccdgo = '" + sectorUrbano + "' and secu_ccdgo = '" + seccionUrbana + "' and manz_ccdgo = '" + manzana + "' order by secu_ccdgo";
 
-            if(clase.equals("2")){
+            if (clase.equals("2")) {
                 rawQuery = "select AsWKT(CastToPolygon(geometry)) from " + tabla + " where cod_mpio = '" + mpio + "' and cod_clase = '" + clase + "' and setu_ccdgo = '" + sectorUrbano + "' and secu_ccdgo = '" + seccionUrbana + "' and zu_ccdgo = '" + centroPoblado + "' and manz_ccdgo = '" + manzana + "' order by secu_ccdgo";
             }
 
@@ -928,7 +924,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             Cursor c = sp1.rawQuery(
                     rawQuery, null);
 
-            if(c.getCount() > 0){
+            if (c.getCount() > 0) {
                 while (c.moveToNext()) {
                     String geometria_ini = c.getString(0);
 

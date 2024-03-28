@@ -4,6 +4,8 @@
     android:id="@+id/dialogo_mapa_base"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_centerHorizontal="false"
+    android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="5dp">
 
@@ -11,16 +13,16 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="false"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="10dp"
             android:text="Tipo de Mapa Base"
             android:textColor="@color/dane"
-            android:textSize="20sp"
-            android:padding="10dp"/>
-
+            android:textSize="20sp" />
 
         <TextView
 
@@ -31,18 +33,18 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_margin="10dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <LinearLayout
+                android:id="@+id/mapa_base_normal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp"
                 android:layout_marginHorizontal="10dp"
                 android:background="@drawable/borde_boton_dane"
-                android:id="@+id/mapa_base_normal">
+                android:orientation="vertical"
+                android:padding="5dp">
 
                 <ImageView
                     android:layout_width="64dp"
@@ -53,18 +55,18 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="Normal" />
+                    android:text="Normal"
+                    android:textAlignment="center" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/mapa_base_satelite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp"
                 android:layout_marginHorizontal="10dp"
                 android:background="@drawable/borde_boton_dane"
-                android:id="@+id/mapa_base_satelite">
+                android:orientation="vertical"
+                android:padding="5dp">
 
                 <ImageView
 
@@ -76,18 +78,18 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="Satelite" />
+                    android:text="Satelite"
+                    android:textAlignment="center" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/mapa_base_hibrido"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp"
                 android:layout_marginHorizontal="10dp"
                 android:background="@drawable/borde_boton_dane"
-                android:id="@+id/mapa_base_hibrido">
+                android:orientation="vertical"
+                android:padding="5dp">
 
                 <ImageView
 
@@ -99,34 +101,29 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="Hibrido" />
+                    android:text="Hibrido"
+                    android:textAlignment="center" />
 
             </LinearLayout>
 
 
-
-
-
-
         </LinearLayout>
-
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_margin="10dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <LinearLayout
+                android:id="@+id/mapa_base_tierra"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp"
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/borde_boton_dane"
-                android:id="@+id/mapa_base_tierra">
+                android:orientation="vertical"
+                android:padding="5dp">
 
                 <ImageView
 
@@ -139,16 +136,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Tierra"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center" />
             </LinearLayout>
+
             <LinearLayout
+                android:id="@+id/mapa_base_none"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp"
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/borde_boton_dane"
-                android:id="@+id/mapa_base_none">
+                android:orientation="vertical"
+                android:padding="5dp">
 
                 <ImageView
 
@@ -160,12 +158,87 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="Ninguno" />
+                    android:text="Ninguno"
+                    android:textAlignment="center" />
             </LinearLayout>
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Capas MGN"
+                android:textColor="@color/dane"
+                android:textSize="20sp" />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seleccione las capas que requiera visualizar sobre el maapa." />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/capa_manzana"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <ImageView
+
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:srcCompat="@drawable/ic_mapa_base_normal" />
+
+                    <TextView
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Manzana"
+                        android:textAlignment="center"
+                        android:id="@+id/capa_manzana_texto" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/capa_seccion_rural"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <ImageView
+
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:srcCompat="@drawable/ic_mapa_base_normal" />
+
+                    <TextView
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Sección rural"
+                        android:textAlignment="center"
+                        android:id="@+id/capa_seccion_texto"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
 
     </LinearLayout>

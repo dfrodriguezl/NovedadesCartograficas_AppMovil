@@ -1300,6 +1300,8 @@ public class MainActivity extends AppCompatActivity
         mMap.setOnCameraMoveListener(this);
 
 
+
+
         //Mapa base del aplciativo
         listado_mapas_offline = new ArrayList<>();
         String ruta_mbtiles = null;
@@ -1375,6 +1377,7 @@ public class MainActivity extends AppCompatActivity
     public void ManzanasMGN(LatLng userLocation) {
 
         Map<String, PolygonOptions> pol_get = spm.getManzanas(userLocation);
+        Map<String, PolygonOptions> pol_get_rural = spm.getSeccionesRurales(userLocation);
 
         for (Map.Entry<String, PolygonOptions> entry : pol_get.entrySet()) {
 
@@ -1388,9 +1391,29 @@ public class MainActivity extends AppCompatActivity
 
                 atributos.put("id", entry.getKey());
                 atributos.put("tipo", "MANZANAS");
-
                 atributos.put("descripcion", entry.getKey());
 
+                manzanas.get(manzanas.size() - 1).setTag(atributos);
+                Log.d("hola:", "hola");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        for (Map.Entry<String, PolygonOptions> entry : pol_get_rural.entrySet()) {
+
+            manzanas.add(mMap.addPolygon(entry.getValue()));
+            manzanas.get(manzanas.size() - 1).setClickable(true);
+            manzanas.get(manzanas.size() - 1).setZIndex(0);
+            manzanas.get(manzanas.size() - 1).setStrokeWidth(5);
+
+            JSONObject atributos = new JSONObject();
+            try {
+
+                atributos.put("id", entry.getKey());
+                atributos.put("tipo", "SECCIONES RURALES");
+                atributos.put("descripcion", entry.getKey());
 
                 manzanas.get(manzanas.size() - 1).setTag(atributos);
                 Log.d("hola:", "hola");
@@ -3630,6 +3653,47 @@ public class MainActivity extends AppCompatActivity
         intent.setData(geoLocation);
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
+        }
+    }
+
+    public void handleLayerVisibility(String capa){
+        Boolean[] visibilidadCapas = session.getVisibilidadCapas();
+        Boolean visibilidadCapa = capa.equals("MANZANAS") ? visibilidadCapas[0] : visibilidadCapas[1];
+
+        for(Polygon pol: manzanas){
+            JSONObject jsonTag = (JSONObject) pol.getTag();
+            String tipo = null;
+            try {
+                tipo = jsonTag.getString("tipo");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
+            if(tipo.equals(capa)){
+                pol.setVisible(!visibilidadCapa);
+            }
+        }
+
+        if(capa.equals("MANZANAS")){
+            session.setCapaManzanas(!visibilidadCapa);
+        } else if(capa.equals("SECCIONES RURALES")){
+            session.setCapaSecciones(!visibilidadCapa);
+        }
+    }
+
+    public void layerOn(String capa){
+        for(Polygon pol: manzanas){
+            JSONObject jsonTag = (JSONObject) pol.getTag();
+            String tipo = null;
+            try {
+                tipo = jsonTag.getString("tipo");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
+            if(tipo.equals(capa)){
+                pol.setVisible(true);
+            }
         }
     }
 

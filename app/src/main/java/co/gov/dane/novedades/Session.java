@@ -18,6 +18,8 @@ public class Session {
         prefs.edit().putString("nombre", nombre).commit();
         prefs.edit().putString("rol", rol).commit();
         prefs.edit().putString("investigacion", investigacion).commit();
+        prefs.edit().putBoolean("capa_manzanas", true).commit();
+        prefs.edit().putBoolean("capa_secciones_rurales", true).commit();
     }
 
     public void setusename(String geom){
@@ -48,5 +50,19 @@ public class Session {
 
     public void borrarSession(){
         prefs.edit().clear().commit();
+    }
+
+    public Boolean[] getVisibilidadCapas(){
+        Boolean manzanas = prefs.getBoolean("capa_manzanas",true);
+        Boolean secciones_rurales = prefs.getBoolean("capa_secciones_rurales",true);
+        return new Boolean[]{manzanas, secciones_rurales};
+    }
+
+    public void setCapaManzanas(Boolean manzanas){
+        prefs.edit().putBoolean("capa_manzanas", manzanas).commit();
+    }
+
+    public void setCapaSecciones(Boolean secciones_rurales){
+        prefs.edit().putBoolean("capa_secciones_rurales", secciones_rurales).commit();
     }
 }
