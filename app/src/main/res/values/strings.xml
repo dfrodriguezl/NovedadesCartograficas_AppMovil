@@ -167,4 +167,9 @@
         <item>Conteo manzana existente MGN</item>
         <item>Otros (cambio de forma)</item>
     </string-array>
+    <string-array name="tipo_busqueda_lista">
+        <item>Seleccione...</item>
+        <item>Niveles MGN</item>
+        <item>AG</item>
+    </string-array>
 </resources>

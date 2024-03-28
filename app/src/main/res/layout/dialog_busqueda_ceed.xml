@@ -20,7 +20,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="0dp"
             android:gravity="center"
-            android:text="Busqueda MGN"
+            android:text="Búsqueda MGN"
             android:textColor="@color/dane"
             android:textSize="20sp" />
 
@@ -30,236 +30,363 @@
             android:layout_marginTop="20dp"
             android:paddingLeft="10dp"
             android:paddingBottom="5dp"
-            android:text="Filtre y ubique el sector de su interes."
+            android:text="Filtre y ubique la unidad de su interes."
 
             android:textSize="15sp" />
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="300dp">
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:orientation="vertical">
+            android:layout_height="300dp">
 
-            <TextView
-                android:paddingHorizontal="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dane"
-                android:text="Departamento" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/borde_spinner"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <Spinner
-                    android:id="@+id/spinner_ceed_dpto"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="10dp"
+                    android:orientation="vertical">
 
-        </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="5dp"
+                        android:text="Tipo búsqueda"
+                        android:textColor="@color/dane" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/borde_spinner"
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+
+                        <Spinner
+                            android:id="@+id/spinner_tipo_busqueda"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:entries="@array/tipo_busqueda_lista" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_lista"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="5dp"
+                            android:text="Departamento"
+                            android:textColor="@color/dane" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/borde_spinner"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                                android:id="@+id/spinner_ceed_dpto"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="5dp"
+                            android:text="Municipio"
+                            android:textColor="@color/dane" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/borde_spinner"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                                android:id="@+id/spinner_ceed_mpio"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="5dp"
+                            android:text="Clase"
+                            android:textColor="@color/dane" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/borde_spinner"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <Spinner
+                                android:id="@+id/spinner_ceed_clase"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:id="@+id/sector_rural_layout">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="5dp"
+                            android:text="Sector Rural"
+                            android:textColor="@color/dane" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/borde_spinner"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <Spinner
+                                android:id="@+id/spinner_ceed_sectorr"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                    </LinearLayout>
 
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="10dp"
+                        android:orientation="vertical"
+                        android:id="@+id/seccion_rural_layout">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="5dp"
+                            android:text="Sección Rural"
+                            android:textColor="@color/dane" />
 
-            <TextView
-                android:paddingHorizontal="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dane"
-                android:text="Municipio" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/borde_spinner"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <Spinner
+                                android:id="@+id/spinner_ceed_seccionr"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:id="@+id/centro_poblado_layout">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="5dp"
+                            android:text="Centro Poblado"
+                            android:textColor="@color/dane" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/borde_spinner"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <Spinner
+                                android:id="@+id/spinner_ceed_cpob"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="10dp"
+                        android:orientation="vertical"
+                        android:id="@+id/sector_urbano_layout">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="5dp"
+                            android:text="Sector Urbano"
+                            android:textColor="@color/dane" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/borde_spinner"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                                android:id="@+id/spinner_ceed_setu"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="10dp"
+                        android:orientation="vertical"
+                        android:id="@+id/seccion_urbano_layout">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="5dp"
+                            android:text="Sección Urbana"
+                            android:textColor="@color/dane" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/borde_spinner"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                                android:id="@+id/spinner_ceed_seccu"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="10dp"
+                        android:orientation="vertical"
+                        android:id="@+id/manzana_layout">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="5dp"
+                            android:text="Manzana"
+                            android:textColor="@color/dane" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/borde_spinner"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                                android:id="@+id/spinner_ceed_manzana"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
             <LinearLayout
+                android:id="@+id/layout_ag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/borde_spinner"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <Spinner
-                    android:id="@+id/spinner_ceed_mpio"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="5dp"
+                        android:text="AG"
+                        android:textColor="@color/dane" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/borde_spinner"
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+
+                        <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                            android:id="@+id/spinner_ceed_ag"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
 
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:paddingHorizontal="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dane"
-                android:text="Clase" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/borde_spinner"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/spinner_ceed_clase"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content" />
             </LinearLayout>
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:paddingHorizontal="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dane"
-                android:text="Sector Rural" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/borde_spinner"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/spinner_ceed_sectorr"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:paddingHorizontal="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dane"
-                android:text="Sección Rural" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/borde_spinner"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/spinner_ceed_seccionr"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:paddingHorizontal="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dane"
-                android:text="Centro Poblado" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/borde_spinner"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/spinner_ceed_cpob"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:paddingHorizontal="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dane"
-                android:text="Sector Urbano" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/borde_spinner"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/spinner_ceed_setu"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-
-
-
-    </LinearLayout>
-
-
-</ScrollView>
-
-
-
-
-
-
-
-
-
-
-
+        </ScrollView>
 
 
         <LinearLayout
@@ -274,11 +401,11 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/boton_verde"
-                android:textColor="@color/blanco"
-                android:padding="10dp"
                 android:layout_margin="10dp"
-                android:text="Ubicar" />
+                android:background="@drawable/boton_verde"
+                android:padding="10dp"
+                android:text="Ubicar"
+                android:textColor="@color/blanco" />
 
             <Button
                 android:id="@+id/btn_dialog_cerrar_dialog_ceed"
@@ -286,18 +413,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
-                android:padding="10dp"
                 android:layout_margin="10dp"
+                android:padding="10dp"
 
-                android:text="Cerrar"
-                />
+                android:text="Cerrar" />
 
         </LinearLayout>
 
 
-
     </LinearLayout>
-
 
 
 </LinearLayout>

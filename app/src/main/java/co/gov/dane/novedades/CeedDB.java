@@ -411,5 +411,57 @@ public class CeedDB  extends SQLiteOpenHelper {
         return tipo;
     }
 
+    public String getNombreDpto(String dpto) {
+        String label = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select distinct TEXTO from txt_dpto where txt_dpto.id = '" +  dpto + "'", null );
+
+        while (res.moveToNext()) {
+            label = res.getString(0);
+        }
+        // closing connection
+        res.close();
+        db.close();
+
+        // returning lables
+        return label;
+    }
+
+    public String getNombreMpio(String mpio) {
+        String label = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor res =  db.rawQuery( "select distinct TEXTO from txt_mpio where txt_mpio.id = '" +  mpio + "'", null );
+
+        while (res.moveToNext()) {
+            label = res.getString(0);
+        }
+        // closing connection
+        res.close();
+        db.close();
+
+        // returning lables
+        return label;
+    }
+
+    public List<String> getNombreCPob(String dpto,String mpio, String clase, String sectorr,String seccionr) {
+
+        List<String> labels = new ArrayList<String>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor res =  db.rawQuery( "select distinct C_POB,TEXTO from sector INNER JOIN txt_cpob on  substr('00'||DPTO,-2) || substr('000'||MPIO,-3) || substr('000'||C_POB,-3)=txt_cpob.id where DPTO="+dpto+" AND mpio="+mpio+" and CLASE="+clase+" and SET_R ="+sectorr+" and SEC_R="+seccionr+" order by C_POB ASC", null );
+
+        while (res.moveToNext()) {
+            labels.add(res.getString(0)+"-"+res.getString(1));
+        }
+        // closing connection
+        res.close();
+        db.close();
+
+        // returning lables
+        return labels;
+    }
+
 
 }

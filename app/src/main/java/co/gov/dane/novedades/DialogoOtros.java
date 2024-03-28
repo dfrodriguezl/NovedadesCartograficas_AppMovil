@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+
 import androidx.appcompat.app.AlertDialog;
+
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 import org.json.JSONException;
@@ -37,7 +40,9 @@ import org.locationtech.jts.io.WKTReader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
@@ -57,31 +62,30 @@ public class DialogoOtros {
     };
 
 
-
-    public DialogoOtros(MainActivity main, Activity _activity){
+    public DialogoOtros(MainActivity main, Activity _activity) {
 
         this.activity = _activity;
 
-        this.main=main;
+        this.main = main;
 
     }
 
-    public void MostrarDialogoCoordenadas(){
+    public void MostrarDialogoCoordenadas() {
 
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(activity);
-        final View mView =inflater.inflate(R.layout.dialog_coordenadas,null);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+        final View mView = inflater.inflate(R.layout.dialog_coordenadas, null);
         mBuilder.setView(mView);
-        final AlertDialog dialog =mBuilder.create();
+        final AlertDialog dialog = mBuilder.create();
 
 
-        Button btn_coordenadas= (Button) mView.findViewById(R.id.btn_dialog_coordenadas);
-        final TextView latitud= (TextView) mView.findViewById(R.id.et_dialog_coordenadas_latitud);
-        final TextView longitud= (TextView) mView.findViewById(R.id.et_dialog_coordenadas_longitud);
+        Button btn_coordenadas = (Button) mView.findViewById(R.id.btn_dialog_coordenadas);
+        final TextView latitud = (TextView) mView.findViewById(R.id.et_dialog_coordenadas_latitud);
+        final TextView longitud = (TextView) mView.findViewById(R.id.et_dialog_coordenadas_longitud);
 
-        latitud.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED );
-        longitud.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED );
+        latitud.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
+        longitud.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
 
         btn_coordenadas.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,9 +93,9 @@ public class DialogoOtros {
                 String lat = latitud.getText().toString();
                 String lon = longitud.getText().toString();
 
-                if(lat.equals("") || lon.equals("") ){
+                if (lat.equals("") || lon.equals("")) {
                     main.mitoast.generarToast("Faltan datos...");
-                }else{
+                } else {
                     LatLng marker = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
 
                     main.mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
@@ -100,11 +104,10 @@ public class DialogoOtros {
                 }
 
 
-
             }
         });
 
-        Button btn_cerrar_coordenadas= (Button) mView.findViewById(R.id.btn_dialog_coordenadas_close);
+        Button btn_cerrar_coordenadas = (Button) mView.findViewById(R.id.btn_dialog_coordenadas_close);
 
         btn_cerrar_coordenadas.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,8 +122,7 @@ public class DialogoOtros {
     }
 
 
-
-    public void scanQR(){
+    public void scanQR() {
 
         IntentIntegrator integrator = new IntentIntegrator(main);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
@@ -133,18 +135,16 @@ public class DialogoOtros {
     }
 
 
+    public void MostrarDialogoAcerca() {
 
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-    public void MostrarDialogoAcerca(){
-
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(activity);
-        final View mView =inflater.inflate(R.layout.dialog_acerca,null);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+        final View mView = inflater.inflate(R.layout.dialog_acerca, null);
         mBuilder.setView(mView);
 
-        Button btn_acerca= (Button) mView.findViewById(R.id.btn_dialog_acerca);
-        final AlertDialog dialog =mBuilder.create();
+        Button btn_acerca = (Button) mView.findViewById(R.id.btn_dialog_acerca);
+        final AlertDialog dialog = mBuilder.create();
         dialog.show();
 
         btn_acerca.setOnClickListener(new View.OnClickListener() {
@@ -153,7 +153,7 @@ public class DialogoOtros {
                 dialog.dismiss();
             }
         });
-        LinearLayout ly_dialog_acerca_web= (LinearLayout) mView.findViewById(R.id.ly_dialog_acerca_web);
+        LinearLayout ly_dialog_acerca_web = (LinearLayout) mView.findViewById(R.id.ly_dialog_acerca_web);
 
         ly_dialog_acerca_web.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,7 +163,7 @@ public class DialogoOtros {
             }
         });
 
-        LinearLayout ly_dialog_acerca_contacto= (LinearLayout) mView.findViewById(R.id.ly_dialog_acerca_contacto);
+        LinearLayout ly_dialog_acerca_contacto = (LinearLayout) mView.findViewById(R.id.ly_dialog_acerca_contacto);
 
         ly_dialog_acerca_contacto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,17 +182,17 @@ public class DialogoOtros {
     }
 
 
-    public void MostrarDialogoAyuda(){
+    public void MostrarDialogoAyuda() {
 
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(activity);
-        final View mView =inflater.inflate(R.layout.dialog_ayuda,null);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+        final View mView = inflater.inflate(R.layout.dialog_ayuda, null);
         mBuilder.setView(mView);
 
-        Button btn_ayuda= (Button) mView.findViewById(R.id.btn_dialog_ayuda);
-        final AlertDialog dialog =mBuilder.create();
+        Button btn_ayuda = (Button) mView.findViewById(R.id.btn_dialog_ayuda);
+        final AlertDialog dialog = mBuilder.create();
         dialog.show();
 
         btn_ayuda.setOnClickListener(new View.OnClickListener() {
@@ -206,24 +206,24 @@ public class DialogoOtros {
 
     }
 
-    public void MostrarDialogoObras(String noformular,String nombreobra,String direccion, String barrio){
+    public void MostrarDialogoObras(String noformular, String nombreobra, String direccion, String barrio) {
 
-        final LinearLayout dialogo= (LinearLayout) main.findViewById(R.id.dialogo_atributos_obra);
+        final LinearLayout dialogo = (LinearLayout) main.findViewById(R.id.dialogo_atributos_obra);
         dialogo.setVisibility(View.VISIBLE);
 
-        TextView tetxo_noformular=main.findViewById(R.id.dialogo_atributos_obra_noformular);
+        TextView tetxo_noformular = main.findViewById(R.id.dialogo_atributos_obra_noformular);
         tetxo_noformular.setText(noformular);
 
-        TextView tetxo_nombreobra=main.findViewById(R.id.dialogo_atributos_obra_nombreobra);
+        TextView tetxo_nombreobra = main.findViewById(R.id.dialogo_atributos_obra_nombreobra);
         tetxo_nombreobra.setText(nombreobra);
 
-        TextView tetxo_direccion=main.findViewById(R.id.dialogo_atributos_obra_direccion);
+        TextView tetxo_direccion = main.findViewById(R.id.dialogo_atributos_obra_direccion);
         tetxo_direccion.setText(direccion);
 
-        TextView tetxo_barrio=main.findViewById(R.id.dialogo_atributos_obra_barrio);
+        TextView tetxo_barrio = main.findViewById(R.id.dialogo_atributos_obra_barrio);
         tetxo_barrio.setText(barrio);
 
-        Button btn_dialog_atributos_obra_close= (Button) main.findViewById(R.id.btn_dialog_atributos_obra_close);
+        Button btn_dialog_atributos_obra_close = (Button) main.findViewById(R.id.btn_dialog_atributos_obra_close);
 
         btn_dialog_atributos_obra_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -235,17 +235,17 @@ public class DialogoOtros {
     }
 
 
-    public void MostrarDialogoSincronizar(){
+    public void MostrarDialogoSincronizar() {
 
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(activity);
-        final View mView =inflater.inflate(R.layout.dialog_sincronizar,null);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+        final View mView = inflater.inflate(R.layout.dialog_sincronizar, null);
         mBuilder.setView(mView);
 
-        Button btn_dialog_sincronizar_close= (Button) mView.findViewById(R.id.btn_dialog_sincronizar_close);
-        final AlertDialog dialog =mBuilder.create();
+        Button btn_dialog_sincronizar_close = (Button) mView.findViewById(R.id.btn_dialog_sincronizar_close);
+        final AlertDialog dialog = mBuilder.create();
         dialog.show();
 
         /*
@@ -273,12 +273,12 @@ public class DialogoOtros {
         });
         */
 
-        Button subir_cambios_sincronizacion= (Button) mView.findViewById(R.id.subir_cambios_sincronizacion);
+        Button subir_cambios_sincronizacion = (Button) mView.findViewById(R.id.subir_cambios_sincronizacion);
 
         subir_cambios_sincronizacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Controlador con=new Controlador(mView.getContext());
+                Controlador con = new Controlador(mView.getContext());
                 con.uploadData();
             }
         });
@@ -292,7 +292,7 @@ public class DialogoOtros {
         });
 
 
-        Button descargar_insumos= (Button) mView.findViewById(R.id.descargar_insumos);
+        Button descargar_insumos = (Button) mView.findViewById(R.id.descargar_insumos);
 
         descargar_insumos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,24 +310,24 @@ public class DialogoOtros {
     }
 
 
-    public void MostrarMapasOffline(){
+    public void MostrarMapasOffline() {
 
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(activity);
-        final View mView =inflater.inflate(R.layout.dialog_mapa_offline,null);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+        final View mView = inflater.inflate(R.layout.dialog_mapa_offline, null);
         mBuilder.setView(mView);
-        final AlertDialog dialog =mBuilder.create();
+        final AlertDialog dialog = mBuilder.create();
 
-        ArrayList<MapaOffline> mapas=new ArrayList<>();
+        ArrayList<MapaOffline> mapas = new ArrayList<>();
 
-        for(int i = 0; i < main.listado_mapas_offline.size(); i++){
+        for (int i = 0; i < main.listado_mapas_offline.size(); i++) {
             mapas.add(main.listado_mapas_offline.get(i));
         }
 
         MapaOfflineAdapter listAdapter = new MapaOfflineAdapter(activity, mapas);
 
-        ListView listView=(ListView)mView.findViewById(R.id.listview_mapa_offline);
+        ListView listView = (ListView) mView.findViewById(R.id.listview_mapa_offline);
 
         listView.setAdapter(listAdapter);
 
@@ -335,7 +335,7 @@ public class DialogoOtros {
 
         dialog.show();
 
-        Button btn_cerrar= (Button) mView.findViewById(R.id.cerrar_dialog_mapa_offline);
+        Button btn_cerrar = (Button) mView.findViewById(R.id.cerrar_dialog_mapa_offline);
         btn_cerrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -344,10 +344,9 @@ public class DialogoOtros {
         });
 
 
-
     }
 
-    public void confirmacionBorrado(){
+    public void confirmacionBorrado() {
         AlertDialog.Builder builder = new AlertDialog.Builder(main);
         builder.setTitle("Confirmación");
         builder.setMessage("Desea Borrar la Geometria?");
@@ -369,8 +368,7 @@ public class DialogoOtros {
     }
 
 
-
-    public void salirApp(){
+    public void salirApp() {
         AlertDialog.Builder builder = new AlertDialog.Builder(main);
         builder.setTitle("Confirmación");
         builder.setMessage("Desea salir del aplicativo ?");
@@ -382,7 +380,7 @@ public class DialogoOtros {
 
                 main.session.borrarSession();
 
-                Intent mainIntent = new Intent(main,login.class);
+                Intent mainIntent = new Intent(main, login.class);
                 main.startActivity(mainIntent);
                 main.finish();
 
@@ -399,21 +397,20 @@ public class DialogoOtros {
     }
 
 
+    public void MostrarMapasBase() {
 
-    public void MostrarMapasBase(){
 
-
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(main);
-        final View mView =main.getLayoutInflater().inflate(R.layout.dialog_mapa_base,null);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(main);
+        final View mView = main.getLayoutInflater().inflate(R.layout.dialog_mapa_base, null);
         mBuilder.setView(mView);
-        final AlertDialog dialog =mBuilder.create();
+        final AlertDialog dialog = mBuilder.create();
 
         WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
 
         wmlp.gravity = Gravity.TOP | Gravity.CENTER;
         wmlp.y = 200;   //y position
 
-        wmlp.width=mView.getWidth();
+        wmlp.width = mView.getWidth();
         dialog.getWindow().setDimAmount(0);
         dialog.show();
 
@@ -464,45 +461,41 @@ public class DialogoOtros {
         });
 
 
-
     }
 
 
-    public void busqueda(EditText busqueda){
+    public void busqueda(EditText busqueda) {
 
-        String text=busqueda.getText().toString().trim();
-        int encontro=0;
-        for(int i=0;i<main.polygon.size();i++){
+        String text = busqueda.getText().toString().trim();
+        int encontro = 0;
+        for (int i = 0; i < main.polygon.size(); i++) {
 
             try {
 
-                main.atributos=new JSONObject(main.polygon.get(i).getTag().toString());
-                if(main.atributos.get("id").toString().equals(text)){
-                    encontro=1;
-                    String centroide=main.analisis.centroidePoligono(main.polygon.get(i));
-                    WKTReader wkt=new WKTReader();
-                    Coordinate[] coord1= new Coordinate[0];
+                main.atributos = new JSONObject(main.polygon.get(i).getTag().toString());
+                if (main.atributos.get("id").toString().equals(text)) {
+                    encontro = 1;
+                    String centroide = main.analisis.centroidePoligono(main.polygon.get(i));
+                    WKTReader wkt = new WKTReader();
+                    Coordinate[] coord1 = new Coordinate[0];
                     try {
                         coord1 = wkt.read(centroide).getCoordinates();
                         LatLng punto = null;
-                        for(int j=0;j<coord1.length;j++){
-                            Double lat=coord1[j].y;
-                            Double lon=coord1[j].x;
-                            punto=new LatLng(lat,lon);
+                        for (int j = 0; j < coord1.length; j++) {
+                            Double lat = coord1[j].y;
+                            Double lon = coord1[j].x;
+                            punto = new LatLng(lat, lon);
 
                         }
 
                         main.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(punto, 18));
 
                         InputMethodManager in = (InputMethodManager) main.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        in.hideSoftInputFromWindow(busqueda.getApplicationWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+                        in.hideSoftInputFromWindow(busqueda.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-
-
-
 
 
                 }
@@ -511,35 +504,33 @@ public class DialogoOtros {
                 e.printStackTrace();
             }
         }
-        if(encontro==0){
+        if (encontro == 0) {
             main.mitoast.generarToast("Sin resultados");
         }
 
     }
 
-    public void MostrarDialogoConteo (String manzana){
+    public void MostrarDialogoConteo(String manzana) {
 
-        DialogoEdicion dialogEditor =new DialogoEdicion(main,main,1);
+        DialogoEdicion dialogEditor = new DialogoEdicion(main, main, 1);
         dialogEditor.DialogoEdicionConteo(false, manzana);
-
-
 
 
     }
 
-    public void MostrarDialogoNovedad(){
+    public void MostrarDialogoNovedad() {
 
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(main);
-        final View mView =main.getLayoutInflater().inflate(R.layout.dialog_add_novedad,null);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(main);
+        final View mView = main.getLayoutInflater().inflate(R.layout.dialog_add_novedad, null);
         mBuilder.setView(mView);
-        final AlertDialog dialog =mBuilder.create();
+        final AlertDialog dialog = mBuilder.create();
 
         WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
 
         wmlp.gravity = Gravity.TOP | Gravity.CENTER;
         wmlp.y = 200;   //y position
 
-        wmlp.width=mView.getWidth();
+        wmlp.width = mView.getWidth();
         dialog.getWindow().setDimAmount(0);
         dialog.show();
 
@@ -548,7 +539,7 @@ public class DialogoOtros {
         novedad_punto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogoEdicion dialogEditor =new DialogoEdicion(main,main,1);
+                DialogoEdicion dialogEditor = new DialogoEdicion(main, main, 1);
                 dialogEditor.mostrarDialogoEdicionPL(false);
                 dialog.hide();
             }
@@ -558,7 +549,7 @@ public class DialogoOtros {
         novedad_linea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogoEdicion dialogEditor =new DialogoEdicion(main,main,2);
+                DialogoEdicion dialogEditor = new DialogoEdicion(main, main, 2);
                 dialogEditor.mostrarDialogoEdicionPL(false);
                 dialog.hide();
             }
@@ -568,7 +559,7 @@ public class DialogoOtros {
         novedad_poligono.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogoEdicion dialogEditor =new DialogoEdicion(main,main,3);
+                DialogoEdicion dialogEditor = new DialogoEdicion(main, main, 3);
                 dialogEditor.mostrarDialogoEdicion();
                 dialog.hide();
             }
@@ -602,23 +593,23 @@ public class DialogoOtros {
     }
 
 
-    public void MostrarDialogoBusquedaCeed(){
+    public void MostrarDialogoBusquedaCeed() {
 
-        AlertDialog.Builder mBuilder =new AlertDialog.Builder(main);
-        final View mView =main.getLayoutInflater().inflate(R.layout.dialog_busqueda_ceed,null);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(main);
+        final View mView = main.getLayoutInflater().inflate(R.layout.dialog_busqueda_ceed, null);
         mBuilder.setView(mView);
-        final AlertDialog dialog =mBuilder.create();
+        final AlertDialog dialog = mBuilder.create();
 
         WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
 
         wmlp.gravity = Gravity.TOP | Gravity.CENTER;
         wmlp.y = 200;   //y position
 
-        wmlp.width=mView.getWidth();
+        wmlp.width = mView.getWidth();
         dialog.getWindow().setDimAmount(0);
         dialog.show();
 
-        Button btn_dialog_cerrar_dialog_ceed =mView.findViewById(R.id.btn_dialog_cerrar_dialog_ceed);
+        Button btn_dialog_cerrar_dialog_ceed = mView.findViewById(R.id.btn_dialog_cerrar_dialog_ceed);
 
 
         btn_dialog_cerrar_dialog_ceed.setOnClickListener(new View.OnClickListener() {
@@ -629,21 +620,123 @@ public class DialogoOtros {
         });
 
         String ruta_db;
-        if(Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT){
-            ruta_db= Environment.getExternalStorageDirectory() + File.separator + "Editor Nc"+ File.separator+"db"+File.separator+"ceed.db";
-        }else{
-            ruta_db= Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc"+ File.separator+"db"+File.separator+"ceed.db";
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
+        } else {
+            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
         }
 
-        final CeedDB db =new CeedDB(main,ruta_db);
+        final CeedDB db = new CeedDB(main, ruta_db);
+        SpatiaLiteManzanas sp = new SpatiaLiteManzanas(main, main.session.getGeom(), ruta_db);
 
+        Map<String, String> deptosUrbanos = sp.getDptoUrbano();
+
+        for (Map.Entry<String, String> entry : deptosUrbanos.entrySet()) {
+            String departamentoNombre = db.getNombreDpto(entry.getKey());
+            entry.setValue(departamentoNombre);
+        }
+
+        Map<String, String> deptosRurales = sp.getDptoRural();
+
+        for (Map.Entry<String, String> entry : deptosRurales.entrySet()) {
+            String departamentoNombre = db.getNombreDpto(entry.getKey());
+            entry.setValue(departamentoNombre);
+        }
+
+        Map<String, String> listaDeptos = new HashMap<>();
+        listaDeptos.putAll(deptosUrbanos);
+        listaDeptos.putAll(deptosRurales);
+
+        List<String> departamentos = new ArrayList<>();
+
+        for (Map.Entry<String, String> entry : listaDeptos.entrySet()) {
+            departamentos.add(entry.getKey() + " - " + entry.getValue());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+        adapter.addAll(departamentos);
 
         Spinner spinner_ceed_dpto = (Spinner) mView.findViewById(R.id.spinner_ceed_dpto);
-
-        List<String> listado_depto = db.getDpto();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
-        adapter.addAll(listado_depto);
         spinner_ceed_dpto.setAdapter(adapter);
+
+        Spinner spinner_ceed_ag = (Spinner) mView.findViewById(R.id.spinner_ceed_ag);
+        Map<String, String> agsUrbanos = sp.getAGUrbano();
+        Map<String, String> agsRurales = sp.getAGRural();
+        Map<String, String> listaAgs = new HashMap<>(agsUrbanos);
+        listaAgs.putAll(agsRurales);
+
+        List<String> ags = new ArrayList<>();
+
+        for (Map.Entry<String, String> entry : listaAgs.entrySet()) {
+            ags.add(entry.getKey());
+        }
+
+        adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+        adapter.addAll(ags);
+        spinner_ceed_ag.setAdapter(adapter);
+
+        LinearLayout layout_lista = (LinearLayout) mView.findViewById(R.id.layout_lista);
+        layout_lista.setVisibility(View.GONE);
+
+        LinearLayout layout_ag = (LinearLayout) mView.findViewById(R.id.layout_ag);
+        layout_ag.setVisibility(View.GONE);
+
+        Spinner spinner_tipo_busqueda = (Spinner) mView.findViewById(R.id.spinner_tipo_busqueda);
+
+        spinner_tipo_busqueda.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String opcionSeleccionada = spinner_tipo_busqueda.getSelectedItem().toString();
+                if (opcionSeleccionada.equals("Niveles MGN")) {
+                    layout_lista.setVisibility(View.VISIBLE);
+                    layout_ag.setVisibility(View.GONE);
+                } else if (opcionSeleccionada.equals("AG")) {
+                    layout_lista.setVisibility(View.GONE);
+                    layout_ag.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        LinearLayout sector_rural_layout = (LinearLayout) mView.findViewById(R.id.sector_rural_layout);
+        LinearLayout seccion_rural_layout = (LinearLayout) mView.findViewById(R.id.seccion_rural_layout);
+        LinearLayout centro_poblado_layout = (LinearLayout) mView.findViewById(R.id.centro_poblado_layout);
+        LinearLayout sector_urbano_layout = (LinearLayout) mView.findViewById(R.id.sector_urbano_layout);
+        LinearLayout seccion_urbano_layout = (LinearLayout) mView.findViewById(R.id.seccion_urbano_layout);
+        LinearLayout manzana_layout = (LinearLayout) mView.findViewById(R.id.manzana_layout);
+
+        spinner_ceed_ag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Button btn_dialog_ceed_ver_latlon = mView.findViewById(R.id.btn_dialog_ceed_ver_latlon);
+                btn_dialog_ceed_ver_latlon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String tipo_busqueda = spinner_tipo_busqueda.getSelectedItem().toString();
+
+                        if (tipo_busqueda.equals("AG")) {
+                            String agSeleccionada = spinner_ceed_ag.getSelectedItem() != null ? spinner_ceed_ag.getSelectedItem().toString() : null;
+
+                            if(agSeleccionada != null){
+                                List<LatLng> poligono = sp.getAgZoom(agSeleccionada);
+                                getPolygonLatLngBounds(poligono);
+                            }
+                        }
+
+                        dialog.hide();
+                    }
+                });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
 
         spinner_ceed_dpto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -651,24 +744,61 @@ public class DialogoOtros {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
-                final String id_depto=parentView.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
+                String cod_depto = parentView.getItemAtPosition(position).toString().split(" - ")[0];
+
+                Map<String, String> mpiosUrbanos = sp.getMpioUrbano(cod_depto);
+
+                for (Map.Entry<String, String> entry : mpiosUrbanos.entrySet()) {
+                    String municipioNombre = db.getNombreMpio(entry.getKey());
+                    entry.setValue(municipioNombre);
+                }
+
+                Map<String, String> mpiosRural = sp.getMpioRural(cod_depto);
+
+                for (Map.Entry<String, String> entry : mpiosRural.entrySet()) {
+                    String municipioNombre = db.getNombreMpio(entry.getKey());
+                    entry.setValue(municipioNombre);
+                }
+
+                Map<String, String> listaMpios = new HashMap<>();
+                listaMpios.putAll(mpiosUrbanos);
+                listaMpios.putAll(mpiosRural);
+
+                List<String> municipios = new ArrayList<>();
+
+                for (Map.Entry<String, String> entry : listaMpios.entrySet()) {
+                    municipios.add(entry.getKey() + " - " + entry.getValue());
+                }
+
 
                 Spinner spinner_ceed_mpio = (Spinner) mView.findViewById(R.id.spinner_ceed_mpio);
-                List<String> listado_mpio = db.getMpio(id_depto);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
-                adapter.addAll(listado_mpio);
+                adapter.addAll(municipios);
                 spinner_ceed_mpio.setAdapter(adapter);
 
                 spinner_ceed_mpio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                        final String id_mpio=parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
+                        final String id_mpio = parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
+                        String cod_mpio = spinner_ceed_mpio.getSelectedItem().toString().split(" - ")[0];
+
+                        Map<String, String> claseUrbano = sp.getClaseUrbano(cod_mpio);
+                        Map<String, String> claseRural = sp.getClaseRural(cod_mpio);
+
+                        Map<String, String> listaClases = new HashMap<>();
+                        listaClases.putAll(claseUrbano);
+                        listaClases.putAll(claseRural);
+
+                        List<String> clases = new ArrayList<>();
+
+                        for (Map.Entry<String, String> entry : listaClases.entrySet()) {
+                            clases.add(entry.getKey());
+                        }
 
                         Spinner spinner_ceed_clase = (Spinner) mView.findViewById(R.id.spinner_ceed_clase);
-                        List<String> listado_clase = db.getClase(id_depto,id_mpio);
                         ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
-                        adapter.addAll(listado_clase);
+                        adapter.addAll(clases);
                         spinner_ceed_clase.setAdapter(adapter);
 
                         spinner_ceed_clase.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -676,100 +806,135 @@ public class DialogoOtros {
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
 
+                                final String id_clase = parent.getItemAtPosition(position).toString();
 
-                                final String id_clase=parent.getItemAtPosition(position).toString();
-
-                                Spinner spinner_ceed_sectorr = (Spinner) mView.findViewById(R.id.spinner_ceed_sectorr);
-                                List<String> listado_sectorr = db.get_SectorR(id_depto,id_mpio,id_clase);
+                                Spinner spinner_ceed_sectoru = (Spinner) mView.findViewById(R.id.spinner_ceed_setu);
                                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
-                                adapter.addAll(listado_sectorr);
-                                spinner_ceed_sectorr.setAdapter(adapter);
 
-                                spinner_ceed_sectorr.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                Spinner spinner_ceed_seccionu = (Spinner) mView.findViewById(R.id.spinner_ceed_seccu);
+                                Spinner spinner_ceed_setr = (Spinner) mView.findViewById(R.id.spinner_ceed_sectorr);
+                                Spinner spinner_ceed_seccionr = (Spinner) mView.findViewById(R.id.spinner_ceed_seccionr);
+                                Spinner spinner_ceed_cpob = (Spinner) mView.findViewById(R.id.spinner_ceed_cpob);
+                                Spinner spinner_ceed_manzana = (Spinner) mView.findViewById(R.id.spinner_ceed_manzana);
+
+                                if (id_clase.equals("1")) {
+                                    sector_rural_layout.setVisibility(View.GONE);
+                                    seccion_rural_layout.setVisibility(View.GONE);
+                                    centro_poblado_layout.setVisibility(View.GONE);
+                                    sector_urbano_layout.setVisibility(View.VISIBLE);
+                                    seccion_urbano_layout.setVisibility(View.VISIBLE);
+                                    manzana_layout.setVisibility(View.VISIBLE);
+
+                                    Map<String, String> sectorUrbano = sp.getSectorUrbano(cod_mpio, id_clase, null);
+
+                                    Map<String, String> listaSectorUrbano = new HashMap<>(sectorUrbano);
+
+                                    List<String> sectoresUrbanos = new ArrayList<>();
+
+                                    for (Map.Entry<String, String> entry : listaSectorUrbano.entrySet()) {
+                                        sectoresUrbanos.add(entry.getKey());
+                                    }
+
+                                    adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+
+                                    adapter.addAll(sectoresUrbanos);
+                                    spinner_ceed_sectoru.setAdapter(adapter);
+
+                                } else if (id_clase.equals("2")) {
+                                    sector_rural_layout.setVisibility(View.VISIBLE);
+                                    seccion_rural_layout.setVisibility(View.VISIBLE);
+                                    centro_poblado_layout.setVisibility(View.VISIBLE);
+                                    sector_urbano_layout.setVisibility(View.VISIBLE);
+                                    seccion_urbano_layout.setVisibility(View.VISIBLE);
+                                    manzana_layout.setVisibility(View.VISIBLE);
+
+                                    Map<String, String> sectorRural = sp.getSectorRural(cod_mpio, id_clase);
+
+                                    Map<String, String> listaSectorRural = new HashMap<>(sectorRural);
+
+                                    List<String> sectoresRurales = new ArrayList<>();
+
+                                    for (Map.Entry<String, String> entry : listaSectorRural.entrySet()) {
+                                        sectoresRurales.add(entry.getKey());
+                                    }
+
+                                    adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+
+                                    adapter.addAll(sectoresRurales);
+                                    spinner_ceed_setr.setAdapter(adapter);
+
+                                } else if (id_clase.equals("3")) {
+                                    sector_rural_layout.setVisibility(View.VISIBLE);
+                                    seccion_rural_layout.setVisibility(View.VISIBLE);
+                                    centro_poblado_layout.setVisibility(View.GONE);
+                                    sector_urbano_layout.setVisibility(View.GONE);
+                                    seccion_urbano_layout.setVisibility(View.GONE);
+                                    manzana_layout.setVisibility(View.GONE);
+
+                                    Map<String, String> sectorRural = sp.getSectorRural(cod_mpio, id_clase);
+
+                                    Map<String, String> listaSectorRural = new HashMap<>(sectorRural);
+
+                                    List<String> sectoresRurales = new ArrayList<>();
+
+                                    for (Map.Entry<String, String> entry : listaSectorRural.entrySet()) {
+                                        sectoresRurales.add(entry.getKey());
+                                    }
+
+                                    adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+
+                                    adapter.addAll(sectoresRurales);
+                                    spinner_ceed_setr.setAdapter(adapter);
+                                }
+
+                                spinner_ceed_setr.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                     @Override
                                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        String id_sector_rural = parent.getItemAtPosition(position).toString();
+                                        Map<String, String> seccionRural = sp.getSeccionRural(cod_mpio, id_clase, id_sector_rural);
 
+                                        Map<String, String> listaSeccionRural = new HashMap<>(seccionRural);
 
-                                        final String id_sectorr=parent.getItemAtPosition(position).toString();
+                                        List<String> seccionesRurales = new ArrayList<>();
 
-                                        Spinner spinner_ceed_seccionr = (Spinner) mView.findViewById(R.id.spinner_ceed_seccionr);
-                                        List<String> listado_seccionr = db.get_SeccionR(id_depto,id_mpio,id_clase,id_sectorr);
+                                        for (Map.Entry<String, String> entry : listaSeccionRural.entrySet()) {
+                                            seccionesRurales.add(entry.getKey());
+                                        }
+
                                         ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
-                                        adapter.addAll(listado_seccionr);
+
+                                        adapter.addAll(seccionesRurales);
                                         spinner_ceed_seccionr.setAdapter(adapter);
+                                    }
 
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
 
-                                        spinner_ceed_seccionr.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                            @Override
-                                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    }
+                                });
 
+                                spinner_ceed_seccionr.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        String id_seccion_rural = parent.getItemAtPosition(position).toString();
+                                        String id_sector_rural = spinner_ceed_setr.getSelectedItem().toString();
 
-                                                final String id_seccionr=parent.getItemAtPosition(position).toString();
+                                        if (id_clase.equals("2")) {
+                                            Map<String, String> centroPoblado = sp.getCentroPoblado(cod_mpio, id_clase, id_sector_rural, id_seccion_rural);
 
-                                                Spinner spinner_ceed_cpob = (Spinner) mView.findViewById(R.id.spinner_ceed_cpob);
-                                                List<String> listado_cpob = db.get_CPob(id_depto,id_mpio,id_clase,id_sectorr,id_seccionr);
-                                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
-                                                adapter.addAll(listado_cpob);
-                                                spinner_ceed_cpob.setAdapter(adapter);
+                                            Map<String, String> listaCentroPoblado = new HashMap<>(centroPoblado);
 
-                                                spinner_ceed_cpob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                                    @Override
-                                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                            List<String> centrosPoblados = new ArrayList<>();
 
-
-                                                        final String id_cpob=parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
-
-                                                        Spinner spinner_ceed_setu = (Spinner) mView.findViewById(R.id.spinner_ceed_setu);
-                                                        List<String> listado_setu = db.get_SetU(id_depto,id_mpio,id_clase,id_sectorr,id_seccionr,id_cpob);
-                                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
-                                                        adapter.addAll(listado_setu);
-                                                        spinner_ceed_setu.setAdapter(adapter);
-
-                                                        spinner_ceed_setu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                                            @Override
-                                                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                                                                final String id_setu=parent.getItemAtPosition(position).toString();
-
-                                                                Button btn_dialog_ceed_ver_latlon =mView.findViewById(R.id.btn_dialog_ceed_ver_latlon);
-
-                                                                btn_dialog_ceed_ver_latlon.setOnClickListener(new View.OnClickListener() {
-                                                                    @Override
-                                                                    public void onClick(View v) {
-                                                                        LatLng coord=db.get_Coordenadas(id_depto,id_mpio,id_clase,id_sectorr,id_seccionr,id_cpob,id_setu);
-
-                                                                        main.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coord, 17));
-
-                                                                        dialog.hide();
-                                                                    }
-                                                                });
-
-                                                            }
-
-                                                            @Override
-                                                            public void onNothingSelected(AdapterView<?> parent) {
-
-                                                            }
-                                                        });
-
-
-                                                    }
-
-                                                    @Override
-                                                    public void onNothingSelected(AdapterView<?> parent) {
-
-                                                    }
-                                                });
-
-
+                                            for (Map.Entry<String, String> entry : listaCentroPoblado.entrySet()) {
+                                                centrosPoblados.add(entry.getKey());
                                             }
 
-                                            @Override
-                                            public void onNothingSelected(AdapterView<?> parent) {
+                                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
 
-                                            }
-                                        });
-
+                                            adapter.addAll(centrosPoblados);
+                                            spinner_ceed_cpob.setAdapter(adapter);
+                                        }
 
                                     }
 
@@ -778,6 +943,210 @@ public class DialogoOtros {
 
                                     }
                                 });
+
+                                spinner_ceed_sectoru.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        String id_sectu = parent.getItemAtPosition(position).toString();
+                                        String id_centro_poblado = spinner_ceed_cpob.getSelectedItem() != null ? spinner_ceed_cpob.getSelectedItem().toString() : null;
+                                        Map<String, String> seccionUrbano = sp.getSeccionUrbano(cod_mpio, id_clase, id_sectu, id_centro_poblado);
+
+                                        Map<String, String> listaSeccionUrbano = new HashMap<>(seccionUrbano);
+
+                                        List<String> seccionesUrbanos = new ArrayList<>();
+
+                                        for (Map.Entry<String, String> entry : listaSeccionUrbano.entrySet()) {
+                                            seccionesUrbanos.add(entry.getKey());
+                                        }
+
+                                        Spinner spinner_ceed_seccionu = (Spinner) mView.findViewById(R.id.spinner_ceed_seccu);
+                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+                                        adapter.addAll(seccionesUrbanos);
+                                        spinner_ceed_seccionu.setAdapter(adapter);
+
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+
+                                    }
+                                });
+
+                                spinner_ceed_seccionu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        String id_centro_poblado = spinner_ceed_cpob.getSelectedItem() != null ? spinner_ceed_cpob.getSelectedItem().toString() : null;
+                                        String id_sectu = spinner_ceed_sectoru.getSelectedItem().toString();
+                                        String id_seccu = parent.getItemAtPosition(position).toString();
+                                        Map<String, String> manzana = sp.getManzana(cod_mpio, id_clase, id_sectu, id_seccu, id_centro_poblado);
+
+                                        Map<String, String> listaManzana = new HashMap<>(manzana);
+
+                                        List<String> manzanas = new ArrayList<>();
+
+                                        for (Map.Entry<String, String> entry : listaManzana.entrySet()) {
+                                            manzanas.add(entry.getKey());
+                                        }
+
+                                        Spinner spinner_ceed_manzana = (Spinner) mView.findViewById(R.id.spinner_ceed_manzana);
+                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+                                        adapter.addAll(manzanas);
+                                        spinner_ceed_manzana.setAdapter(adapter);
+
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+
+                                    }
+                                });
+
+                                spinner_ceed_cpob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                        String id_centro_poblado = parent.getItemAtPosition(position).toString();
+                                        Map<String, String> sectorUrbano = sp.getSectorUrbano(cod_mpio, id_clase, id_centro_poblado);
+
+                                        Map<String, String> listaSectorUrbano = new HashMap<>(sectorUrbano);
+
+                                        List<String> sectoresUrbanos = new ArrayList<>();
+
+                                        for (Map.Entry<String, String> entry : listaSectorUrbano.entrySet()) {
+                                            sectoresUrbanos.add(entry.getKey());
+                                        }
+
+                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+                                        adapter.addAll(sectoresUrbanos);
+                                        spinner_ceed_sectoru.setAdapter(adapter);
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> parent) {
+
+                                    }
+                                });
+
+                                Button btn_dialog_ceed_ver_latlon = mView.findViewById(R.id.btn_dialog_ceed_ver_latlon);
+                                btn_dialog_ceed_ver_latlon.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        String tipo_busqueda = spinner_tipo_busqueda.getSelectedItem().toString();
+
+                                        if(tipo_busqueda.equals("Niveles MGN")){
+                                            String id_sector_urbano = spinner_ceed_sectoru.getSelectedItem() != null ? spinner_ceed_sectoru.getSelectedItem().toString() : null;
+                                            String id_seccion_urbana = spinner_ceed_seccionu.getSelectedItem() != null ? spinner_ceed_seccionu.getSelectedItem().toString() : null;
+                                            String id_centro_poblado = spinner_ceed_cpob.getSelectedItem() != null ? spinner_ceed_cpob.getSelectedItem().toString() : null;
+                                            String id_manzana = spinner_ceed_manzana.getSelectedItem() != null ? spinner_ceed_manzana.getSelectedItem().toString() : null;
+                                            String id_sector_rural = spinner_ceed_setr.getSelectedItem() != null ? spinner_ceed_setr.getSelectedItem().toString() : null;
+                                            String id_seccion_rural = spinner_ceed_seccionr.getSelectedItem() != null ? spinner_ceed_seccionr.getSelectedItem().toString() : null;
+                                            if(id_clase.equals("1") || id_clase.equals("2")){
+                                                List<LatLng> poligono = sp.getManzanaZoom(id_mpio, id_clase, id_sector_urbano, id_seccion_urbana, id_centro_poblado, id_manzana);
+                                                getPolygonLatLngBounds(poligono);
+                                            } else if(id_clase.equals("3")) {
+                                                List<LatLng> poligono = sp.getSeccionRuralZoom(id_mpio, id_clase, id_sector_rural, id_seccion_rural);
+                                                getPolygonLatLngBounds(poligono);
+                                            }
+
+                                        }
+
+                                        dialog.hide();
+                                    }
+                                });
+
+
+//                                spinner_ceed_sectoru.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                                    @Override
+//                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//
+//
+//                                        final String id_sectorr = parent.getItemAtPosition(position).toString();
+//
+//                                        Spinner spinner_ceed_seccionr = (Spinner) mView.findViewById(R.id.spinner_ceed_seccionr);
+//                                        List<String> listado_seccionr = db.get_SeccionR(cod_depto, id_mpio, id_clase, id_sectorr);
+//                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+//                                        adapter.addAll(listado_seccionr);
+//                                        spinner_ceed_seccionr.setAdapter(adapter);
+//
+//
+//                                        spinner_ceed_seccionr.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                                            @Override
+//                                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//
+//
+//                                                final String id_seccionr = parent.getItemAtPosition(position).toString();
+//
+//                                                Spinner spinner_ceed_cpob = (Spinner) mView.findViewById(R.id.spinner_ceed_cpob);
+//                                                List<String> listado_cpob = db.get_CPob(cod_depto, id_mpio, id_clase, id_sectorr, id_seccionr);
+//                                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+//                                                adapter.addAll(listado_cpob);
+//                                                spinner_ceed_cpob.setAdapter(adapter);
+//
+//                                                spinner_ceed_cpob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                                                    @Override
+//                                                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//
+//
+//                                                        final String id_cpob = parent.getItemAtPosition(position).toString().replaceAll("[^0-9]", "");
+//
+//                                                        Spinner spinner_ceed_setu = (Spinner) mView.findViewById(R.id.spinner_ceed_setu);
+//                                                        List<String> listado_setu = db.get_SetU(cod_depto, id_mpio, id_clase, id_sectorr, id_seccionr, id_cpob);
+//                                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(main, android.R.layout.simple_spinner_item);
+//                                                        adapter.addAll(listado_setu);
+//                                                        spinner_ceed_setu.setAdapter(adapter);
+//
+//                                                        spinner_ceed_setu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                                                            @Override
+//                                                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//
+//                                                                final String id_setu = parent.getItemAtPosition(position).toString();
+//
+//                                                                Button btn_dialog_ceed_ver_latlon = mView.findViewById(R.id.btn_dialog_ceed_ver_latlon);
+//
+//                                                                btn_dialog_ceed_ver_latlon.setOnClickListener(new View.OnClickListener() {
+//                                                                    @Override
+//                                                                    public void onClick(View v) {
+//                                                                        LatLng coord = db.get_Coordenadas(cod_depto, id_mpio, id_clase, id_sectorr, id_seccionr, id_cpob, id_setu);
+//
+//                                                                        main.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coord, 17));
+//
+//                                                                        dialog.hide();
+//                                                                    }
+//                                                                });
+//
+//                                                            }
+//
+//                                                            @Override
+//                                                            public void onNothingSelected(AdapterView<?> parent) {
+//
+//                                                            }
+//                                                        });
+//
+//
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onNothingSelected(AdapterView<?> parent) {
+//
+//                                                    }
+//                                                });
+//
+//
+//                                            }
+//
+//                                            @Override
+//                                            public void onNothingSelected(AdapterView<?> parent) {
+//
+//                                            }
+//                                        });
+//
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onNothingSelected(AdapterView<?> parent) {
+//
+//                                    }
+//                                });
 
 
                             }
@@ -810,13 +1179,18 @@ public class DialogoOtros {
         });
 
 
-
-
     }
 
+    public void getPolygonLatLngBounds(List<LatLng> polygon) {
+        final LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
+        for (LatLng point : polygon) {
+            builder.include(point);
+        }
+        LatLngBounds bounds = builder.build();
+        main.mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20));
 
-
+    }
 
 
 }
