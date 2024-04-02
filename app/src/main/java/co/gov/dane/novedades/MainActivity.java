@@ -1379,6 +1379,28 @@ public class MainActivity extends AppCompatActivity
         Map<String, PolygonOptions> pol_get = spm.getManzanas(userLocation);
         Map<String, PolygonOptions> pol_get_rural = spm.getSeccionesRurales(userLocation);
 
+        for (Map.Entry<String, PolygonOptions> entry : pol_get_rural.entrySet()) {
+
+            manzanas.add(mMap.addPolygon(entry.getValue()));
+            manzanas.get(manzanas.size() - 1).setClickable(true);
+            manzanas.get(manzanas.size() - 1).setZIndex(0);
+            manzanas.get(manzanas.size() - 1).setStrokeWidth(5);
+
+            JSONObject atributos = new JSONObject();
+            try {
+
+                atributos.put("id", entry.getKey());
+                atributos.put("tipo", "SECCIONES RURALES");
+                atributos.put("descripcion", entry.getKey());
+
+                manzanas.get(manzanas.size() - 1).setTag(atributos);
+                Log.d("hola:", "hola");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
         for (Map.Entry<String, PolygonOptions> entry : pol_get.entrySet()) {
 
             manzanas.add(mMap.addPolygon(entry.getValue()));
@@ -1401,27 +1423,7 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        for (Map.Entry<String, PolygonOptions> entry : pol_get_rural.entrySet()) {
 
-            manzanas.add(mMap.addPolygon(entry.getValue()));
-            manzanas.get(manzanas.size() - 1).setClickable(true);
-            manzanas.get(manzanas.size() - 1).setZIndex(0);
-            manzanas.get(manzanas.size() - 1).setStrokeWidth(5);
-
-            JSONObject atributos = new JSONObject();
-            try {
-
-                atributos.put("id", entry.getKey());
-                atributos.put("tipo", "SECCIONES RURALES");
-                atributos.put("descripcion", entry.getKey());
-
-                manzanas.get(manzanas.size() - 1).setTag(atributos);
-                Log.d("hola:", "hola");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
 
     }
 
@@ -1537,7 +1539,8 @@ public class MainActivity extends AppCompatActivity
                     try {
                         Log.d("Atributos:", atributos.get("tipo").toString());
 
-                        if (!atributos.get("tipo").toString().equals("MANZANAS")) {
+                        if (!atributos.get("tipo").toString().equals("MANZANAS")
+                        && !atributos.get("tipo").toString().equals("SECCIONES RURALES")) {
                             //para edicion normal//
                             edicion(polygon.getPoints());
                             show_delete_geom();
@@ -1545,6 +1548,7 @@ public class MainActivity extends AppCompatActivity
                             hide_atributos_manzana();
                         } else {
                             show_atributos_manzana();
+                            show_directions();
                             datos_manzana(atributos.get("descripcion").toString());
                         }
                     } catch (JSONException e) {
@@ -3086,6 +3090,11 @@ public class MainActivity extends AppCompatActivity
         edit_atributos.setVisibility(View.GONE);
     }
 
+    public void show_directions() {
+        com.getbase.floatingactionbutton.FloatingActionButton directions = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.direcciones);
+        directions.setVisibility(View.VISIBLE);
+    }
+
     public void show_edit_join() {
         final com.getbase.floatingactionbutton.FloatingActionButton edit_join = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.edit_join);
         edit_join.setVisibility(View.GONE);
@@ -3680,22 +3689,5 @@ public class MainActivity extends AppCompatActivity
             session.setCapaSecciones(!visibilidadCapa);
         }
     }
-
-    public void layerOn(String capa){
-        for(Polygon pol: manzanas){
-            JSONObject jsonTag = (JSONObject) pol.getTag();
-            String tipo = null;
-            try {
-                tipo = jsonTag.getString("tipo");
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-
-            if(tipo.equals(capa)){
-                pol.setVisible(true);
-            }
-        }
-    }
-
 
 }

@@ -192,6 +192,15 @@
             app:fab_size="normal"
             app:fab_title="Atributos" />
 
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/direcciones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/dane"
+            app:fab_icon="@drawable/baseline_directions_24"
+            app:fab_size="normal"
+            app:fab_title="Direcciones" />
+
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/delete_geom"
