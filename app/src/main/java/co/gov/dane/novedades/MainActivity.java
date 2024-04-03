@@ -159,6 +159,10 @@ public class MainActivity extends AppCompatActivity
     Polygon polygon_sel;
     List<Polygon> polygon_union = new ArrayList<>();
 
+    public Polyline ruta;
+
+    public List<Marker> puntosRuta = new ArrayList<>();
+
     private SensorManager mSensorManager;
     private float[] mRotationMatrix = new float[16];
     static ArrayList<MapaOffline> listado_mapas_offline;
@@ -438,6 +442,7 @@ public class MainActivity extends AppCompatActivity
                 hide_msg_area();
                 hide_msg_distancia();
                 drop_markers_edicion();
+                removeDirections();
 
                 if (tipo_edicion == 1) {
                     if (Point_shape != null) {
@@ -597,6 +602,16 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+        com.getbase.floatingactionbutton.FloatingActionButton show_directions = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.direcciones);
+
+        show_directions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                abrirDialogoDirecciones();
+            }
+        });
+
 
         final com.getbase.floatingactionbutton.FloatingActionButton cut_geom = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.cut_geom);
 
@@ -3688,6 +3703,43 @@ public class MainActivity extends AppCompatActivity
         } else if(capa.equals("SECCIONES RURALES")){
             session.setCapaSecciones(!visibilidadCapa);
         }
+    }
+
+    private void abrirDialogoDirecciones(){
+        Location currentLocation = getLastKnownLocation();
+        String inicio = currentLocation.getLatitude() + "%2C" + currentLocation.getLongitude();
+        LatLng centerEnd = getCenter(polygon_sel.getPoints());
+        String fin = centerEnd.latitude + "%2C" + centerEnd.longitude;
+        DialogoOtros dialogo = new DialogoOtros(MainActivity.this, MainActivity.this);
+        dialogo.MostrarDialogoDirecciones(inicio, fin);
+    }
+
+    public LatLng getCenter(List<LatLng> polygon) {
+        final LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+        for (LatLng point : polygon) {
+            builder.include(point);
+        }
+
+        LatLngBounds bounds = builder.build();
+        return bounds.getCenter();
+
+    }
+
+    private void removeDirections(){
+        if(ruta != null){
+            ruta.remove();
+        }
+
+        if(puntosRuta != null){
+            for(Marker punto: puntosRuta){
+                punto.remove();
+            }
+        }
+
+        LinearLayout datos_viaje_layout = findViewById(R.id.datos_viaje);
+
+        datos_viaje_layout.setVisibility(View.GONE);
     }
 
 }

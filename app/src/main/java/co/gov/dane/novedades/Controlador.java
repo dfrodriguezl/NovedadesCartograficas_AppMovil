@@ -53,6 +53,7 @@ public class Controlador {
 
 
     String folder_insumos = "https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_list.php";
+    String directionApi = "https://maps.googleapis.com/maps/api/directions/json";
 
     int descargas = 0;
 
@@ -523,6 +524,62 @@ public class Controlador {
         }
 
 
+    }
+
+    public void getRoute(String origin, String destination, String mode, final VolleyCallBackJSON callBack) {
+
+
+        Boolean hay_internet = isNetworkAvailable();
+
+
+        if (hay_internet) {
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
+
+            String url = directionApi +
+                    "?destination=" + destination +
+                    "&origin=" + origin +
+                    "&mode=" + mode +
+                    "&key=" + context.getString(R.string.google_maps_key);
+
+            JsonObjectRequest request = new JsonObjectRequest(
+                    Request.Method.GET,
+                    url,
+                    null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                JSONArray routes = response.getJSONArray("routes");
+                                JSONObject overviewPolyline = routes.getJSONObject(0).getJSONObject("overview_polyline");
+                                JSONObject leg = (JSONObject) routes.getJSONObject(0).getJSONArray("legs").get(0);
+                                String distance = leg.getJSONObject("distance").getString("text");
+                                String duration = leg.getJSONObject("duration").getString("text");
+                                String shapeEncoded = overviewPolyline.getString("points");
+                                callBack.onSuccess(shapeEncoded, distance, duration);
+                            } catch (JSONException e) {
+                                callBack.onError();
+                                throw new RuntimeException(e);
+                            }
+
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("error", String.valueOf(error));
+                            callBack.onError();
+                        }
+                    }
+            );
+
+
+            request.setShouldCache(false);
+
+            requestQueue.add(request);
+        } else {
+            Mensajes mitoast = new Mensajes(context);
+            mitoast.generarToast("No hay conexión a internet");
+        }
     }
 
 

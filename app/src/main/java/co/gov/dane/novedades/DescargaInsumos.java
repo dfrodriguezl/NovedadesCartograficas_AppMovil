@@ -137,6 +137,11 @@ public class DescargaInsumos extends AppCompatActivity {
 
                 recyclerView.setAdapter(mAdapter);
             }
+
+            @Override
+            public void onSuccess(String result, String duration, String distance) {
+
+            }
         });
 
 

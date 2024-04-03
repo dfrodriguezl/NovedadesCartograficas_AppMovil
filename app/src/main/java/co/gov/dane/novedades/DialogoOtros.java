@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -33,6 +34,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 import org.json.JSONException;
@@ -1259,7 +1264,156 @@ public class DialogoOtros {
             builder.include(point);
         }
         LatLngBounds bounds = builder.build();
-        main.mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20));
+        main.mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+
+    }
+
+    public void MostrarDialogoDirecciones(String inicio, String fin) {
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(main);
+        final View mView = main.getLayoutInflater().inflate(R.layout.dialog_direcciones, null);
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+
+        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+        wmlp.gravity = Gravity.TOP | Gravity.CENTER;
+        wmlp.y = 200;   //y position
+
+        wmlp.width = mView.getWidth();
+        dialog.getWindow().setDimAmount(0);
+        dialog.show();
+
+        LinearLayout modo_viaje_layout = main.findViewById(R.id.datos_viaje);
+        TextView texto_modo = main.findViewById(R.id.modo_viaje_texto);
+        TextView texto_tiempo = main.findViewById(R.id.tiempo_viaje_texto);
+        TextView texto_distancia = main.findViewById(R.id.distancia_viaje_texto);
+
+        LinearLayout mode_driving = (LinearLayout) mView.findViewById(R.id.modo_viaje_driving);
+
+        mode_driving.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Controlador controlador = new Controlador(main);
+                controlador.getRoute(inicio, fin, "driving",
+                        new VolleyCallBackJSON() {
+                            @Override
+                            public void onSuccess(JSONObject result) {
+
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+
+                            @Override
+                            public void onSuccess(String result, String distance, String duration) {
+                                PolylineOptions polyline = new PolylineOptions()
+                                        .addAll(PolyUtil.decode(result))
+                                        .width(8f)
+                                        .color(Color.RED);
+
+                                main.ruta = main.mMap.addPolyline(polyline);
+
+                                List<LatLng> points = polyline.getPoints();
+
+                                MarkerOptions inicio = new MarkerOptions()
+                                        .position(points.get(0))
+                                                .title("Inicio");
+
+                                Marker inicioMarker = main.mMap.addMarker(inicio);
+                                inicioMarker.showInfoWindow();
+
+                                main.puntosRuta.add(inicioMarker);
+
+                                MarkerOptions fin = new MarkerOptions()
+                                        .position(points.get(points.size() - 1))
+                                        .title("Fin");
+
+                                Marker finMarker = main.mMap.addMarker(fin);
+                                finMarker.showInfoWindow();
+
+                                main.puntosRuta.add(finMarker);
+
+                                getPolygonLatLngBounds(points);
+
+                                dialog.dismiss();
+
+                                main.show_discard_save_edicion();
+
+                                modo_viaje_layout.setVisibility(View.VISIBLE);
+                                texto_modo.setText("Modo: Conduciendo");
+                                texto_tiempo.setText("Tiempo: " + duration);
+                                texto_distancia.setText("Distancia: " + distance);
+
+                            }
+                        });
+            }
+        });
+
+        LinearLayout mode_walking = (LinearLayout) mView.findViewById(R.id.modo_viaje_walking);
+
+        mode_walking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Controlador controlador = new Controlador(main);
+                controlador.getRoute(inicio, fin, "walking",
+                        new VolleyCallBackJSON() {
+                            @Override
+                            public void onSuccess(JSONObject result) {
+
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+
+                            @Override
+                            public void onSuccess(String result, String distance, String duration) {
+                                PolylineOptions polyline = new PolylineOptions()
+                                        .addAll(PolyUtil.decode(result))
+                                        .width(8f)
+                                        .color(Color.RED);
+
+                                main.ruta = main.mMap.addPolyline(polyline);
+
+                                List<LatLng> points = polyline.getPoints();
+
+                                MarkerOptions inicio = new MarkerOptions()
+                                        .position(points.get(0))
+                                        .title("Inicio");
+
+                                Marker inicioMarker = main.mMap.addMarker(inicio);
+                                inicioMarker.showInfoWindow();
+
+                                main.puntosRuta.add(inicioMarker);
+
+                                MarkerOptions fin = new MarkerOptions()
+                                        .position(points.get(points.size() - 1))
+                                        .title("Fin");
+
+                                Marker finMarker = main.mMap.addMarker(fin);
+                                finMarker.showInfoWindow();
+
+                                main.puntosRuta.add(finMarker);
+
+                                getPolygonLatLngBounds(points);
+
+                                dialog.dismiss();
+
+                                main.show_discard_save_edicion();
+
+                                modo_viaje_layout.setVisibility(View.VISIBLE);
+                                texto_modo.setText("Modo: Caminando");
+                                texto_tiempo.setText("Tiempo: " + duration);
+                                texto_distancia.setText("Distancia: " + distance);
+
+                            }
+                        });
+            }
+        });
 
     }
 
