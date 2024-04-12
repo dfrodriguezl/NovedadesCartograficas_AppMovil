@@ -63,7 +63,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db").getAbsolutePath() + File.separator;
             }
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
             org.spatialite.database.SQLiteDatabase sp1 = db1.getWritableDatabase();
@@ -126,7 +126,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db").getAbsolutePath() + File.separator;
             }
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
             org.spatialite.database.SQLiteDatabase sp1 = db1.getWritableDatabase();
@@ -257,11 +257,13 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
 
         try {
             String ruta_db = null;
+
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
+
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
             org.spatialite.database.SQLiteDatabase sp1 = db1.getWritableDatabase();
 
@@ -312,7 +314,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db =  context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -345,7 +347,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -378,7 +380,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -411,7 +413,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -444,7 +446,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -477,7 +479,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -510,7 +512,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -549,7 +551,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -591,7 +593,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -631,7 +633,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -673,7 +675,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -706,7 +708,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -745,7 +747,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -797,7 +799,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -846,7 +848,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -879,7 +881,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
@@ -912,7 +914,7 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+                ruta_db = context.getExternalFilesDir("db") + File.separator;
             }
 
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);

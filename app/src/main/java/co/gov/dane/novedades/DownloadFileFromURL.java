@@ -89,7 +89,8 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
                 if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                     file = new File(Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
                 } else {
-                    file = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
+//                    file = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
+                    file = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath(), fileName);
                 }
 
 //                descarga(url,lenghtOfFile,fileName);
@@ -174,11 +175,12 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
         if(this.fileName_temp != null){
             fileName = this.fileName_temp;
         }
+
         int count;
         // download the file
         InputStream input = null;
         try {
-            input = new BufferedInputStream(url.openStream(), 8192);
+            input = new BufferedInputStream(url.openStream(), lenghtOfFile);
 
             // Output stream
             OutputStream output = null;
@@ -186,7 +188,8 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
             } else {
-                output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
+                output = new FileOutputStream(new File(context.getExternalFilesDir("db"), fileName));
+//                output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + fileName);
             }
 
             byte data[] = new byte[1024];
@@ -210,7 +213,7 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
             output.close();
             input.close();
         } catch (IOException e) {
-            Log.d("error:", "error");
+            Log.d("IOError:", e.toString());
         }
     }
 

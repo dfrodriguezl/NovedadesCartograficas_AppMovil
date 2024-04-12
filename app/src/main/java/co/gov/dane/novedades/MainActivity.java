@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             archivo = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + session.getGeom();
         } else {
-            archivo = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + session.getGeom();
+            archivo = getExternalFilesDir("db") + File.separator + session.getGeom();
         }
 
         File fichero = new File(archivo);
@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
         } else {
-            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+            ruta_db = getExternalFilesDir("db").getAbsolutePath() + File.separator;
         }
 
         if (fichero.exists()) {
@@ -1048,25 +1048,32 @@ public class MainActivity extends AppCompatActivity
             if (userLocation(MainActivity.this)) {
 
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                // Ensure that there's a camera activity to handle the intent
-                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    // Create the File where the photo should go
-                    File photoFile = null;
-                    try {
-                        photoFile = createImageFile();
-                    } catch (IOException ex) {
-                        // Error occurred while creating the File
-                        Log.d("nop", ex.getMessage());
-                    }
-                    // Continue only if the File was successfully created
-                    if (photoFile != null) {
-                        photoURI = FileProvider.getUriForFile(getApplicationContext(), "co.gov.dane.novedades.fileprovider", photoFile);
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-                    }
-                } else {
+                try {
+                    // Ensure that there's a camera activity to handle the intent
+                    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                        // Create the File where the photo should go
+                        File photoFile = null;
+                        try {
+                            photoFile = createImageFile();
+                        } catch (IOException ex) {
+                            // Error occurred while creating the File
+                            Log.d("nop", ex.getMessage());
+                        }
+                        // Continue only if the File was successfully created
+                        if (photoFile != null) {
+                            photoURI = FileProvider.getUriForFile(getApplicationContext(), "co.gov.dane.novedades.fileprovider", photoFile);
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                            startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                        }
+                    } else {
 
+                    }
+                } catch (Exception e){
+                    Log.e("ERROR", e.toString());
                 }
+
+
+
             } else {
                 Log.d("no", "sirve");
             }
@@ -2059,6 +2066,7 @@ public class MainActivity extends AppCompatActivity
     //Permisos para acceder a utilidades del dispositivo.
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_LOCATION_REQUEST_CODE) {
             if (permissions.length == 1 &&
                     permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
@@ -2725,7 +2733,8 @@ public class MainActivity extends AppCompatActivity
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
             } else {
-                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
+//                ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
+                ruta_db = getExternalFilesDir("db") + File.separator + "ceed.db";
             }
 
             CeedDB ceeddb = new CeedDB(MainActivity.this, ruta_db);
@@ -3231,7 +3240,7 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         } else {
-            path_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
+            path_backup = getExternalFilesDir("backup") + File.separator;
         }
 
 
@@ -3297,7 +3306,7 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
         } else {
-            ruta_foto = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Fotos";
+            ruta_foto = getExternalFilesDir("Fotos").getAbsolutePath();
         }
 
         File storageDir = new File(ruta_foto);
@@ -3372,7 +3381,7 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             ruta_foto = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
         } else {
-            ruta_foto = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Fotos";
+            ruta_foto = getExternalFilesDir("Fotos").getAbsolutePath();
         }
 
         File FotoPath = new File(ruta_foto);
@@ -3481,7 +3490,7 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         } else {
-            path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
+            path_backup = getExternalFilesDir("backup") + File.separator;
         }
         File directory = new File(path_backup);
         File[] files = directory.listFiles();
@@ -3548,7 +3557,7 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             path_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
         } else {
-            path_backup = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator + "Editor Nc" + File.separator + "backup" + File.separator;
+            path_backup = getExternalFilesDir("backup") + File.separator;
         }
         Mensajes mensaje = new Mensajes(this);
         File directory = new File(path_backup);

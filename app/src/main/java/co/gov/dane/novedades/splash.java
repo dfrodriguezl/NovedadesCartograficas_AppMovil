@@ -55,10 +55,10 @@ public class splash extends Activity {
             if (!checkPermission()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     try {
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                        intent.addCategory("android.intent.category.DEFAULT");
-                        intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
-                        startActivityForResult(intent, 2296);
+//                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+//                        intent.addCategory("android.intent.category.DEFAULT");
+//                        intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+//                        startActivityForResult(intent, 2296);
                     } catch (Exception e) {
                         Intent intent = new Intent();
                         intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
@@ -119,47 +119,47 @@ public class splash extends Activity {
 
     public void logica() {
         //creación de los Folder para el aplicativo
-        String ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
-        String ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Capturas";
-        String ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
-        String ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup";
-        String ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
-
-        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-            ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
-            ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Capturas";
-            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
-            ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup";
-            ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
-        } else {
-            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "mbtiles";
-            ruta_capturas = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Capturas";
-            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db";
-            ruta_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "backup";
-            ruta_fotos = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Fotos";
-        }
-
-        File folder_mbtile = new File(ruta_mbtiles);
-
-        if (!folder_mbtile.exists()) {
-            folder_mbtile.mkdirs();
-        }
-        File folder_captura = new File(ruta_capturas);
-        if (!folder_captura.exists()) {
-            folder_captura.mkdirs();
-        }
-        File folder_db = new File(ruta_db);
-        if (!folder_db.exists()) {
-            folder_db.mkdirs();
-        }
-        File folder_backup = new File(ruta_backup);
-        if (!folder_backup.exists()) {
-            folder_backup.mkdirs();
-        }
-        File folder_fotos = new File(ruta_fotos);
-        if (!folder_fotos.exists()) {
-            folder_fotos.mkdirs();
-        }
+//        String ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
+//        String ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Capturas";
+//        String ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
+//        String ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup";
+//        String ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
+//
+//        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+//            ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
+//            ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Capturas";
+//            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
+//            ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup";
+//            ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
+//        } else {
+//            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "mbtiles";
+//            ruta_capturas = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Capturas";
+//            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db";
+//            ruta_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "backup";
+//            ruta_fotos = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Fotos";
+//        }
+//
+//        File folder_mbtile = new File(ruta_mbtiles);
+//
+//        if (!folder_mbtile.exists()) {
+//            folder_mbtile.mkdirs();
+//        }
+//        File folder_captura = new File(ruta_capturas);
+//        if (!folder_captura.exists()) {
+//            folder_captura.mkdirs();
+//        }
+//        File folder_db = new File(ruta_db);
+//        if (!folder_db.exists()) {
+//            folder_db.mkdirs();
+//        }
+//        File folder_backup = new File(ruta_backup);
+//        if (!folder_backup.exists()) {
+//            folder_backup.mkdirs();
+//        }
+//        File folder_fotos = new File(ruta_fotos);
+//        if (!folder_fotos.exists()) {
+//            folder_fotos.mkdirs();
+//        }
 
 
         DownloadFileFromURL mTask = new DownloadFileFromURL(splash.this, "ceed.db");

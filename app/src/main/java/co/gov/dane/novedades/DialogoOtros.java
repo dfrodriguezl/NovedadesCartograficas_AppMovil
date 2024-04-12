@@ -699,7 +699,8 @@ public class DialogoOtros {
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
         } else {
-            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
+//            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db" + File.separator + "ceed.db";
+            ruta_db = main.getExternalFilesDir("db") + File.separator + "ceed.db";
         }
 
         final CeedDB db = new CeedDB(main, ruta_db);
