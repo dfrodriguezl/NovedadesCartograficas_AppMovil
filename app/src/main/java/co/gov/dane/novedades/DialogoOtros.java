@@ -171,6 +171,16 @@ public class DialogoOtros {
             }
         });
 
+        LinearLayout ly_dialog_calificanos = (LinearLayout) mView.findViewById(R.id.ly_dialog_calificanos);
+
+        ly_dialog_calificanos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + main.getPackageName()));
+                ((Activity) main).startActivity(browserIntent);
+            }
+        });
+
         LinearLayout ly_dialog_acerca_contacto = (LinearLayout) mView.findViewById(R.id.ly_dialog_acerca_contacto);
 
         ly_dialog_acerca_contacto.setOnClickListener(new View.OnClickListener() {

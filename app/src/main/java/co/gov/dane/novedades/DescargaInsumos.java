@@ -164,10 +164,21 @@ public class DescargaInsumos extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
     public void onBackPressed() {
+        super.onBackPressed();
         Intent i = new Intent(DescargaInsumos.this, MainActivity.class);
         startActivity(i);
         finish();
+    }
+
+    public void refresh() {
+        finish();
+        startActivity(getIntent());
     }
 
 

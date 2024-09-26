@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:text="V. 1.0"
+        android:text=""
         android:textSize="15sp"
         android:textColor="@color/dane"
         android:paddingBottom="10sp"/>
@@ -64,7 +64,8 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:padding="5sp"
-            android:layout_marginBottom="10sp">
+            android:layout_marginBottom="10sp"
+            android:id="@+id/ly_dialog_calificanos">
 
             <ImageView
                 android:id="@+id/imageView5"

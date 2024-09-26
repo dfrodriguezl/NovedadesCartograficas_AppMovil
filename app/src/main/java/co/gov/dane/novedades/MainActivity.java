@@ -1330,7 +1330,8 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
         } else {
-            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "mbtiles";
+            ruta_mbtiles = getExternalFilesDir("mbtiles").getAbsolutePath();
+//            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "mbtiles";
         }
         File dir = new File(ruta_mbtiles);
         if (dir.exists()) {
@@ -1657,10 +1658,13 @@ public class MainActivity extends AppCompatActivity
                 distancia(polyline.getPoints());
                 show_edit_atributos();
                 hide_msg_area();
+                String tag = polyline.getTag().toString();
                 update_atributos(polyline.getTag().toString());
 
                 drag_punto_edicion(2);
                 hide_atributos_manzana();
+                hide_directions();
+
             }
         });
 
@@ -1742,6 +1746,8 @@ public class MainActivity extends AppCompatActivity
 
                     }
                 }
+
+                hide_directions();
 
 
                 return false;
@@ -3117,6 +3123,11 @@ public class MainActivity extends AppCompatActivity
     public void show_directions() {
         com.getbase.floatingactionbutton.FloatingActionButton directions = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.direcciones);
         directions.setVisibility(View.VISIBLE);
+    }
+
+    public void hide_directions() {
+        com.getbase.floatingactionbutton.FloatingActionButton directions = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.direcciones);
+        directions.setVisibility(View.GONE);
     }
 
     public void show_edit_join() {

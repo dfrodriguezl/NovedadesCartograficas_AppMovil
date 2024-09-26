@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -35,7 +36,6 @@ public class splash extends Activity {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.READ_PHONE_STATE,
-//            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CAMERA
@@ -54,16 +54,16 @@ public class splash extends Activity {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             if (!checkPermission()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    try {
-//                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-//                        intent.addCategory("android.intent.category.DEFAULT");
-//                        intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+//                    try {
+////                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+////                        intent.addCategory("android.intent.category.DEFAULT");
+////                        intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+////                        startActivityForResult(intent, 2296);
+//                    } catch (Exception e) {
+//                        Intent intent = new Intent();
+//                        intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
 //                        startActivityForResult(intent, 2296);
-                    } catch (Exception e) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                        startActivityForResult(intent, 2296);
-                    }
+//                    }
                 } else {
                     //below android 11
                     ActivityCompat.requestPermissions(splash.this, new String[]{WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_ACCOUNTS);
@@ -118,58 +118,39 @@ public class splash extends Activity {
 
 
     public void logica() {
-        //creación de los Folder para el aplicativo
-//        String ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
-//        String ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Capturas";
-//        String ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
-//        String ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup";
-//        String ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
-//
-//        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
-//            ruta_mbtiles = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "mbtiles";
-//            ruta_capturas = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Capturas";
-//            ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
-//            ruta_backup = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "backup";
-//            ruta_fotos = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "Fotos";
-//        } else {
-//            ruta_mbtiles = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "mbtiles";
-//            ruta_capturas = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Capturas";
-//            ruta_db = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "db";
-//            ruta_backup = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "backup";
-//            ruta_fotos = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + File.separator + "Editor Nc" + File.separator + "Fotos";
-//        }
-//
-//        File folder_mbtile = new File(ruta_mbtiles);
-//
-//        if (!folder_mbtile.exists()) {
-//            folder_mbtile.mkdirs();
-//        }
-//        File folder_captura = new File(ruta_capturas);
-//        if (!folder_captura.exists()) {
-//            folder_captura.mkdirs();
-//        }
-//        File folder_db = new File(ruta_db);
-//        if (!folder_db.exists()) {
-//            folder_db.mkdirs();
-//        }
-//        File folder_backup = new File(ruta_backup);
-//        if (!folder_backup.exists()) {
-//            folder_backup.mkdirs();
-//        }
-//        File folder_fotos = new File(ruta_fotos);
-//        if (!folder_fotos.exists()) {
-//            folder_fotos.mkdirs();
-//        }
 
 
-        DownloadFileFromURL mTask = new DownloadFileFromURL(splash.this, "ceed.db");
+        String ruta = null;
 
+        if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
+            ruta = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db";
+        } else {
+            ruta = getExternalFilesDir("db").getAbsolutePath();
+        }
+
+        FileDownloader fileDownloader = new FileDownloader(this);
+        fileDownloader.downloadFile("https://geoportal.dane.gov.co/descargas/edicion_mobile/ceed.db",
+                ruta,
+                "ceed.db",
+                new FileDownloader.FileDownloadListener() {
+                    @Override
+                    public void onDownloadComplete() {
+
+                    }
+
+                    @Override
+                    public void onDownloadFailed(String errorMessage) {
+                        Mensajes mensaje = new Mensajes(splash.this);
+                        mensaje.generarToast("Error en la descarga: " + errorMessage);
+                    }
+
+                    @Override
+                    public void onProgressUpdate(int progress) {
+
+                    }
+                });
 
         try {
-//            String  hola=mTask.execute("https://geoportal.dane.gov.co/laboratorio/serviciosjson/edicion_mobile/file_get.php?name=ceed.db").get();
-//            String hola = mTask.execute("https://nowsoft.app/geoportal/descargas/edicion_mobile/ceed.db").get();
-            String hola = mTask.execute("https://geoportal.dane.gov.co/descargas/edicion_mobile/ceed.db").get();
-
             Session session = new Session(splash.this);
             String usuario = session.getusename();
 
@@ -191,25 +172,6 @@ public class splash extends Activity {
         }
 
 
-
-    }
-
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                intent.addCategory("android.intent.category.DEFAULT");
-                intent.setData(Uri.parse(String.format("package:%s",getApplicationContext().getPackageName())));
-                startActivityForResult(intent, 2296);
-            } catch (Exception e) {
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                startActivityForResult(intent, 2296);
-            }
-        } else {
-            //below android 11
-            ActivityCompat.requestPermissions(splash.this, new String[]{WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_ACCOUNTS);
-        }
     }
 
     private boolean checkPermission() {

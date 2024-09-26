@@ -535,11 +535,13 @@ public class Controlador {
         if (hay_internet) {
             RequestQueue requestQueue = Volley.newRequestQueue(context);
 
+            String myApiKey = BuildConfig.MY_API_KEY;
+
             String url = directionApi +
                     "?destination=" + destination +
                     "&origin=" + origin +
                     "&mode=" + mode +
-                    "&key=" + context.getString(R.string.google_maps_key);
+                    "&key=" + myApiKey;
 
             JsonObjectRequest request = new JsonObjectRequest(
                     Request.Method.GET,
@@ -548,6 +550,7 @@ public class Controlador {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            Log.d("JSON RESPONSE", response.toString());
                             try {
                                 JSONArray routes = response.getJSONArray("routes");
                                 JSONObject overviewPolyline = routes.getJSONObject(0).getJSONObject("overview_polyline");

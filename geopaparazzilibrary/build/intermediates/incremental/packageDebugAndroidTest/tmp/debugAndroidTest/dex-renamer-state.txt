@@ -1,0 +1,4 @@
+#Tue Apr 23 20:22:20 COT 2024
+base.0=D\:\\Workspace\\Android\\NovedadesCartograficas_AppMovil\\geopaparazzilibrary\\build\\intermediates\\dex\\debugAndroidTest\\mergeDexDebugAndroidTest\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

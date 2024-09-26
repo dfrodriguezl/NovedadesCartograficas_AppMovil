@@ -13,6 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"        
         android:contentDescription="@string/nav_header_desc"
-        app:srcCompat="@drawable/splash" />
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_splash_2024" />
 
 </RelativeLayout>

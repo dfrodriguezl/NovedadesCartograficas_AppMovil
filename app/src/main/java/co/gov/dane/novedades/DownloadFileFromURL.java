@@ -39,7 +39,6 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
         this.fileName_temp = name;
     }
 
-
     @Override
     protected void onPreExecute() {
         this.dialog.setMessage("Descargando bases de datos");
@@ -172,7 +171,7 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
     public void descarga(URL url, int lenghtOfFile, String fileName) {
 
-        if(this.fileName_temp != null){
+        if (this.fileName_temp != null) {
             fileName = this.fileName_temp;
         }
 

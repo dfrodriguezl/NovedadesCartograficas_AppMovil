@@ -1,0 +1,36 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="eu.geopaparazzi.spatialite.test" >
+4
+5    <uses-sdk
+5-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:5:5-74
+6        android:minSdkVersion="16"
+6-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:5:15-41
+7        android:targetSdkVersion="28" />
+7-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:5:42-71
+8
+9    <instrumentation
+9-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:11:5-15:81
+10        android:name="android.test.InstrumentationTestRunner"
+10-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:11:22-75
+11        android:functionalTest="false"
+11-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:14:22-52
+12        android:handleProfiling="false"
+12-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:13:22-53
+13        android:label="Tests for eu.geopaparazzi.spatialite.test"
+13-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:15:22-79
+14        android:targetPackage="eu.geopaparazzi.spatialite.test" />
+14-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:12:22-77
+15
+16    <application
+16-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:7:5-9:19
+17        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+17-->[androidx.core:core:1.0.0] C:\Users\dfrodriguezl\.gradle\caches\transforms-3\0de9b6f25662a9690c94bfe64f556540\transformed\core-1.0.0\AndroidManifest.xml:22:18-86
+18        android:debuggable="true"
+19        android:extractNativeLibs="true" >
+20        <uses-library android:name="android.test.runner" />
+20-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:8:9-60
+20-->D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest8256483619258329105.xml:8:23-57
+21    </application>
+22
+23</manifest>

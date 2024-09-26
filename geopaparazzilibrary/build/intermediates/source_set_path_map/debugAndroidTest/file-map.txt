@@ -1,0 +1,13 @@
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-transition-1.0.0-0 C:\Users\dfrodriguezl\.gradle\caches\transforms-3\06e9875b303012838f13f068a389cb48\transformed\transition-1.0.0\res
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-core-1.0.0-1 C:\Users\dfrodriguezl\.gradle\caches\transforms-3\0de9b6f25662a9690c94bfe64f556540\transformed\core-1.0.0\res
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-material-1.0.0-2 C:\Users\dfrodriguezl\.gradle\caches\transforms-3\17e92279aa26fb71f12f3489e8a3b6af\transformed\material-1.0.0\res
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-coordinatorlayout-1.0.0-3 C:\Users\dfrodriguezl\.gradle\caches\transforms-3\4df7f7c418404fdde6e4c6b3c77110a0\transformed\coordinatorlayout-1.0.0\res
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-media-1.0.0-4 C:\Users\dfrodriguezl\.gradle\caches\transforms-3\5db9664ebfb3462e23bba753e9b8528a\transformed\media-1.0.0\res
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-recyclerview-1.0.0-5 C:\Users\dfrodriguezl\.gradle\caches\transforms-3\802b0dac5a020f79b8abd5557b5e43fc\transformed\recyclerview-1.0.0\res
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-appcompat-1.0.0-6 C:\Users\dfrodriguezl\.gradle\caches\transforms-3\8cd7091ee2b2b177314b70f9267776cd\transformed\appcompat-1.0.0\res
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-cardview-1.0.0-7 C:\Users\dfrodriguezl\.gradle\caches\transforms-3\ab620463462e0f419f905989207689fa\transformed\cardview-1.0.0\res
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-androidTest-8 D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\generated\res\resValues\androidTest\debug
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-mergeDebugAndroidTestResources-9 D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-mergeDebugAndroidTestResources-10 D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-merged_res-11 D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\merged_res\debugAndroidTest
+eu.geopaparazzi.spatialite.test.geopaparazzilibrary-packaged_res-12 D:\Workspace\Android\NovedadesCartograficas_AppMovil\geopaparazzilibrary\build\intermediates\packaged_res\debug
