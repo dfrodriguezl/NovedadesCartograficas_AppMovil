@@ -554,6 +554,29 @@ public class DialogoEdicion {
             LinearLayout panel_item = (LinearLayout) mView.findViewById(R.id.panel_item);
             panel_item.setVisibility(View.GONE);
             SpinnerNovedadPoligono(mView, 0);
+
+            final EditText descripcion_novedad = (EditText) mView.findViewById(R.id.descripcion_novedad);
+            final Spinner spinner_novedad_grupo = (Spinner) mView.findViewById(R.id.spinner_novedad_grupo);
+
+            spinner_novedad_grupo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    String tipo = spinner_novedad_grupo.getSelectedItem().toString().replaceAll("[^0-9]", "");
+                    if (tipo.equals("2")) {
+                        descripcion_novedad.setText(descripcion_novedad.getText().toString().equals("") ? "Cambio de forma de manzana: " : descripcion_novedad.getText().toString());
+                    } else if (tipo.equals("3")) {
+                        descripcion_novedad.setText(descripcion_novedad.getText().toString().equals("") ? "Unión de manzanas: " : descripcion_novedad.getText().toString());
+                    } else if (tipo.equals("4")) {
+                        descripcion_novedad.setText(descripcion_novedad.getText().toString().equals("") ? "Manzana no existe: " : descripcion_novedad.getText().toString());
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
+
+
         }
 
 //        if (opcion == 4) {
@@ -613,21 +636,45 @@ public class DialogoEdicion {
                     dialog.dismiss();
 
                     if (opcion == 3 || opcion == 5) {
-                        if (tipo.equals("3")) {// se implementa la unión de manzanas
-                            main.mitoast.generarToast("Seleccione más de una Manzana");
-                            main.JoinPicker = false;
-                        } else if (tipo.equals("2") || tipo.equals("4") || tipo.equals("5") || tipo.equals("6")) {// se implementa para AG NO EXISTE
+
+                        if (tipo.equals("5") || tipo.equals("6")) {
                             main.mitoast.generarToast("Seleccione una Manzana");
                             main.JoinPicker = false;
-                        } else {// se implementa para las novedades tipo poligono que se deben dibujar
-                            if(opcion == 5){
-                                main.crearPoligonoDesdeLinea();
-                            } else {
-                                main.dibujo_poligono();
-                                main.show_add_punto();
-                            }
-
+                            return;
                         }
+
+                        if (tipo.equals("2")) {
+                            main.mitoast.generarToast("Dibujar manzana");
+                        } else if (tipo.equals("3")) {
+                            main.mitoast.generarToast("Dibuje la nueva manzana que une los polígonos existentes en la cartogrfía del MGN");
+                        } else if (tipo.equals("4")) {
+                            main.mitoast.generarToast("Dibuje el polígono de la manzana a eliminar de la cartografía del MGN");
+                        }
+
+                        if (opcion == 5) {
+                            main.crearPoligonoDesdeLinea();
+                        } else {
+                            main.dibujo_poligono();
+                            main.show_add_punto();
+                        }
+
+
+
+//                        if (tipo.equals("3")) {// se implementa la unión de manzanas
+//                            main.mitoast.generarToast("Seleccione más de una Manzana");
+//                            main.JoinPicker = false;
+//                        } else if (tipo.equals("2") || tipo.equals("4") || tipo.equals("5") || tipo.equals("6")) {// se implementa para AG NO EXISTE
+//                            main.mitoast.generarToast("Seleccione una Manzana");
+//                            main.JoinPicker = false;
+//                        } else {// se implementa para las novedades tipo poligono que se deben dibujar
+//                            if(opcion == 5){
+//                                main.crearPoligonoDesdeLinea();
+//                            } else {
+//                                main.dibujo_poligono();
+//                                main.show_add_punto();
+//                            }
+//
+//                        }
 
 
                     }

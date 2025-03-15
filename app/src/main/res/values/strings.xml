@@ -155,6 +155,7 @@
         <item>Prueba/capacitación</item>
         <item>PRUEBA</item>
         <item>RURAL</item>
+        <item>Censo de pescadores</item>
     </string-array>
     <string-array name="tipo_geometria_gps">
         <item>Polígono</item>
