@@ -1320,8 +1320,8 @@ public class MainActivity extends AppCompatActivity
 
         mMap.setOnMyLocationClickListener(this);
         mMap.setOnCameraMoveListener(this);
-
-
+        mMap.setIndoorEnabled(true);
+        mMap.setBuildingsEnabled(false);
 
 
         //Mapa base del aplciativo
