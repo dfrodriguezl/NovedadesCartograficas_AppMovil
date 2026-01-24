@@ -2,6 +2,7 @@ package co.gov.dane.novedades;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -119,7 +121,6 @@ public class splash extends Activity {
 
     public void logica() {
 
-
         String ruta = null;
 
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
@@ -128,6 +129,33 @@ public class splash extends Activity {
             ruta = getExternalFilesDir("db").getAbsolutePath();
         }
 
+        // Verificar si el archivo ya existe
+        File dbFile = new File(ruta, "ceed.db");
+        
+        if (dbFile.exists()) {
+            Log.d("splash", "Archivo ceed.db ya existe, no es necesario descargarlo");
+            // El archivo ya existe, continuar directamente
+            navegarAProximaPantalla();
+        } else {
+            Log.d("splash", "Archivo ceed.db no existe, iniciando descarga");
+            // El archivo no existe, descargarlo y bloquear el splash
+            descargarArchivo(ruta);
+        }
+    }
+
+    /**
+     * Descarga el archivo ceed.db y bloquea el splash hasta que termine
+     */
+    private void descargarArchivo(String ruta) {
+        // Crear ProgressDialog bloqueante
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Descargando base de datos...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setMax(100);
+        progressDialog.show();
+
         FileDownloader fileDownloader = new FileDownloader(this);
         fileDownloader.downloadFile("https://geoportal.dane.gov.co/descargas/edicion_mobile/ceed.db",
                 ruta,
@@ -135,43 +163,60 @@ public class splash extends Activity {
                 new FileDownloader.FileDownloadListener() {
                     @Override
                     public void onDownloadComplete() {
-
+                        // Cerrar el diálogo de progreso
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
+                        Log.d("splash", "Descarga completada exitosamente");
+                        // Navegar a la siguiente pantalla después de la descarga
+                        navegarAProximaPantalla();
                     }
 
                     @Override
                     public void onDownloadFailed(String errorMessage) {
+                        // Cerrar el diálogo de progreso
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                         Mensajes mensaje = new Mensajes(splash.this);
                         mensaje.generarToast("Error en la descarga: " + errorMessage);
+                        Log.e("splash", "Error en la descarga: " + errorMessage);
+                        // Aún así, intentar navegar (puede que el archivo exista de una descarga anterior)
+                        navegarAProximaPantalla();
                     }
 
                     @Override
                     public void onProgressUpdate(int progress) {
-
+                        // Actualizar el progreso del diálogo
+                        if (progressDialog.isShowing()) {
+                            progressDialog.setProgress(progress);
+                            progressDialog.setMessage("Descargando base de datos... " + progress + "%");
+                        }
                     }
                 });
+    }
 
+    /**
+     * Navega a la siguiente pantalla (login o MainActivity)
+     */
+    private void navegarAProximaPantalla() {
         try {
             Session session = new Session(splash.this);
             String usuario = session.getusename();
 
             if (usuario.equals("")) {
-
                 Intent mainIntent = new Intent(splash.this, login.class);
                 splash.this.startActivity(mainIntent);
                 ((Activity) splash.this).finish();
-
             } else {
                 Intent mainIntent = new Intent(splash.this, MainActivity.class);
                 splash.this.startActivity(mainIntent);
                 ((Activity) splash.this).finish();
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e("splash", "Error al navegar: " + e.getMessage());
         }
-
-
     }
 
     private boolean checkPermission() {

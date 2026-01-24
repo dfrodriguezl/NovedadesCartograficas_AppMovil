@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -66,10 +67,14 @@ public class Novedades {
 
     public Boolean insertarNovedad(){
 
-        try {
-            SpatiaLite db=new SpatiaLite(context);
+        SpatiaLite db=new SpatiaLite(context);
 
-            org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+        org.spatialite.database.SQLiteDatabase sp=db.getWritableDatabase();
+
+        try {
+
+
+            sp.beginTransaction();
 
             ContentValues values = new ContentValues();
             values.put(Estructura.NovedadEntry.ID, id);
@@ -88,10 +93,17 @@ public class Novedades {
 
             //llena la tabla de novedades.
             sp.insertWithOnConflict(Estructura.NovedadEntry.TABLE_NAME, null, values,CONFLICT_REPLACE);
-            sp.close();
+
+            sp.setTransactionSuccessful();
+//            sp.close();
         } catch (SQLiteConstraintException e) {
+            Log.e("ERROR", "Error al guardar novedad " + e.getMessage());
 
             return false;
+        } finally {
+            if (sp != null && sp.inTransaction()){
+                sp.endTransaction();
+            }
         }
 
         return true;

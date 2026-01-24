@@ -252,15 +252,33 @@ public class MainActivity extends AppCompatActivity
         String ruta_db = null;
         if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
             ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
+            // Asegurar que el directorio existe
+            File dbDir = new File(ruta_db);
+            if (!dbDir.exists()) {
+                dbDir.mkdirs();
+            }
         } else {
-            ruta_db = getExternalFilesDir("db").getAbsolutePath() + File.separator;
+            File dbDir = getExternalFilesDir("db");
+            if (dbDir != null) {
+                // Asegurar que el directorio existe
+                if (!dbDir.exists()) {
+                    dbDir.mkdirs();
+                }
+                ruta_db = dbDir.getAbsolutePath() + File.separator;
+            } else {
+                Log.e("MainActivity", "No se pudo obtener el directorio de base de datos");
+                ruta_db = "";
+            }
         }
 
-        if (fichero.exists()) {
-
+        if (fichero.exists() && session.getGeom() != null && !session.getGeom().isEmpty()) {
             spm = new SpatiaLiteManzanas(MainActivity.this, session.getGeom(), ruta_db);
         } else {
-            spm = new SpatiaLiteManzanas(MainActivity.this, "", ruta_db);
+            // Si el archivo no existe o getGeom() está vacío, no crear la instancia
+            // o usar un nombre por defecto válido
+            Log.w("MainActivity", "Archivo de base de datos no existe o getGeom() está vacío: " + archivo);
+            // No crear spm si no hay base de datos válida
+            spm = null;
         }
 
 
@@ -1398,6 +1416,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void ManzanasMGN(LatLng userLocation) {
+
+        // Verificar que spm no sea null antes de usarlo
+        if (spm == null) {
+            Log.w("MainActivity", "spm es null, no se pueden cargar las manzanas");
+            return;
+        }
 
         Map<String, PolygonOptions> pol_get = spm.getManzanas(userLocation);
         Map<String, PolygonOptions> pol_get_rural = spm.getSeccionesRurales(userLocation);

@@ -36,12 +36,36 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
     private Context context;
     private String databaseName;
 
-    public SpatiaLiteManzanas(Context context, String databaseName, String url) {
+    /**
+     * Helper method para preparar la ruta de la base de datos y crear el directorio si es necesario
+     */
+    private static String prepareDatabasePath(String databaseName, String url) {
+        // Construir la ruta de la base de datos
+        String dbPath = (databaseName == null || databaseName.isEmpty()) 
+            ? url + "default.db" 
+            : url + databaseName;
+        
+        // Asegurar que el directorio padre existe
+        File dbFile = new File(dbPath);
+        File parentDir = dbFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+        
+        return dbPath;
+    }
 
-        super(context, url + databaseName, null, DATABASE_VERSION);
+    public SpatiaLiteManzanas(Context context, String databaseName, String url) {
+        // Llamar a super() como primera declaración, usando un método helper para preparar la ruta
+        super(context, prepareDatabasePath(databaseName, url), null, DATABASE_VERSION);
 
         this.context = context;
         this.databaseName = databaseName;
+        
+        // Log de advertencia si databaseName estaba vacío
+        if (databaseName == null || databaseName.isEmpty()) {
+            Log.w("SpatiaLiteManzanas", "databaseName estaba vacío, usando nombre por defecto");
+        }
     }
 
     @Override
@@ -63,8 +87,25 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = context.getExternalFilesDir("db").getAbsolutePath() + File.separator;
+                File dbDir = context.getExternalFilesDir("db");
+                if (dbDir != null) {
+                    // Asegurar que el directorio existe
+                    if (!dbDir.exists()) {
+                        dbDir.mkdirs();
+                    }
+                    ruta_db = dbDir.getAbsolutePath() + File.separator;
+                } else {
+                    Log.e("SpatiaLiteManzanas", "No se pudo obtener el directorio de base de datos");
+                    return poligonos;
+                }
             }
+            
+            // Validar que databaseName no esté vacío
+            if (databaseName == null || databaseName.isEmpty()) {
+                Log.e("SpatiaLiteManzanas", "databaseName está vacío o es null");
+                return poligonos;
+            }
+            
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
             org.spatialite.database.SQLiteDatabase sp1 = db1.getWritableDatabase();
 
@@ -126,8 +167,25 @@ public class SpatiaLiteManzanas extends SQLiteOpenHelper {
             if (Build.VERSION_CODES.KITKAT > Build.VERSION.SDK_INT) {
                 ruta_db = Environment.getExternalStorageDirectory() + File.separator + "Editor Nc" + File.separator + "db" + File.separator;
             } else {
-                ruta_db = context.getExternalFilesDir("db").getAbsolutePath() + File.separator;
+                File dbDir = context.getExternalFilesDir("db");
+                if (dbDir != null) {
+                    // Asegurar que el directorio existe
+                    if (!dbDir.exists()) {
+                        dbDir.mkdirs();
+                    }
+                    ruta_db = dbDir.getAbsolutePath() + File.separator;
+                } else {
+                    Log.e("SpatiaLiteManzanas", "No se pudo obtener el directorio de base de datos");
+                    return poligonos;
+                }
             }
+            
+            // Validar que databaseName no esté vacío
+            if (databaseName == null || databaseName.isEmpty()) {
+                Log.e("SpatiaLiteManzanas", "databaseName está vacío o es null");
+                return poligonos;
+            }
+            
             SpatiaLiteManzanas db1 = new SpatiaLiteManzanas(context, databaseName, ruta_db);
             org.spatialite.database.SQLiteDatabase sp1 = db1.getWritableDatabase();
 

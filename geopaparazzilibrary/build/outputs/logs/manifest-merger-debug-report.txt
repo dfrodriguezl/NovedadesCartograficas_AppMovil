@@ -1,21 +1,21 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml:2:1-7:12
-INJECTED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml:2:1-7:12
+ADDED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml:2:1-7:12
+INJECTED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml:2:1-7:12
 	package
-		ADDED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml:3:5-41
-		INJECTED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml
+		ADDED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml:3:5-41
+		INJECTED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml
 	android:versionName
-		ADDED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml:5:5-32
+		ADDED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml:5:5-32
 	xmlns:android
-		ADDED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml:2:11-69
+		ADDED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml:2:11-69
 	android:versionCode
-		ADDED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml:4:5-29
+		ADDED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml:4:5-29
 uses-sdk
-INJECTED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml
-INJECTED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml
+INJECTED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml
+INJECTED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml
+		INJECTED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from C:\Users\DIEGO\Documents\Workspace_DANE\NovedadesCartograficas_AppMovil\geopaparazzilibrary\AndroidManifest.xml
+		INJECTED from /Users/dfrodriguezl/Documents/Workspace_D/android/NovedadesCartograficas_AppMovil/geopaparazzilibrary/AndroidManifest.xml

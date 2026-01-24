@@ -28,6 +28,7 @@
             android:configChanges="orientation|screenSize"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"
+            android:hardwareAccelerated="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

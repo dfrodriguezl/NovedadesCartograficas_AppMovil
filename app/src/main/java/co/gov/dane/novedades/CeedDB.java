@@ -50,7 +50,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -69,7 +68,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -88,7 +86,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -107,7 +104,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -126,7 +122,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -145,7 +140,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -164,7 +158,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -183,7 +176,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return coord;
@@ -204,7 +196,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -223,7 +214,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -242,7 +232,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -261,7 +250,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -281,7 +269,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -303,7 +290,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
@@ -323,7 +309,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return imagen;
@@ -343,7 +328,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return color;
@@ -363,7 +347,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return color;
@@ -385,7 +368,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return tipo;
@@ -405,7 +387,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return tipo;
@@ -421,7 +402,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return label;
@@ -438,7 +418,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return label;
@@ -457,7 +436,6 @@ public class CeedDB  extends SQLiteOpenHelper {
         }
         // closing connection
         res.close();
-        db.close();
 
         // returning lables
         return labels;
